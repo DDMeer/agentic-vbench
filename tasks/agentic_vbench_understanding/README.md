@@ -6,9 +6,10 @@ v1.0 is the **post-production** area (`agentic_vbench_repair`, `_assembly`,
 **video-understanding** area — the first community-built one. It does not modify the
 frozen v1.0 post-production tasks; it stands on its own alongside them.
 
-A task here gives an agent a real video and one unambiguous question, and grades the
-answer with deterministic code. The answer is usually objective — a count, an event,
-a time span, a yes/no — so scoring is clean and the task resists contamination.
+A task here gives an agent one or multiple real videos and one unambiguous question,
+and grades the answer with deterministic code. The answer is usually objective — a
+count, an event, a time span, a yes/no — so scoring is clean and the task resists
+contamination.
 
 ## Hard requirements (enforced by `tools/check_task.py`)
 
@@ -16,10 +17,11 @@ Every task in this family must satisfy all of these, and ships a filled-in **Spe
 Card** (`TASK_SPEC.md`; copy it into your task folder as `SPEC.md`) stating each
 claim so a reviewer can verify it.
 
-- **Input video.** Real footage from a stable, downloadable source (archive.org or
-  YouTube). Single-video tasks 10–300 minutes; a two-clip comparison task is exempt
-  from the length floor. At least 720p either way. Bake it at build time with a
-  pinned URL and a SHA256 checksum.
+- **Input video(s).** One or more real videos from a stable, downloadable source
+  (archive.org or YouTube). A single-video task runs 10–300 minutes; a comparison
+  task may instead use a pair (or a few) short clips, which are exempt from the
+  length floor. At least 720p either way. Bake each at build time with a pinned URL
+  and a SHA256 checksum.
 - **Task prompt.** One clearly worded question with an explicit JSON output schema.
   No trick wording, no hidden requirements. Define every scored term; give any closed
   vocabulary in full; name the deliverable path; never leak the scoring method or the
@@ -68,10 +70,13 @@ tasks/agentic_vbench_understanding/<task-id>/
 ├── SPEC.md                       # the filled-in Spec Card (copy of TASK_SPEC.md)
 ├── task.toml                     # settings, resources, time limits, canary header
 ├── environment/Dockerfile        # base image + pinned deps; bakes the media
-└── steps/solve/
-    ├── instruction.md            # what the agent reads + where to save output
-    ├── solution/solve.sh         # the oracle (works out the answer)
-    └── tests/{judge.py, test.sh} # deterministic scorer; writes reward.json
+├── steps/solve/
+│   ├── instruction.md            # what the agent reads + where to save output
+│   ├── solution/solve.sh         # the oracle (works out the answer)
+│   └── tests/{judge.py, test.sh} # deterministic scorer; writes reward.json
+└── calibration/                  # the difficulty evidence (see below)
+    ├── scores.md                 # per-agent score + rollout turns table
+    └── rollouts/                 # one raw agent transcript per agent
 ```
 
 ### Task naming
