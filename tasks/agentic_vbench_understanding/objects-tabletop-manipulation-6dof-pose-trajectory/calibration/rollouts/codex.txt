@@ -1,7 +1,7 @@
 Reading additional input from stdin...
 OpenAI Codex v0.144.1
 --------
-workdir: /data/avb/calib/runs/objects_codex
+workdir: /workspace
 model: gpt-5.5
 provider: openai
 approval: never
@@ -16,15 +16,15 @@ user
 You are given three egocentric (head-mounted, first-person) video clips of a person
 manipulating small tabletop objects:
 
-- `/data/avb/calib/runs/objects_codex/materials/clip_01.mp4`
-- `/data/avb/calib/runs/objects_codex/materials/clip_02.mp4`
-- `/data/avb/calib/runs/objects_codex/materials/clip_03.mp4`
+- `/workspace/materials/clip_01.mp4`
+- `/workspace/materials/clip_02.mp4`
+- `/workspace/materials/clip_03.mp4`
 
 In each clip one **target object** is designated. For a set of query frames in each
 clip, reconstruct the **6DoF pose of that target object** — its position and
 orientation — expressed **in that clip's RGB camera coordinate frame, in metres**.
 
-You are also given, in `/data/avb/calib/runs/objects_codex/materials/`:
+You are also given, in `/workspace/materials/`:
 
 - `objects.json` — the target object's name for each clip id (`clip_01`, `clip_02`,
   `clip_03`).
@@ -53,7 +53,7 @@ structure, projected through the given camera model, matches what the clip shows
 
 ## What to submit
 
-Write `/data/avb/calib/runs/objects_codex/output/solution.json` in exactly this shape:
+Write `/workspace/output/solution.json` in exactly this shape:
 
 ```json
 {
@@ -88,7 +88,7 @@ IMPORTANT: You must produce a COMPLETE deliverable covering EVERY query before y
 codex
 I’ll inspect the provided metadata and video properties first, then extract the requested frames into a local working folder so I can make a complete first-pass pose file before refining.
 exec
-/bin/bash -lc "sed -n '1,220p' materials/objects.json" in /data/avb/calib/runs/objects_codex
+/bin/bash -lc "sed -n '1,220p' materials/objects.json" in /workspace
  succeeded in 0ms:
 {
   "clip_01": "birdhouse_toy",
@@ -96,7 +96,7 @@ exec
   "clip_03": "potato_masher"
 }
 exec
-/bin/bash -lc "sed -n '1,260p' materials/queries.json" in /data/avb/calib/runs/objects_codex
+/bin/bash -lc "sed -n '1,260p' materials/queries.json" in /workspace
  succeeded in 0ms:
 {
   "clip_01": [
@@ -143,7 +143,7 @@ exec
   ]
 }
 exec
-/bin/bash -lc "sed -n '1,260p' materials/cameras.json" in /data/avb/calib/runs/objects_codex
+/bin/bash -lc "sed -n '1,260p' materials/cameras.json" in /workspace
  succeeded in 0ms:
 {
   "clip_01": {
@@ -164,7 +164,7 @@ exec
     "imageWidth": 1408,
     "label": "camera-rgb",
     "maxSolidAngle": 1.0,
-    "projectionModelType": "CameraModelType.FISHEYE624",
+    "projectionModelType": "CameraModelType.a camera model",
     "projectionParams": [
       609.639892578125,
       707.0669555664062,
@@ -203,7 +203,7 @@ exec
     "imageWidth": 1408,
     "label": "camera-rgb",
     "maxSolidAngle": 1.0,
-    "projectionModelType": "CameraModelType.FISHEYE624",
+    "projectionModelType": "CameraModelType.a camera model",
     "projectionParams": [
       609.278564453125,
       706.708251953125,
@@ -242,7 +242,7 @@ exec
     "imageWidth": 1408,
     "label": "camera-rgb",
     "maxSolidAngle": 1.0,
-    "projectionModelType": "CameraModelType.FISHEYE624",
+    "projectionModelType": "CameraModelType.a camera model",
     "projectionParams": [
       608.9542236328125,
       705.601318359375,
@@ -265,9 +265,9 @@ exec
   }
 }
 exec
-/bin/bash -lc 'pwd && rg --files materials output || true' in /data/avb/calib/runs/objects_codex
+/bin/bash -lc 'pwd && rg --files materials output || true' in /workspace
  succeeded in 0ms:
-/data/avb/calib/runs/objects_codex
+/workspace
 materials/clip_03.mp4
 materials/objects.json
 materials/cameras.json
@@ -278,7 +278,7 @@ materials/clip_01.mp4
 codex
 The query set is 36 total frames, 12 per clip. I’m checking frame rate and extracting just those frames now; the target objects are `birdhouse_toy`, `vase`, and `potato_masher`.
 exec
-/bin/bash -lc 'ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration -of json materials/clip_03.mp4' in /data/avb/calib/runs/objects_codex
+/bin/bash -lc 'ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration -of json materials/clip_03.mp4' in /workspace
  succeeded in 0ms:
 {
     "programs": [
@@ -300,9 +300,9 @@ exec
 }
 
 exec
-/bin/bash -lc 'ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration -of json materials/clip_02.mp4' in /data/avb/calib/runs/objects_codex
+/bin/bash -lc 'ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration -of json materials/clip_02.mp4' in /workspace
 exec
-/bin/bash -lc 'ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration -of json materials/clip_01.mp4' in /data/avb/calib/runs/objects_codex
+/bin/bash -lc 'ffprobe -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,r_frame_rate,nb_frames,duration -of json materials/clip_01.mp4' in /workspace
  succeeded in 0ms:
 {
     "programs": [
@@ -371,7 +371,7 @@ for clip, frames in q.items():
     for i,im in enumerate(thumbs): sheet.paste(im,((i%4)*352,(i//4)*352))
     sheet.save(f'work/contact/{clip}.jpg', quality=95)
 PY
-ls -l work/contact work/frames | sed -n '1,80p'" in /data/avb/calib/runs/objects_codex
+ls -l work/contact work/frames | sed -n '1,80p'" in /workspace
 codex
 The extraction is still running because it is seeking individual high-resolution frames. I’ll wait for it to finish, then inspect the contact sheets directly.
  succeeded in 66527ms:
@@ -512,7 +512,7 @@ with open('output/solution.json','w') as f:
     f.write('\\n')
 print('wrote output/solution.json')
 PY
-python3 -m json.tool output/solution.json >/dev/null && wc -c output/solution.json && sed -n '1,80p' output/solution.json" in /data/avb/calib/runs/objects_codex
+python3 -m json.tool output/solution.json >/dev/null && wc -c output/solution.json && sed -n '1,80p' output/solution.json" in /workspace
  succeeded in 0ms:
 wrote output/solution.json
 8359 output/solution.json
@@ -632,7 +632,7 @@ for clip, entries in sol.items():
     for i,im in enumerate(thumbs): sheet.paste(im,((i%4)*352,(i//4)*352))
     sheet.save(f'work/contact/{clip}_overlay.jpg', quality=95)
 print('made overlays')
-PY" in /data/avb/calib/runs/objects_codex
+PY" in /workspace
  succeeded in 683ms:
 coverage ok
 made overlays
@@ -680,7 +680,7 @@ for clip, frames in q.items():
         n=math.sqrt(sum(x*x for x in e['q_wxyz']))
         assert abs(n-1)<2e-6, (clip,e['frame'],n)
 print('final validation ok:', sum(len(v) for v in sol.values()), 'poses')
-PY" in /data/avb/calib/runs/objects_codex
+PY" in /workspace
  succeeded in 0ms:
 updated output/solution.json
 final validation ok: 36 poses
@@ -694,7 +694,7 @@ q=json.load(open('materials/queries.json'))
 s=json.load(open('output/solution.json'))['clips']
 print({k: len(v) for k,v in s.items()})
 print('frames_match=', {k: [e['frame'] for e in s[k]] == q[k] for k in q})
-PY" in /data/avb/calib/runs/objects_codex
+PY" in /workspace
  succeeded in 0ms:
 -rw-rw-r-- 1 xiatao xiatao 8351 Jul 10 06:40 output/solution.json
 {'clip_01': 12, 'clip_02': 12, 'clip_03': 12}
@@ -703,7 +703,7 @@ frames_match= {'clip_01': True, 'clip_02': True, 'clip_03': True}
 codex
 Done. Wrote the complete deliverable to:
 
-`/data/avb/calib/runs/objects_codex/output/solution.json`
+`/workspace/output/solution.json`
 
 Validation passed:
 - 36 total poses
@@ -715,7 +715,7 @@ tokens used
 79,020
 Done. Wrote the complete deliverable to:
 
-`/data/avb/calib/runs/objects_codex/output/solution.json`
+`/workspace/output/solution.json`
 
 Validation passed:
 - 36 total poses
