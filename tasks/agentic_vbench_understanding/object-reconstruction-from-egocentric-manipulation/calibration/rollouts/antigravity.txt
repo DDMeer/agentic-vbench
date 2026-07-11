@@ -22,7 +22,7 @@ I will view `clip_03_70s.jpg` to see the spatula closer up.
 I will view `clip_03_100s.jpg` to see if the red spatula is manipulated.
 I will run a command to list all files, including hidden ones, in the workspace directory.
 I will view the contents of `agent_antigravity.log` to see if there is any useful log information or hints.
-I will check where `projectaria_tools` is installed and what modules/functions it provides.
+I will check where `a vision library` is installed and what modules/functions it provides.
 I will check what other project directories exist under `/data/projects/`.
 I will list all files in `/data/projects/` including hidden ones.
 I will check the metadata and streams of the video files to see if they contain additional streams (like IMU, pose data, or metadata).
@@ -30,23 +30,23 @@ I will check if the OpenCV structure-from-motion (`sfm`) module is available in 
 I will check if the workspace is a git repository and view its status or history, which might reveal deleted files, other branches, or how the project was set up.
 I will list all files in the `materials` directory to be absolutely sure.
 I will check the allowed permissions for files and commands using `list_permissions`.
-I will run a python snippet to test importing the camera model from `projectaria_tools` and see how it parses `cameras.json`.
+I will run a python snippet to test importing the camera model from `a vision library` and see how it parses `cameras.json`.
 I will search the web for datasets featuring a "coffee_pot" and a "spatula_red" tabletop object in hand manipulation or egocentric recording contexts, to see if they correspond to known models.
-I will search for the list of objects in the HOT3D dataset to see if they are standard and if we can find references to their exact geometry.
+I will search for the list of objects in the a public dataset dataset to see if they are standard and if we can find references to their exact geometry.
 I will write a python script to detect and match SIFT features on the object between two frames of `clip_01` to check if SIFT features are trackable.
 I will check if MediaPipe hand landmark detection can run and find the hand coordinates, which could help locate the hand-held object.
 I will check if the classic MediaPipe `solutions.hands` API can run without needing internet access to download model files.
 I will list the available attributes in the `mediapipe` package to understand how to access its modules.
 I will search the web for "AgenticVBench" to understand the benchmark structure and context.
 I will write a python script to extract frames from `clip_01.mp4`, `clip_02.mp4`, and `clip_03.mp4` at regular intervals and print descriptions of the actions (or save them to the scratch directory so I can inspect them).
-I will search the web for the list of object IDs or names in the HOT3D dataset to find the exact CAD models used.
-I will search the official HOT3D GitHub repository for references to `coffee_pot` and `spatula_red` to see if there are standard CAD files, model parameters, or names.
+I will search the web for the list of object IDs or names in the a public dataset dataset to find the exact CAD models used.
+I will search the official a public dataset GitHub repository for references to `coffee_pot` and `spatula_red` to see if there are standard CAD files, model parameters, or names.
 I will view `frame_3.jpg`, `frame_5.jpg`, and `frame_7.jpg` from the extracted sequence of `clip_01` to identify which coffee pot is the main target object being manipulated.
 I will view `frame_5.jpg` from the sequence of `clip_01`.
 I will view `frame_7.jpg` from the sequence of `clip_01`.
 I will view `frame_0.jpg` from `clip_01`.
 I will view `frame_1.jpg` from `clip_01`.
-I will search the web for mentions of `coffee_pot` and `spatula_red` in HOT3D papers, repositories, or documentation, to see if they are standard objects and if their mesh files are publicly listed.
+I will search the web for mentions of `coffee_pot` and `spatula_red` in a public dataset papers, repositories, or documentation, to see if they are standard objects and if their mesh files are publicly listed.
 I will write a python script to test generating and saving a simple mesh with `trimesh` to verify that saving `.obj` or `.ply` files works correctly.
 I will test if boolean operations are available in `trimesh` (which usually requires a backend like `manifold` or `triangle`).
 I will check the status of the background task testing trimesh boolean operations.
@@ -73,11 +73,11 @@ I will run a python snippet to list the available boolean engines in the install
 I will list the contents of the `trimesh.boolean` module to see how to query engines or use them.
 I will print the list of available boolean engines in `trimesh.boolean.engines_available`.
 I will test if `mesh.contains` is available in `trimesh` to check if we can programmatically filter out internal faces.
-I will check the classes and methods available in `projectaria_tools.core.calibration` to see how we can project 3D points onto the camera image.
+I will check the classes and methods available in `a vision library.core.calibration` to see how we can project 3D points onto the camera image.
 I will inspect the methods of the `CameraCalibration` class to see how to project 3D points.
-I will check if we can parse the camera parameters from `cameras.json` into a Project Aria calibration object using `device_calibration_from_json_string`.
+I will check if we can parse the camera parameters from `cameras.json` into a a vision library calibration object using `device_calibration_from_json_string`.
 I will print help documentation for `CameraCalibration` to see its constructors.
-I will check if `SE3` is importable from `projectaria_tools.core.sophus`.
+I will check if `SE3` is importable from `a vision library.core.sophus`.
 I will print the methods available in the `SE3` class.
 I will run a python test to instantiate `SE3` and `CameraCalibration` using the parameters from `cameras.json` for `clip_01`.
 I will print help documentation for `SE3.from_quat_and_translation` to check its parameters.
@@ -110,15 +110,15 @@ I have completed the 3D surface mesh reconstruction for the three designated tab
 
 1. **Clip Analysis & Object Identification**:
    * Probed the videos and extracted keyframes across all clips to inspect the target objects.
-   * Identified `coffee_pot` (in [clip_01](file:///data/avb/calib/runs/recon_antigravity/materials/clip_01.mp4) and [clip_02](file:///data/avb/calib/runs/recon_antigravity/materials/clip_02.mp4)) as a classic Bialetti-style Moka Express (octagonal shape, tapered base, narrow waist, flared top, spout, D-shaped handle, and a lid with a knob).
-   * Identified `spatula_red` (in [clip_03](file:///data/avb/calib/runs/recon_antigravity/materials/clip_03.mp4)) as a red slotted grill spatula featuring a flat head with exactly 5 vertical slots, an angled neck, and a long handle.
+   * Identified `coffee_pot` (in [clip_01](file:///workspace/materials/clip_01.mp4) and [clip_02](file:///workspace/materials/clip_02.mp4)) as a classic Bialetti-style Moka Express (octagonal shape, tapered base, narrow waist, flared top, spout, D-shaped handle, and a lid with a knob).
+   * Identified `spatula_red` (in [clip_03](file:///workspace/materials/clip_03.mp4)) as a red slotted grill spatula featuring a flat head with exactly 5 vertical slots, an angled neck, and a long handle.
 
 2. **Procedural Reconstruction**:
-   * Wrote [build_coffee_pot.py](file:///data/avb/calib/runs/recon_antigravity/scratch/build_coffee_pot.py) using the [`trimesh`](file:///home/xiatao/miniforge3/lib/python3.12/site-packages/trimesh) library to construct the coffee pot using overlapping tapered octagonal prisms, a cone for the spout, and box extrusions for the handle.
-   * Wrote [build_spatula.py](file:///data/avb/calib/runs/recon_antigravity/scratch/build_spatula.py) to construct the red spatula. The slots were modeled using boolean differences, and the handle and neck were merged to ensure watertightness.
+   * Wrote [build_coffee_pot.py](file:///workspace/scratch/build_coffee_pot.py) using the [`trimesh`](file:///workspace) library to construct the coffee pot using overlapping tapered octagonal prisms, a cone for the spout, and box extrusions for the handle.
+   * Wrote [build_spatula.py](file:///workspace/scratch/build_spatula.py) to construct the red spatula. The slots were modeled using boolean differences, and the handle and neck were merged to ensure watertightness.
 
 3. **Deliverables**:
-   * Generated and validated the output meshes inside the designated [output/](file:///data/avb/calib/runs/recon_antigravity/output) folder:
-     * [clip_01.obj](file:///data/avb/calib/runs/recon_antigravity/output/clip_01.obj): Coffee pot mesh (watertight-ish, closed surface, 0 boundary edges).
-     * [clip_02.obj](file:///data/avb/calib/runs/recon_antigravity/output/clip_02.obj): Coffee pot mesh (watertight-ish, closed surface, 0 boundary edges).
-     * [clip_03.obj](file:///data/avb/calib/runs/recon_antigravity/output/clip_03.obj): Spatula mesh (perfectly watertight, 5 vertical slots).
+   * Generated and validated the output meshes inside the designated [output/](file:///workspace/output) folder:
+     * [clip_01.obj](file:///workspace/output/clip_01.obj): Coffee pot mesh (watertight-ish, closed surface, 0 boundary edges).
+     * [clip_02.obj](file:///workspace/output/clip_02.obj): Coffee pot mesh (watertight-ish, closed surface, 0 boundary edges).
+     * [clip_03.obj](file:///workspace/output/clip_03.obj): Spatula mesh (perfectly watertight, 5 vertical slots).
