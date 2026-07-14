@@ -66,22 +66,27 @@ difficulty:
   tool_call_turns: 67         # Claude 67, Antigravity 45, Cursor 57; Codex self-stopped at 13
   agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI, Cursor CLI (Composer)
 
-# 8. Anti-shortcut ablations (each must be <= 0.15). Best-case degraded submission scored.
+# 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
+# calibration/ablations/.
 anti_shortcut:
-  single_frame: 0.0        # real hand shape at a guessed fixed depth -> no metric hit
+  single_frame: 0.0        # one frame per clip + intrinsics; agent tried 43 turns, no metric depth
   video_only: n/a          # audio not used
   audio_only: n/a
-  no_media: 0.0            # fixed canonical hand at plausible depth
-  frame_dump_no_tools: 0.0039  # eyeballed 2D + 15% scale error + 2 cm noise
+  no_media: 0.0            # only cameras.json + queries.json
+  frame_dump_no_tools: 0.0  # pre-dumped frames, no shell tools
 
 # 9. Input media (three short clips; comparison/multi-clip -> exempt from length floor).
 input:
   clips: 3
-  url: hosted on Hugging Face (see Dockerfile MATERIALS_BASE); baked at build with SHA256
+  # every file is fetched from this base with {base}/{name}, pinned by SHA256 in the
+  # Dockerfile. Same host as the v1.0 families.
+  base_url: https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_hands/resolve/main
   sha256:
-    clip_01: 22d4f7e060ee79eb77eadd58b92c0f3a3e840640aba2f3afc6322aee47c8b729
-    clip_02: 5323761ef008f7f0e3d317a9b477c4f9ffd80da6da3504b3280324af93a47544
-    clip_03: 6fc266fd070b00e547642ef3e0613ef82ca13a58b8042a86c4259f7bf8269874
+    clip_01.mp4: 22d4f7e060ee79eb77eadd58b92c0f3a3e840640aba2f3afc6322aee47c8b729
+    clip_02.mp4: 5323761ef008f7f0e3d317a9b477c4f9ffd80da6da3504b3280324af93a47544
+    clip_03.mp4: 6fc266fd070b00e547642ef3e0613ef82ca13a58b8042a86c4259f7bf8269874
+    cameras.json: 753c37861a52a82d0689a571afed6ce5f90dcc358367a54c8a637919fb565d1c
+    queries.json: 127fcbcdfdc2babc6a728925f75d542acece658c5447f51e2defc4edbfb0642c
   length_min: ~2 min each (short-clip set; exempt from the 10-min single-video floor)
   resolution: 1024x1024 pinhole (>= 720p; rectified from a wider capture)
 ```

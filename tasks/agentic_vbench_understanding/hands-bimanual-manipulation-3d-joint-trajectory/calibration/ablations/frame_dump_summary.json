@@ -1,0 +1,8 @@
+{
+  "mode": "frame_dump",
+  "agent": "claude",
+  "reward": 0.0,
+  "turns": 17,
+  "duration_s": 288.0,
+  "returncode": 0
+}

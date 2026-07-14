@@ -2,9 +2,9 @@
 # Oracle: write the verified right-hand 3D joint trajectory as solution.json.
 #
 # The reference answer is the capture rig's logged hand-tracking, forward-kinematicked
-# to 20 canonical joints and expressed in each clip's RGB camera frame. This is the
-# verified answer key baked into the image, not something read from the clips. The
-# agent never sees this file.
+# to 20 canonical joints and expressed in each clip's RGB camera frame. It ships on the
+# verifier side and is copied to /solution only for this oracle step, so the agent never
+# sees it. This is the verified answer key, not something read from the clips.
 set -euo pipefail
 
 mkdir -p /workspace/output
@@ -13,7 +13,7 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 
-gt = json.loads(Path("/baked/ground_truth.json").read_text())
+gt = json.loads(Path("/solution/ground_truth.json").read_text())
 clips = {}
 for clip in gt["clips"]:
     clips[clip["clip"]] = [

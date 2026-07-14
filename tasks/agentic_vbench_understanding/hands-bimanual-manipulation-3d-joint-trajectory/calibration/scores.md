@@ -21,14 +21,41 @@ long on PnP, camera-model, and marker-detection work and still produced no corre
 stop early on its own after fewer turns (13) and reached the same 0.0; the task did not
 lack work for it. Monocular metric 3D hand-joint recovery is beyond all of them.
 
-## Anti-shortcut ablations (target ≤ 0.15; simulated best-case degraded submissions)
+## The 3 cm target is reachable (partial-credit curve)
 
-| ablation | score |
+Because every agent scored 0.0 and the oracle copies the answer key, here is what a
+method that recovers joints to a given accuracy would score, obtained by adding gaussian
+noise of the stated magnitude to the reference joints and grading:
+
+| per-joint error | reward |
 |---|---|
-| single_frame (real hand shape, guessed fixed depth) | 0.0000 |
-| no_media (fixed canonical hand @ 0.4 m) | 0.0000 |
-| frame_dump_no_tools (15% scale error + 2 cm noise) | 0.0039 |
-| video_only / audio_only | n/a (audio not used) |
+| 5 mm | 0.733 |
+| 10 mm | 0.476 |
+| 15 mm | 0.245 |
+| 20 mm | 0.151 |
+| 30 mm | 0.052 |
+| 50 mm | 0.015 |
+
+The reward rises smoothly as accuracy improves, so a genuinely good reconstruction is
+rewarded well before it is perfect. The gap between this curve and the agents' 0.0 is the
+difficulty: they could not get any joint reliably within a few centimetres.
+
+## Anti-shortcut ablations (target ≤ 0.15; real Claude Code runs on degraded input)
+
+Each row is a real agent run on the degraded input, graded by the same judge. Transcripts
+and summaries are in `calibration/ablations/`.
+
+| ablation | score | turns |
+|---|---|---|
+| single_frame (one still frame per clip + intrinsics) | 0.0 | 43 |
+| no_media (only cameras.json + queries.json) | 0.0 | 2 |
+| frame_dump_no_tools (pre-dumped frames, no shell tools) | 0.0 | 17 |
+| video_only / audio_only | n/a (audio not used) | - |
+
+single_frame is the strongest test: the agent spent 43 turns trying to triangulate depth
+from one frame per clip and still landed at 0.0, because metric depth is not recoverable
+from a single view. These runs were on the host with general CV libraries available; the
+shipped image has only numpy and ffmpeg, so in-image scores can only be lower.
 
 Raw transcripts are in `rollouts/`, one file per agent, so a reviewer can confirm each
 score was earned honestly and count the tool-call turns. Honesty notes verifiable in the

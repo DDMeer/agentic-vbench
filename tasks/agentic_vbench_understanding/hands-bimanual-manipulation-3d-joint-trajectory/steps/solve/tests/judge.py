@@ -65,7 +65,7 @@ def score(pred, gt):
             g = np.asarray(q["joints_m"], float)
             total += n_joints
             p = pfr.get(f)
-            if p is None or p.shape != g.shape:
+            if p is None or p.shape != g.shape or not np.all(np.isfinite(p)):
                 clip_hits.append(0.0)
                 continue
             d = np.linalg.norm(p - g, axis=1)

@@ -1,0 +1,8 @@
+{
+  "mode": "single_frame",
+  "agent": "claude",
+  "reward": 0.0,
+  "turns": 43,
+  "duration_s": 928.7,
+  "returncode": 0
+}

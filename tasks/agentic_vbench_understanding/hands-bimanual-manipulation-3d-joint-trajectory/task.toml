@@ -16,7 +16,7 @@ source = "egocentric tabletop manipulation clips (head-mounted RGB), logged hand
 build_timeout_sec = 2400.0
 cpus = 4
 memory_mb = 8192
-# Three ~2-minute 1408x1408 clips are a few hundred MB total; give the build room.
+# Three ~2-minute 1024x1024 clips are a few hundred MB total; give the build room.
 storage_mb = 8192
 # Clips + camera models are baked at build time and the answer is not online.
 allow_internet = false
