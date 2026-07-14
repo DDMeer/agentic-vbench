@@ -45,8 +45,10 @@ ground_truth:
     object models), sampled to a dense reference point cloud baked into the verifier.
   tier: logged
   verification: "Reference mesh reprojects onto the object silhouette in sampled frames;
-    mesh diameters are physically sensible (16-42 cm); each object is confirmed present
-    and manipulated in its clip."
+    mesh diameters are physically sensible (23-37 cm); each target object is confirmed
+    grasped and rotated through the clip (measured object-pose rotation across the clip:
+    coffee_pot 145 deg, potato_masher 136 deg, spatula_red > 90 deg), so many distinct
+    viewpoints are actually shown."
 
 # 6. Scorer: deterministic code only.
 scorer:
@@ -59,33 +61,48 @@ scorer:
     is normalised by the per-object oracle_iou ceiling (the IoU the true mesh reaches
     under independent resampling+voxelisation, baked at authoring) so the true shape
     scores 1.0. reward = mean over the three clips.
-  oracle_reward: 1.0   # measured: 0.9985-1.0 end-to-end in Docker (>= 0.999)
+  oracle_reward: 1.0   # measured: 1.0 end-to-end in Docker (per-clip 1.0/1.0/1.0)
   null_reward: 0.0     # measured: empty output dir
 
 # 7. Difficulty: measured with real strong-agent runs.
 difficulty:
-  strong_agent_reward: 0.043  # Claude 0.043, Antigravity 0.033, Cursor 0.019, Codex 0.014 (all < 0.10)
-  tool_call_turns: 64          # Antigravity 64, Cursor 60 (>50); Claude 46, Codex 11
+  strong_agent_reward: 0.034  # Codex 0.034, Claude 0.018, Cursor 0.006, Antigravity 0.001 (all < 0.10)
+  tool_call_turns: 153         # Antigravity 153, Cursor 116, Claude 52 (all > 50); Codex 14
   agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI, Cursor CLI (Composer)
+  # Turn gate: three of the four runs (Antigravity 153, Cursor 116, Claude 52) cleared 50
+  # turns and still scored under 0.10, so the low scores are the task being hard, not
+  # agents quitting early. Codex (14) stopped on its own. Antigravity ran a full COLMAP
+  # structure-from-motion + Poisson-meshing pipeline in an isolated container and still
+  # scored 0.001.
+  # Solvability: a correct-but-imperfect reconstruction is well-rewarded. Decimating the
+  # true mesh to 5% of its faces still scores 1.0 (a coarse yet correct surface passes);
+  # perturbing every vertex by 2% of the diameter still scores 0.116 mean, above the best
+  # real agent (0.034). The bar is reachable, agents just do not get the shape accurate
+  # enough yet.
 
 # 8. Anti-shortcut ablations (each must be <= 0.15). Best-case degraded submission scored.
 anti_shortcut:
-  single_frame: <= 0.13    # a silhouette slab (extruded 2D bbox) scores 0.005-0.012
+  single_frame: 0.007      # silhouette slab (extruded 2D bbox): coffee_pot 0.006, potato_masher 0.007, spatula_red 0.006
   video_only: n/a          # audio not used
   audio_only: n/a
   no_media: 0.0           # empty output / stock mesh; wrong object (keyboard) = 0.003-0.009
-  frame_dump_no_tools: <= 0.13  # a convex hull (no concavity, best tool-less guess):
-    # coffee_pot 0.127, spatula_red 0.017
+  frame_dump_no_tools: 0.046  # convex hull (best tool-less guess, no concavity):
+    # coffee_pot 0.046, potato_masher 0.003, spatula_red 0.006
 
 # 9. Input media (three short clips; multi-clip -> exempt from length floor).
 input:
   clips: 3
-  objects: [coffee_pot, coffee_pot, spatula_red]   # concave shapes (survive the hull test)
-  url: hosted on Hugging Face (see Dockerfile MATERIALS_BASE); baked at build with SHA256
+  objects: [coffee_pot, potato_masher, spatula_red]   # three distinct non-convex shapes that need many views (survive the hull test)
+  url: https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_recon/resolve/main
+    # baked at build; every file SHA256-checked (see Dockerfile ARGs). Only the agent-facing
+    # materials are hosted here; the reference meshes (answer key) are not, they ship
+    # verifier-side under steps/solve/tests/ (grader) and steps/solve/solution/ (oracle).
   sha256:
     clip_01: 2f153d49b5c6b61e58d6b648af1002718dddd2fe2b32c6ba28d4e9d80d388a1c
-    clip_02: bbfabad6a5e5736de3ec5de7d31cee679c8c8267fdb0bc88ca52bcc8c82f47e6
+    clip_02: 56c42f94baecf5a78e2b6e32ed5af59719b51badfc6405d3f67d9b26bbc77520
     clip_03: 9d2cd0f8127622bc5805f4cbaf83efcbf17a9ad8d1f46748a26a9ccb7c5ab546
+    cameras.json: 753c37861a52a82d0689a571afed6ce5f90dcc358367a54c8a637919fb565d1c
+    objects.json: 08ceed454127f4d8f2186d92a97bfab7f3c183c58e348808ff863a020a857798
   length_min: ~2 min each (short-clip set; exempt from the 10-min single-video floor)
   resolution: 1024x1024 pinhole (>= 720p; rectified from a wider capture)
 ```

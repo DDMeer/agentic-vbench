@@ -10,33 +10,58 @@ Oracle must be ~1.0 and an empty attempt near 0.
 | oracle (reference meshes) | 1.0 | - |
 | empty / null (no meshes) | 0.0 | - |
 | wrong object (keyboard mesh) | ≤ 0.002 | - |
-| Claude Code CLI (Opus 4.8) | 0.043 | 46 |
-| Codex CLI (GPT-5.5) | 0.014 | 11 |
-| Antigravity CLI | 0.033 | 64 |
-| Cursor CLI (Composer) | 0.019 | 60 |
+| Claude Code CLI (Opus 4.8) | 0.018 | 52 |
+| Codex CLI (GPT-5.5) | 0.034 | 14 |
+| Antigravity CLI | 0.001 | 153 |
+| Cursor CLI (Composer) | 0.006 | 116 |
 
-Every real agent scored below 0.10. Claude (46), Antigravity (64), and Cursor (60) ran
-long, reconstructing three full meshes each via frame sampling + multi-view fusion, but
-none matched the true surface well enough. The volumetric-occupancy term punishes the
-coarse, concavity-poor shells the agents produced, exactly as it punishes a convex hull.
-Codex ran only 11 turns because it chose to stop early on its own, not because the task
-lacked work to do, and its partial attempt scored 0.014.
+Every real agent scored below 0.10. Claude (52 turns), Cursor (116), and Antigravity
+(153) all ran well past the 50-turn gate, reconstructing three full meshes each, yet none
+matched the true surface well enough: the low scores are the difficulty of the task, not
+agents giving up early. Antigravity built a full structure-from-motion pipeline (COLMAP
+SIFT features, exhaustive matching, incremental mapping, Poisson meshing) and still landed
+at 0.001, which shows that even a textbook multi-view reconstruction on these hand-held,
+self-occluding, texture-poor objects is far from the surface accuracy the scorer wants.
+The volumetric-occupancy term punishes the coarse, concavity-poor shells the agents
+produced, exactly as it punishes a convex hull. Codex ran only 14 turns because it chose
+to stop on its own, and its partial attempt scored 0.034.
 
 ## Anti-shortcut ablations (target ≤ 0.15; best-case degraded submission scored)
 
 | ablation | score |
 |---|---|
-| single_frame (silhouette slab, extruded 2D bbox) | 0.005–0.012 |
+| single_frame (silhouette slab, extruded 2D bbox) | coffee_pot 0.006, potato_masher 0.007, spatula_red 0.006 |
 | no_media (empty output dir) | 0.0 |
-| frame_dump_no_tools (convex hull, best tool-less guess, no concavity) | coffee_pot 0.127, spatula_red 0.017 |
+| frame_dump_no_tools (convex hull, best tool-less guess, no concavity) | coffee_pot 0.046, potato_masher 0.003, spatula_red 0.006 |
 | wrong object (keyboard mesh) | 0.003–0.009 |
 | video_only / audio_only | n/a (audio not used) |
 
 The convex-hull and slab shortcuts are exactly what the volumetric-IoU term defeats:
 filling a real concavity (hull) or flattening the object (slab) changes the occupied
-volume, so both collapse well below the bar while the true shape scores 1.0.
+volume, so both collapse well below the bar while the true shape scores 1.0. The
+potato_masher's thin handle and perforated head make it especially hostile to a convex
+hull (0.003).
+
+## Solvability: a correct-but-imperfect mesh is well-rewarded
+
+To show the 0.10 bar is reachable and not a cliff, the reference mesh was degraded and
+re-scored (same aligner, same grader):
+
+| degraded reference | clip_01 | clip_02 | clip_03 | mean |
+|---|---|---|---|---|
+| exact | 1.000 | 1.000 | 1.000 | 1.000 |
+| decimate to 5% of faces | 1.000 | 1.000 | 1.000 | 1.000 |
+| vertex noise 2% of diameter | 0.141 | 0.120 | 0.087 | 0.116 |
+
+A coarse but correct surface still scores 1.0, and even a noticeably noisy surface (2% of
+the object diameter, well beyond a good reconstruction) scores 0.116 mean, above the
+strongest real agent (0.034). The gap is reconstruction accuracy, not an unreachable
+threshold.
 
 Raw transcripts are in `rollouts/`, one file per agent.
 
-Oracle end-to-end verified by building the task image (materials pulled from Hugging
-Face) and running setup → solve.sh → judge.py in Docker (reward = 0.9985–1.0).
+Oracle end-to-end verified by building the task image (agent materials pulled from
+Hugging Face, reference meshes copied verifier-side) and running setup, solve.sh, and
+judge.py in Docker (reward = 1.0; per-clip 1.0 / 1.0 / 1.0), repeated three times with
+identical scores to confirm the seeded sampler is deterministic. During the agent phase
+the image holds no reference mesh and no ground_truth.json.

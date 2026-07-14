@@ -66,7 +66,13 @@ def _sample_submission(path, n=N_SAMPLE):
     m = trimesh.load(path, force="mesh")
     if m.vertices is None or len(m.vertices) == 0 or len(getattr(m, "faces", [])) == 0:
         raise ValueError("submission has no faces/vertices")
-    pts, _ = trimesh.sample.sample_surface(m, n)
+    # Seed the surface sampler so a given submission always scores identically. Newer
+    # trimesh takes seed=; fall back to seeding numpy's global RNG for older versions.
+    try:
+        pts, _ = trimesh.sample.sample_surface(m, n, seed=_SAMPLE_SEED)
+    except TypeError:
+        np.random.seed(_SAMPLE_SEED)
+        pts, _ = trimesh.sample.sample_surface(m, n)
     return np.asarray(pts, float)
 
 

@@ -5,13 +5,14 @@ honestly and count the tool-call turns:
 
 - `claude-code.jsonl` — Claude Code CLI (Opus 4.8), stream-json transcript
 - `codex.txt` — Codex CLI transcript (codex exec prints a plain-text log, not JSONL)
-- `antigravity.txt` — Antigravity CLI transcript (objects: run in a filesystem-isolated Docker container)
+- `antigravity.txt` — Antigravity CLI transcript (run in a filesystem-isolated Docker
+  container that mounts only `materials/`, so it cannot reach the repo or any other run)
 - `cursor.jsonl` — Cursor CLI transcript
 
-Each transcript shows the full run (all tool calls + the final deliverable). The agent
-is given only `materials/` (the clips + camera/query/object metadata); the ground truth
-is never staged into its workspace.
+Each transcript shows the full run (all tool calls plus the final deliverable). The agent
+is given only `materials/` (the three clips plus the camera and object-name metadata);
+the reference meshes and ground truth are never staged into its workspace.
 
-Note: base64 image payloads in the transcripts (frames the agent sampled)
-are elided (`"<elided base64>"`) to keep file sizes reasonable; all tool calls,
-reasoning, and the final answer are intact.
+Note: base64 image payloads in the transcripts (frames the agent sampled) are elided
+(`"<elided base64>"`) to keep file sizes reasonable; all tool calls, reasoning, and the
+final answer are intact.

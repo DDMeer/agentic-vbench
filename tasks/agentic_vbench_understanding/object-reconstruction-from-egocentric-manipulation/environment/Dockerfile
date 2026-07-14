@@ -8,14 +8,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # aligns point clouds, so it needs numpy + scipy + trimesh.
 RUN pip install --no-cache-dir numpy==2.1.3 scipy==1.14.1 trimesh==4.5.3
 
-# Bake the three egocentric clips + the agent-facing camera / object lists AND the
-# reference meshes (used only by the oracle + verifier, never staged to the agent) at
-# build time: pinned URL and SHA256 verified at build. Media hosted on Hugging Face
-# (see the task README).
+# Bake only the agent-facing materials at build time (the three clips, the camera
+# intrinsics, and the target-object names), each pinned with a SHA256 verified at build.
+# Media hosted on Hugging Face, same host as the v1.0 families. The reference meshes are
+# the answer key and are NOT in the image: they ship verifier-side (a copy in
+# steps/solve/solution/ for the oracle), and the grader scores against the point set
+# baked into steps/solve/tests/ground_truth.json. So the agent never sees a reference mesh.
 ARG MATERIALS_BASE=https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_recon/resolve/main
 ARG CLIP01_SHA256=2f153d49b5c6b61e58d6b648af1002718dddd2fe2b32c6ba28d4e9d80d388a1c
-ARG CLIP02_SHA256=bbfabad6a5e5736de3ec5de7d31cee679c8c8267fdb0bc88ca52bcc8c82f47e6
+ARG CLIP02_SHA256=56c42f94baecf5a78e2b6e32ed5af59719b51badfc6405d3f67d9b26bbc77520
 ARG CLIP03_SHA256=9d2cd0f8127622bc5805f4cbaf83efcbf17a9ad8d1f46748a26a9ccb7c5ab546
+ARG CAMERAS_SHA256=753c37861a52a82d0689a571afed6ce5f90dcc358367a54c8a637919fb565d1c
+ARG OBJECTS_SHA256=08ceed454127f4d8f2186d92a97bfab7f3c183c58e348808ff863a020a857798
 
 RUN mkdir -p /baked \
  && curl --fail --silent --show-error --location --retry 5 --retry-delay 3 \
@@ -29,14 +33,10 @@ RUN mkdir -p /baked \
  && echo "${CLIP03_SHA256}  /baked/clip_03.mp4" | sha256sum -c - \
  && curl --fail --silent --show-error --location --retry 5 --retry-delay 3 \
       "${MATERIALS_BASE}/cameras.json" -o /baked/cameras.json \
+ && echo "${CAMERAS_SHA256}  /baked/cameras.json" | sha256sum -c - \
  && curl --fail --silent --show-error --location --retry 5 --retry-delay 3 \
       "${MATERIALS_BASE}/objects.json" -o /baked/objects.json \
- && curl --fail --silent --show-error --location --retry 5 --retry-delay 3 \
-      "${MATERIALS_BASE}/ref_clip_01.glb" -o /baked/ref_clip_01.glb \
- && curl --fail --silent --show-error --location --retry 5 --retry-delay 3 \
-      "${MATERIALS_BASE}/ref_clip_02.glb" -o /baked/ref_clip_02.glb \
- && curl --fail --silent --show-error --location --retry 5 --retry-delay 3 \
-      "${MATERIALS_BASE}/ref_clip_03.glb" -o /baked/ref_clip_03.glb \
+ && echo "${OBJECTS_SHA256}  /baked/objects.json" | sha256sum -c - \
  && test -s /baked/clip_01.mp4 && test -s /baked/clip_02.mp4 && test -s /baked/clip_03.mp4
 
 WORKDIR /workspace
