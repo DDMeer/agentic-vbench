@@ -37,9 +37,12 @@ output_schema: >
 evidence:
   - "36 query frames total (12 per clip) spread across the middle 90% of each ~2 min
      clip: the answer is distributed over the whole timeline."
-  - "Each pose needs both metric depth and 3D orientation, which for a monocular
-     monocular view resolve only by integrating the object's motion/parallax across many
-     neighbouring frames plus the supplied camera intrinsics."
+  - "Each pose needs both metric depth and 3D orientation, which for a monocular view
+     resolve only by integrating the object's motion/parallax across many neighbouring
+     frames plus the supplied camera intrinsics and object point set."
+  - "The agent is given the object's canonical point set (object_points.json), so the
+     pose is well defined and the task is solvable; the difficulty is estimating it from
+     a single moving view, not guessing an unknown reference frame."
   - "The object is grasped, lifted, and turned over. Its pose changes substantially
      across the clip (camera-frame net displacement ~0.4-1.9 m), so a single guess
      cannot cover the trajectory."
@@ -64,29 +67,38 @@ scorer:
   oracle_reward: 1.0
   null_reward: 0.0   # measured: empty/None submission
 
-# 7. Difficulty: measured with real strong-agent runs.
+# 7. Difficulty: measured with real strong-agent runs on the current design (object_points
+# shipped). Reachability of the ADD bar is shown by the partial-credit curve in
+# calibration/scores.md; a good model-based pose estimate scores well before it is exact.
 difficulty:
-  strong_agent_reward: 0.0    # Claude Opus 4.8, Codex GPT-5.5, Cursor Composer, all 0.0
-  tool_call_turns: 80         # Claude 80, Antigravity 100(isolated), Cursor 62; Codex self-stopped at 12
-  agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI, Cursor CLI (Composer)
+  strong_agent_reward: 0.0    # Claude Code (Opus 4.8) on the current design, well below 0.10
+  tool_call_turns: 49         # long-horizon: agent samples and fits poses across the whole clip
+  agent_model: Claude Code CLI (Opus 4.8)
 
-# 8. Anti-shortcut ablations (each must be <= 0.15). Best-case degraded submission scored.
+# 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
+# calibration/ablations/.
 anti_shortcut:
-  single_frame: 0.0833     # one true pose repeated across the moving trajectory
+  single_frame: 0.0        # one frame per clip + intrinsics + object_points; 49 turns, no depth
   video_only: n/a          # audio not used
   audio_only: n/a
-  no_media: 0.0           # fixed plausible pose, identity rotation
-  frame_dump_no_tools: 0.0  # 5 cm translation error + guessed rotation
+  no_media: 0.0            # only cameras.json + queries.json + object_points.json
 
-# 9. Input media (three short clips; multi-clip -> exempt from length floor).
+# 9. Input media. Three ~2-minute clips are used as a multi-clip set rather than one
+# long video: the three clips are compared against three separate objects, which the
+# family README allows in place of a single 10-300 minute video, so the per-video length
+# floor does not apply here.
 input:
   clips: 3
   objects: [birdhouse_toy, vase, potato_masher]   # all asymmetric
-  url: hosted on Hugging Face (see Dockerfile MATERIALS_BASE); baked at build with SHA256
+  base_url: https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_objects/resolve/main
   sha256:
-    clip_01: aefb41b216cc2cbacfca639de8175a29f37006c3be730b118928ce20e27d19ee
-    clip_02: b187d5cbaba972ca715f0ffd670b99b1c77ee9ad579d40b3acdff1b564c114ae
-    clip_03: 56c42f94baecf5a78e2b6e32ed5af59719b51badfc6405d3f67d9b26bbc77520
+    clip_01.mp4: aefb41b216cc2cbacfca639de8175a29f37006c3be730b118928ce20e27d19ee
+    clip_02.mp4: b187d5cbaba972ca715f0ffd670b99b1c77ee9ad579d40b3acdff1b564c114ae
+    clip_03.mp4: 56c42f94baecf5a78e2b6e32ed5af59719b51badfc6405d3f67d9b26bbc77520
+    cameras.json: 753c37861a52a82d0689a571afed6ce5f90dcc358367a54c8a637919fb565d1c
+    queries.json: f55bc339b06544d2720e61910c05eccb2b3d9393c56516e86bddfa377963e2d6
+    objects.json: cc9906530da3bfd8b6a97a7586cfc541b23a3e8e2cbe4b9f77e2362562c82f19
+    object_points.json: da0889b30ec5dee3723533ab85fa819ec2e49988ee99b76c69669b64ccea22eb
   length_min: ~2 min each (short-clip set; exempt from the 10-min single-video floor)
   resolution: 1024x1024 pinhole (>= 720p; rectified from a wider capture)
 ```

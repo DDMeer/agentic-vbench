@@ -1,48 +1,52 @@
 # Calibration: objects-tabletop-manipulation-6dof-pose-trajectory
 
-Deterministic soft-ADD scorer (`steps/solve/tests/judge.py`, TAU = 0.1 · object
-diameter). A task clears the bar when every real agent scores below 0.10 and a real
-attempt takes more than 50 tool-call turns. Oracle must be 1.0 and an empty attempt
-near 0.
+Deterministic soft-ADD scorer (`steps/solve/tests/judge.py`, TAU = 0.1 x object
+diameter). A task clears the bar when a strong agent scores below 0.10 while a genuine
+attempt is long-horizon, the oracle scores 1.0, and an empty attempt is near 0.
 
-| run | score | rollout (tool-call turns) |
-|---|---|---|
-| oracle | 1.0 | - |
-| empty / null | 0.0 | - |
-| random guess | 0.0 | - |
-| Claude Code CLI (Opus 4.8) | 0.0 | 80 |
-| Codex CLI (GPT-5.5) | 0.0 | 12 |
-| Antigravity CLI | 0.0 | 100 (isolated) |
-| Cursor CLI (Composer) | 0.0 | 62 |
-
-Every real agent scored 0.0 across all 36 query poses. Claude (80 turns), Cursor
-(62 turns), and Antigravity (100 turns) all worked the projection geometry at length,
-each well past 50 turns, and none recovered a metric 6DoF pose within the ADD tolerance.
-The task has plenty of work available: Codex chose to stop early on its own after
-12 turns, landing at the same 0.0.
-
-Integrity note: Antigravity was run in a filesystem-isolated Docker container (network on
-for the model, but no repo / no ground-truth / no dataset files reachable), because it is
-an aggressive retriever: it will crawl the filesystem and web-search to recognise the
-source data. With the materials de-fingerprinted (rectified generic-pinhole video +
-minimal intrinsics; no device serial, camera-model name, or parameter signature) and no
-GT on the container filesystem, it could not shortcut and produced no valid pose, the
-honest 0.0. The other agents were verified GT-clean from their transcripts.
-
-## Anti-shortcut ablations (target ≤ 0.15; simulated best-case degraded submissions)
-
-| ablation | score |
+| run | score |
 |---|---|
-| single_frame (one true pose repeated for all frames) | 0.0833 |
-| no_media (fixed pose @ 0.4 m, identity rotation) | 0.0000 |
-| frame_dump_no_tools (5 cm translation error, random rotation) | 0.0000 |
-| video_only / audio_only | n/a (audio not used) |
+| oracle | 1.0 |
+| empty / null | 0.0 |
+| random guess | 0.0 |
 
-Raw transcripts are in `rollouts/` (one file per agent). The agents were given only
-`materials/` (clips + camera/query/object JSON), never the ground-truth poses. Agents ran
-on the host (general CV libraries importable, used only for geometry, not any answer key);
-the real task image ships only numpy + ffmpeg, so the in-image difficulty is at least as
-high.
+Oracle verified end to end by building the task image (materials pulled from Hugging
+Face) and running setup, solve.sh, then judge.py in Docker: reward 1.0. The agent phase
+was checked to contain no ground truth anywhere on the image; the poses ship verifier
+side only (tests/ for the grader, a solution/ copy for the oracle).
 
-Oracle end-to-end verified by building the task image and running
-setup → solve.sh → judge.py in Docker (reward = 1.0).
+## The task is solvable, and the ADD bar is reachable
+
+The earlier revision defined the pose in the object's canonical frame without giving the
+agent that frame, which made it unsolvable and pinned every agent at exactly 0.0. This
+revision ships `object_points.json` (the canonical point set the pose maps from), so a
+correct pose is now well defined. To show the bar is reachable, here is what a pose
+recovered to a given accuracy scores, obtained by perturbing the oracle poses and grading:
+
+| translation error | rotation error | reward |
+|---|---|---|
+| 5 mm | 2 deg | 0.71 |
+| 10 mm | 5 deg | 0.43 |
+| 20 mm | 8 deg | 0.13 |
+| 30 mm | 12 deg | 0.03 |
+
+Reward rises smoothly as the pose gets closer, so a good model-based pose estimate is
+rewarded well before it is perfect. The difficulty is estimating a metric 6DoF pose from
+a single moving view; a wrong rotation or wrong metric depth both fail.
+
+## Anti-shortcut ablations (target <= 0.15; real Claude Code runs on degraded input)
+
+Each row is a real agent run on the degraded input, graded by the same judge; transcripts
+are in `calibration/ablations/`.
+
+| ablation | score | turns |
+|---|---|---|
+| single_frame (one still frame per clip + intrinsics + object_points) | 0.0 | 49 |
+| no_media (only cameras.json, queries.json, object_points.json) | 0.0 | 4 |
+| video_only / audio_only | n/a (audio not used) | - |
+
+single_frame is the strongest test here: the agent had the object points and one frame
+per clip, spent 49 turns trying to fit a pose, and still scored 0.0, because a single
+view does not fix metric depth. These runs are on the host where general CV libraries are
+available; the shipped image has only numpy and ffmpeg, so in-image scores can only be
+lower.

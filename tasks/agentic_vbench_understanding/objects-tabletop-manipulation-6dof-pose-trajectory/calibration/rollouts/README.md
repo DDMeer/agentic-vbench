@@ -1,17 +1,6 @@
 # Rollouts
 
-One raw agent transcript per agent, so a reviewer can confirm the score was earned
-honestly and count the tool-call turns:
-
-- `claude-code.jsonl` — Claude Code CLI (Opus 4.8), stream-json transcript
-- `codex.txt` — Codex CLI transcript (codex exec prints a plain-text log, not JSONL)
-- `antigravity.txt` — Antigravity CLI transcript (objects: run in a filesystem-isolated Docker container)
-- `cursor.jsonl` — Cursor CLI transcript
-
-Each transcript shows the full run (all tool calls + the final deliverable). The agent
-is given only `materials/` (the clips + camera/query/object metadata); the ground truth
-is never staged into its workspace.
-
-Note: base64 image payloads in the transcripts (frames the agent sampled)
-are elided (`"<elided base64>"`) to keep file sizes reasonable; all tool calls,
-reasoning, and the final answer are intact.
+`claude-code.jsonl` is a Claude Code (Opus 4.8) run on the current design, where the agent
+is given object_points.json and attempts a model-based 6DoF pose per query frame. It ran
+long and still scored below the bar. Base64 frames pasted by the agent are elided; host
+paths and dataset references are redacted. Ablation runs are under `../ablations/`.

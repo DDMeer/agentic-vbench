@@ -21,12 +21,15 @@ You are also given, in `/workspace/materials/`:
   `v = fy*Y/Z + cy`).
 - `queries.json`: for each clip id, the list of 0-based integer frame indices you must
   answer for.
+- `object_points.json`: for each clip id, a set of 3D points sampled from the target
+  object's surface, given in the object's own canonical frame (metres). This defines the
+  canonical frame your pose maps from, and is the same point set the pose is scored on.
 
 ## What a pose means here
 
-The target object has a fixed canonical object frame (the frame its 3D model is defined
-in). Its 6DoF pose in a given video frame is the rigid transform `T_camera_object` that
-maps a point `p_obj` in the object frame to the camera frame:
+The pose you report for a query frame is the rigid transform `T_camera_object` that maps
+a point `p_obj` given in the object's canonical frame (the frame `object_points.json` is
+in) to the camera frame:
 
 ```
 p_camera = R * p_obj + t
@@ -36,9 +39,10 @@ p_camera = R * p_obj + t
   (camera convention: +Z forward along the optical axis, +X right, +Y down).
 - `R` is the rotation, which you report as a unit quaternion `q = [w, x, y, z]`.
 
-The object's canonical frame is the one used by its 3D model; you do not need the model
-to answer. Recover a consistent rigid pose per frame such that the object's rigid
-structure, projected through the given camera model, matches what the clip shows.
+Recover a pose per query frame such that the object points, placed by `R` and `t` and
+projected through the given camera model, line up with the object as it appears in that
+frame. Because you have both the object points and the camera model, a correct pose is
+well defined; the difficulty is estimating it from a single moving view.
 
 ## What to submit
 

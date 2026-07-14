@@ -1,0 +1,8 @@
+{
+  "mode": "no_media",
+  "agent": "claude",
+  "reward": 0.0,
+  "turns": 4,
+  "duration_s": 58.0,
+  "returncode": 0
+}

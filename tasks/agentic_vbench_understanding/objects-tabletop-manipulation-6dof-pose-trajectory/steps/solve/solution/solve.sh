@@ -2,8 +2,8 @@
 # Oracle: write the verified object 6DoF pose trajectory as solution.json.
 #
 # The reference answer is the capture rig's logged object pose, expressed in each clip's
-# RGB camera frame. This is the verified answer key baked into the image, not something
-# read from the clips. The agent never sees this file.
+# RGB camera frame. It ships verifier-side and is copied to /solution only for this
+# oracle step, so the agent never sees it. Not something read from the clips.
 set -euo pipefail
 
 mkdir -p /workspace/output
@@ -12,7 +12,7 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 
-gt = json.loads(Path("/baked/ground_truth.json").read_text())
+gt = json.loads(Path("/solution/ground_truth.json").read_text())
 clips = {}
 for clip in gt["clips"]:
     clips[clip["clip"]] = [
