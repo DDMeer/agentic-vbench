@@ -1,0 +1,3221 @@
+#!/bin/bash
+# Oracle: the machine-recorded gameplay ledger (mineflayer events +
+# the bot's own placements), in play order, with the weapon per kill.
+set -euo pipefail
+mkdir -p "$(dirname "${SOLUTION_PATH:-/solution/solution.json}")"
+cat > "${SOLUTION_PATH:-/solution/solution.json}" <<'JSON'
+{
+  "events": [
+    {
+      "i": 0,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 1,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 2,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 3,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 4,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 5,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 6,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 7,
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "i": 8,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 9,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 10,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 11,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 12,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 13,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 14,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 15,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 16,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 17,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 18,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 19,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 20,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 21,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 22,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 23,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 24,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 25,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 26,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 27,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 28,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 29,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 30,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 31,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 32,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 33,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 34,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 35,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 36,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 37,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 38,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 39,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 40,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 41,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 42,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 43,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 44,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 45,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 46,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 47,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 48,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 49,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 50,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 51,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 52,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 53,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 54,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 55,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 56,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 57,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 58,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 59,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 60,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 61,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 62,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 63,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 64,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 65,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 66,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 67,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 68,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 69,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 70,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 71,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 72,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 73,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 74,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 75,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 76,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 77,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 78,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 79,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 80,
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "i": 81,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 82,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 83,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 84,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 85,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 86,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 87,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 88,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 89,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 90,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 91,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 92,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 93,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 94,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 95,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 96,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 97,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 98,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 99,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 100,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 101,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 102,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 103,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 104,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 105,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 106,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 107,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 108,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 109,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 110,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 111,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 112,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 113,
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "i": 114,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 115,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 116,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 117,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 118,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 119,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 120,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 121,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 122,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 123,
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "i": 124,
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "i": 125,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 126,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 127,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 128,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 129,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 130,
+      "action": "kill",
+      "target": "chicken",
+      "tool": "bow"
+    },
+    {
+      "i": 131,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 132,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 133,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 134,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 135,
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "i": 136,
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "i": 137,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 138,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "i": 139,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 140,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 141,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 142,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 143,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 144,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 145,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 146,
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "i": 147,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "i": 148,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 149,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 150,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 151,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 152,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 153,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 154,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 155,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 156,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 157,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 158,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 159,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 160,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 161,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 162,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 163,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 164,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 165,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 166,
+      "action": "mine",
+      "target": "acacia_log"
+    },
+    {
+      "i": 167,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 168,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 169,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 170,
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "i": 171,
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "i": 172,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "i": 173,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 174,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 175,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 176,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 177,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 178,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 179,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 180,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 181,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 182,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 183,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 184,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 185,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 186,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 187,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 188,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 189,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 190,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 191,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 192,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 193,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 194,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 195,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 196,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 197,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 198,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 199,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 200,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 201,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 202,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 203,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 204,
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "i": 205,
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "i": 206,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 207,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 208,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 209,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 210,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 211,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 212,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 213,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 214,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 215,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 216,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 217,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 218,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 219,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 220,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 221,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 222,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 223,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 224,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 225,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 226,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 227,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 228,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 229,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 230,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 231,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 232,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 233,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 234,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 235,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 236,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 237,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 238,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 239,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 240,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 241,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 242,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 243,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 244,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 245,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 246,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 247,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 248,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 249,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 250,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 251,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 252,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 253,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 254,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 255,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 256,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 257,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 258,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 259,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 260,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 261,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 262,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 263,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 264,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 265,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 266,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 267,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 268,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 269,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 270,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 271,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 272,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 273,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 274,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 275,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 276,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 277,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 278,
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "i": 279,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 280,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 281,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 282,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 283,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 284,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 285,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 286,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 287,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 288,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 289,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 290,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 291,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 292,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 293,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 294,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 295,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 296,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 297,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 298,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 299,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 300,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 301,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 302,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 303,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 304,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 305,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 306,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 307,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 308,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 309,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 310,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 311,
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "i": 312,
+      "action": "kill",
+      "target": "pig",
+      "tool": "bow"
+    },
+    {
+      "i": 313,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 314,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 315,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 316,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 317,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 318,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 319,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 320,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 321,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 322,
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "i": 323,
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "i": 324,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 325,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 326,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 327,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 328,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 329,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 330,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 331,
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "i": 332,
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "i": 333,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "i": 334,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 335,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 336,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 337,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 338,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 339,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 340,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 341,
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "i": 342,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 343,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 344,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 345,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 346,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 347,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 348,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 349,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 350,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 351,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 352,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 353,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 354,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 355,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 356,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 357,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 358,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 359,
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "bow"
+    },
+    {
+      "i": 360,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 361,
+      "action": "mine",
+      "target": "acacia_log"
+    },
+    {
+      "i": 362,
+      "action": "mine",
+      "target": "acacia_log"
+    },
+    {
+      "i": 363,
+      "action": "mine",
+      "target": "acacia_log"
+    },
+    {
+      "i": 364,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 365,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 366,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 367,
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "i": 368,
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "i": 369,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 370,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 371,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 372,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 373,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 374,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 375,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 376,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 377,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 378,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 379,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 380,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 381,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 382,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 383,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 384,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 385,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 386,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 387,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 388,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 389,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 390,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 391,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 392,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 393,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 394,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 395,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 396,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 397,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 398,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 399,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 400,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "i": 401,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 402,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 403,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 404,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 405,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 406,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 407,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 408,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 409,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 410,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 411,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 412,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 413,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 414,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 415,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 416,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 417,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 418,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 419,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 420,
+      "action": "place",
+      "target": "stone"
+    },
+    {
+      "i": 421,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 422,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 423,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 424,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 425,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 426,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 427,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 428,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 429,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 430,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 431,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 432,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 433,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 434,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 435,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 436,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 437,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 438,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 439,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 440,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 441,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 442,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 443,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 444,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 445,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 446,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 447,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 448,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 449,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 450,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 451,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 452,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 453,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 454,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 455,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 456,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 457,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 458,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 459,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 460,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 461,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 462,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 463,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 464,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 465,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 466,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 467,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 468,
+      "action": "place",
+      "target": "spruce_planks"
+    },
+    {
+      "i": 469,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 470,
+      "action": "place",
+      "target": "birch_planks"
+    },
+    {
+      "i": 471,
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "i": 472,
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "i": 473,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 474,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 475,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 476,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 477,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 478,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 479,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 480,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 481,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 482,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 483,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 484,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 485,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 486,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 487,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 488,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 489,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 490,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 491,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 492,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 493,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 494,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 495,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 496,
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "i": 497,
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "i": 498,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 499,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 500,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 501,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 502,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 503,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 504,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 505,
+      "action": "kill",
+      "target": "chicken",
+      "tool": "sword"
+    },
+    {
+      "i": 506,
+      "action": "kill",
+      "target": "wolf",
+      "tool": "sword"
+    },
+    {
+      "i": 507,
+      "action": "kill",
+      "target": "pig",
+      "tool": "bow"
+    },
+    {
+      "i": 508,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 509,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 510,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 511,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 512,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 513,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 514,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 515,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 516,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 517,
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "i": 518,
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "i": 519,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 520,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 521,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 522,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 523,
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "i": 524,
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "i": 525,
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "i": 526,
+      "action": "mine",
+      "target": "sandstone"
+    },
+    {
+      "i": 527,
+      "action": "mine",
+      "target": "sandstone"
+    },
+    {
+      "i": 528,
+      "action": "mine",
+      "target": "sandstone"
+    },
+    {
+      "i": 529,
+      "action": "kill",
+      "target": "chicken",
+      "tool": "bow"
+    },
+    {
+      "i": 530,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 531,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 532,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 533,
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "i": 534,
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "i": 535,
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "i": 536,
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "i": 537,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 538,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 539,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 540,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 541,
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "i": 542,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 543,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 544,
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "i": 545,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "i": 546,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 547,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 548,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 549,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 550,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 551,
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "i": 552,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 553,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 554,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 555,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 556,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 557,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 558,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 559,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 560,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 561,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 562,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 563,
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "i": 564,
+      "action": "mine",
+      "target": "acacia_log"
+    },
+    {
+      "i": 565,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 566,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 567,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 568,
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "i": 569,
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "i": 570,
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "i": 571,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 572,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 573,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 574,
+      "action": "mine",
+      "target": "red_sand"
+    },
+    {
+      "i": 575,
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "i": 576,
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "i": 577,
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "i": 578,
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "i": 579,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 580,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 581,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 582,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 583,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 584,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 585,
+      "action": "place",
+      "target": "diorite"
+    },
+    {
+      "i": 586,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 587,
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "i": 588,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 589,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 590,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 591,
+      "action": "place",
+      "target": "granite"
+    },
+    {
+      "i": 592,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 593,
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "i": 594,
+      "action": "place",
+      "target": "andesite"
+    },
+    {
+      "i": 595,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 596,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 597,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 598,
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "i": 599,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 600,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 601,
+      "action": "place",
+      "target": "oak_fence"
+    },
+    {
+      "i": 602,
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "i": 603,
+      "action": "mine",
+      "target": "stone"
+    },
+    {
+      "i": 604,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 605,
+      "action": "mine",
+      "target": "coal_ore"
+    },
+    {
+      "i": 606,
+      "action": "mine",
+      "target": "andesite"
+    },
+    {
+      "i": 607,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 608,
+      "action": "mine",
+      "target": "iron_ore"
+    },
+    {
+      "i": 609,
+      "action": "mine",
+      "target": "granite"
+    },
+    {
+      "i": 610,
+      "action": "mine",
+      "target": "stone"
+    },
+    {
+      "i": 611,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 612,
+      "action": "mine",
+      "target": "gold_ore"
+    },
+    {
+      "i": 613,
+      "action": "mine",
+      "target": "diorite"
+    },
+    {
+      "i": 614,
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "i": 615,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 616,
+      "action": "mine",
+      "target": "redstone_ore"
+    },
+    {
+      "i": 617,
+      "action": "mine",
+      "target": "stone"
+    },
+    {
+      "i": 618,
+      "action": "mine",
+      "target": "granite"
+    },
+    {
+      "i": 619,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 620,
+      "action": "mine",
+      "target": "lapis_ore"
+    },
+    {
+      "i": 621,
+      "action": "mine",
+      "target": "andesite"
+    },
+    {
+      "i": 622,
+      "action": "mine",
+      "target": "diorite"
+    },
+    {
+      "i": 623,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 624,
+      "action": "mine",
+      "target": "diamond_ore"
+    },
+    {
+      "i": 625,
+      "action": "mine",
+      "target": "granite"
+    },
+    {
+      "i": 626,
+      "action": "mine",
+      "target": "stone"
+    },
+    {
+      "i": 627,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 628,
+      "action": "mine",
+      "target": "emerald_ore"
+    },
+    {
+      "i": 629,
+      "action": "mine",
+      "target": "diorite"
+    },
+    {
+      "i": 630,
+      "action": "mine",
+      "target": "andesite"
+    },
+    {
+      "i": 631,
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "i": 632,
+      "action": "mine",
+      "target": "coal_ore"
+    }
+  ]
+}
+JSON

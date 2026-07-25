@@ -1,0 +1,80 @@
+{
+  "events": [
+    {"action": "mine", "target": "oak_log"},
+    {"action": "mine", "target": "oak_leaves"},
+    {"action": "mine", "target": "oak_log"},
+
+    {"action": "place", "target": "stone_bricks"},
+    {"action": "place", "target": "stone_bricks"},
+    {"action": "place", "target": "andesite"},
+    {"action": "place", "target": "stone_bricks"},
+    {"action": "place", "target": "andesite"},
+    {"action": "place", "target": "stone_bricks"},
+
+    {"action": "place", "target": "oak_log"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "spruce_planks"},
+    {"action": "place", "target": "birch_planks"},
+    {"action": "place", "target": "oak_log"},
+
+    {"action": "place", "target": "oak_log"},
+    {"action": "place", "target": "birch_planks"},
+    {"action": "place", "target": "glass"},
+    {"action": "place", "target": "spruce_planks"},
+    {"action": "place", "target": "oak_log"},
+
+    {"action": "place", "target": "oak_log"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "glass"},
+    {"action": "place", "target": "birch_planks"},
+    {"action": "place", "target": "oak_log"},
+
+    {"action": "place", "target": "oak_log"},
+    {"action": "place", "target": "spruce_planks"},
+    {"action": "place", "target": "glass"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "oak_log"},
+
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "oak_planks"},
+    {"action": "place", "target": "cobblestone"},
+    {"action": "place", "target": "oak_fence"},
+    {"action": "place", "target": "oak_fence"},
+    {"action": "place", "target": "oak_fence"},
+    {"action": "place", "target": "torch"},
+    {"action": "place", "target": "torch"},
+
+    {"action": "kill", "target": "chicken", "tool": "sword"},
+    {"action": "kill", "target": "pig", "tool": "bow"},
+    {"action": "kill", "target": "cow", "tool": "bow"},
+    {"action": "kill", "target": "pig", "tool": "bow"},
+    {"action": "kill", "target": "mooshroom", "tool": "bow"},
+    {"action": "kill", "target": "panda", "tool": "sword"},
+
+    {"action": "place", "target": "cobblestone"},
+    {"action": "place", "target": "cobblestone"},
+    {"action": "place", "target": "cobblestone"},
+    {"action": "place", "target": "oak_fence"},
+    {"action": "place", "target": "oak_fence"},
+    {"action": "place", "target": "torch"},
+
+    {"action": "kill", "target": "pig", "tool": "bow"},
+    {"action": "kill", "target": "cow", "tool": "sword"},
+    {"action": "kill", "target": "mooshroom", "tool": "bow"},
+    {"action": "kill", "target": "mooshroom", "tool": "sword"},
+
+    {"action": "mine", "target": "redstone_ore"},
+    {"action": "mine", "target": "lapis_ore"},
+    {"action": "mine", "target": "diamond_ore"},
+    {"action": "mine", "target": "emerald_ore"},
+    {"action": "mine", "target": "coal_ore"},
+    {"action": "mine", "target": "iron_ore"},
+    {"action": "mine", "target": "torch"},
+    {"action": "mine", "target": "granite"},
+    {"action": "mine", "target": "granite"},
+    {"action": "mine", "target": "granite"}
+  ]
+}

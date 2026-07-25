@@ -1,0 +1,16 @@
+{
+  "reward": 0.292,
+  "details": {
+    "reason": "ok",
+    "n_ground_truth": 248,
+    "n_predicted": 66,
+    "lcs": 48,
+    "ledger_f1": 0.3057,
+    "n_gt_kills": 18,
+    "n_pred_kills": 10,
+    "aligned_kills": 7,
+    "weapon_correct": 3,
+    "weapon_f1": 0.2143,
+    "note": "reward = 0.85*LCS-F1(action,target) + 0.15*weapon-F1 over LCS-aligned kills"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "reward": 0.4197,
+  "details": {
+    "reason": "ok",
+    "n_ground_truth": 237,
+    "n_predicted": 89,
+    "lcs": 62,
+    "ledger_f1": 0.3804,
+    "n_gt_kills": 19,
+    "n_pred_kills": 9,
+    "weapon_lcs": 9,
+    "weapon_f1": 0.6429,
+    "note": "reward = 0.85*LCS-F1(action,target) + 0.15*LCS-F1(kill weapons)"
+  }
+}
