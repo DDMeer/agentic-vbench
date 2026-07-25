@@ -10,11 +10,11 @@ Ground truth (`steps/solve/tests/gt.json`, 111 events: 86 champion_kill, 16 towe
 
 Each run was isolated in a directory outside the repo tree (no GT, no scorer on disk); trajectories audited for GT access — all clean.
 
-| harness | harness version | model | reasoning | score | tool-call turns | trajectory |
-|---|---|---|---|---|---|---|
-| Codex CLI | 0.130.0 | gpt-5.6-sol | high | 0.058 | 74 | `rollouts/gpt-5.6-sol_codex_isolated.jsonl` |
-| Claude Code | 2.1.215 | opus-4.8 | high | 0.010 | 141 | `rollouts/opus-4.8_claudecode.trace.txt` |
-| Antigravity CLI | 1.1.3 | Gemini 3.1 Pro | high | 0.009 | 34 (round-trips; CLI does not expose tool-call counts) | `rollouts/gemini-3.1-pro_antigravity.answer.json` |
+| harness | harness version | model | score | tool-call turns | trajectory |
+|---|---|---|---|---|---|
+| Codex CLI | 0.130.0 | gpt-5.6-sol | 0.058 | 74 | `rollouts/gpt-5.6-sol_codex_isolated.jsonl` |
+| Claude Code | 2.1.215 | opus-4.8 | 0.010 | 141 | `rollouts/opus-4.8_claudecode.trace.txt` |
+| Antigravity CLI | 1.1.3 | Gemini 3.1 Pro | 0.009 | 34 (round-trips; CLI does not expose tool-call counts) | `rollouts/gemini-3.1-pro_antigravity.answer.json` |
 
 Baselines (task is solvable but not guessable):
 
