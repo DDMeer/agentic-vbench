@@ -1,0 +1,64 @@
+{
+  "players": [
+    {
+      "race": "terran",
+      "buildings": [
+        {"t_seconds": 0, "name": "CommandCenter"},
+        {"t_seconds": 20, "name": "SupplyDepot"},
+        {"t_seconds": 36, "name": "Barracks"},
+        {"t_seconds": 82, "name": "SupplyDepot"},
+        {"t_seconds": 97, "name": "OrbitalCommand"},
+        {"t_seconds": 105, "name": "Refinery"},
+        {"t_seconds": 118, "name": "CommandCenter"},
+        {"t_seconds": 128, "name": "Refinery"},
+        {"t_seconds": 140, "name": "Factory"},
+        {"t_seconds": 148, "name": "BarracksReactor"},
+        {"t_seconds": 158, "name": "Barracks"},
+        {"t_seconds": 170, "name": "SupplyDepot"},
+        {"t_seconds": 185, "name": "BarracksTechLab"},
+        {"t_seconds": 195, "name": "BarracksReactor"},
+        {"t_seconds": 200, "name": "EngineeringBay"},
+        {"t_seconds": 210, "name": "CommandCenter"},
+        {"t_seconds": 218, "name": "Starport"},
+        {"t_seconds": 228, "name": "Barracks"},
+        {"t_seconds": 238, "name": "StarportReactor"},
+        {"t_seconds": 248, "name": "OrbitalCommand"},
+        {"t_seconds": 255, "name": "Refinery"},
+        {"t_seconds": 268, "name": "SupplyDepot"},
+        {"t_seconds": 280, "name": "BarracksReactor"},
+        {"t_seconds": 288, "name": "CommandCenter"},
+        {"t_seconds": 300, "name": "Refinery"},
+        {"t_seconds": 312, "name": "Barracks"},
+        {"t_seconds": 322, "name": "OrbitalCommand"},
+        {"t_seconds": 335, "name": "Armory"},
+        {"t_seconds": 358, "name": "EngineeringBay"},
+        {"t_seconds": 385, "name": "BarracksTechLab"},
+        {"t_seconds": 410, "name": "SupplyDepot"},
+        {"t_seconds": 440, "name": "Barracks"}
+      ]
+    },
+    {
+      "race": "zerg",
+      "buildings": [
+        {"t_seconds": 0, "name": "Hatchery"},
+        {"t_seconds": 43, "name": "SpawningPool"},
+        {"t_seconds": 95, "name": "Extractor"},
+        {"t_seconds": 110, "name": "Hatchery"},
+        {"t_seconds": 118, "name": "Extractor"},
+        {"t_seconds": 130, "name": "RoachWarren"},
+        {"t_seconds": 175, "name": "BanelingNest"},
+        {"t_seconds": 190, "name": "Lair"},
+        {"t_seconds": 205, "name": "EvolutionChamber"},
+        {"t_seconds": 220, "name": "Extractor"},
+        {"t_seconds": 240, "name": "SpineCrawler"},
+        {"t_seconds": 265, "name": "SpineCrawler"},
+        {"t_seconds": 280, "name": "HydraliskDen"},
+        {"t_seconds": 300, "name": "EvolutionChamber"},
+        {"t_seconds": 325, "name": "SporeCrawler"},
+        {"t_seconds": 400, "name": "Hatchery"},
+        {"t_seconds": 425, "name": "Extractor"},
+        {"t_seconds": 490, "name": "Hive"}
+      ]
+    }
+  ]
+}

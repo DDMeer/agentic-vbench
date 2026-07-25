@@ -1,0 +1,43 @@
+version = "1.0"
+
+[task]
+name = "agentic-vbench/sc2-build-order-reconstruction"
+
+[metadata]
+difficulty = "hard"
+category = "video-understanding"
+tags = ["video-understanding", "strategy-game", "starcraft-2", "build-order", "event-timeline", "agentic-vbench-games"]
+# One full 1v1 StarCraft II match (Terran vs Zerg, ~15 min) from an AutomatonLE
+# replay (base build 75689). Rendered as a single full-map bird's-eye god-view
+# (fog-of-war disabled, whole battlefield in frame, no clipping), RAW frames
+# (no color/brightness processing), split into a 3×3 tile grid. No HUD, panels,
+# counters, minimap, or player names — only the rendered world.
+# Ground truth: machine-parsed from the SAME .SC2Replay via the SC2 engine's
+# tracker events (construction-start times); no manual annotation.
+source = "AutomatonLE 1v1 TvZ replay match.SC2Replay (base build 75689; ordinary ladder game, no public record)"
+
+[environment]
+# 9 tiles (~140 MB) + frames_time.json baked at build time.
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 4096
+storage_mb = 8192
+# The answer is not online (ordinary ladder game, no public build-order record): keep this false.
+allow_internet = false
+
+[environment.env]
+HF_TOKEN = "${HF_TOKEN:-}"
+
+[[steps]]
+name = "solve"
+
+[steps.agent]
+# A ~15-min game with ~100 build events to localize and type across 9 tiles:
+# give the agent real time to seek and inspect frames. Local calibration runs
+# took up to ~90 min (opus-4.8, 112 tool calls; codex 297 atomic ffmpeg calls).
+timeout_sec = 5400.0
+
+[steps.verifier]
+timeout_sec = 600.0
+
+# CANARY: agentic_vbench task — do not train on this file.
