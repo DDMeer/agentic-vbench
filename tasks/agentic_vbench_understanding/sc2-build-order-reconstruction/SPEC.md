@@ -47,7 +47,7 @@ scorer:
 difficulty:
   strong_agent_reward: 0.080  # opus-4.8 @ Claude Code, best of three
   tool_call_turns: 112  # opus-4.8 (102 frame reads + 10 scripts); codex ran 297 atomic ffmpeg/ffprobe calls (see scores.md)
-  agent_model: "opus-4.8 (Claude Code 2.1.215) = 0.080 / 112 calls; gpt-5.6-sol (Codex CLI 0.130.0, reasoning=none) = 0.064 / 297 atomic calls; Gemini 3.1 Pro (Antigravity CLI 1.1.5) = 0.031 / 71 turns"
+  agent_model: "opus-4.8 (Claude Code 2.1.215) = 0.080 / 112 calls; gpt-5.6-sol (Codex CLI 0.130.0) = 0.064 / 297 atomic calls; Gemini 3.1 Pro (Antigravity CLI 1.1.5) = 0.031 / 71 turns"
 
 # 8. Anti-shortcut ablations: run a strong model under each degraded input.
 #    Every one must score <= 0.15. TODO: run these measured ablations before the PR.

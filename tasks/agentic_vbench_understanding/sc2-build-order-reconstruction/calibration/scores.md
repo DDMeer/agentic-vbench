@@ -10,11 +10,11 @@ Ground truth (`steps/solve/tests/gt.json`, 100 events: Terran 67, Zerg 33) machi
 
 Each run was isolated in a directory outside the repo tree (`C:/sc2_v320_{codex,opus,ag}`) with only the 9 tiles + `frames_time.json` + `PROMPT.md` + ffmpeg — no GT, no scorer on disk; trajectories audited for GT access — all clean.
 
-| harness | harness version | model | reasoning | score | tool-call turns | trajectory |
-|---|---|---|---|---|---|---|
-| Claude Code | 2.1.215 | opus-4.8 | high | 0.080 | 112 (102 frame reads + 10 scripts) | `rollouts/opus-4.8_v320.answer.json` |
-| Codex CLI | 0.130.0 | gpt-5.6-sol | none | 0.064 | 297 (atomic; 17 exec / 24 turns — see note) | `rollouts/codex-gpt5.6sol_v320.txt` |
-| Antigravity CLI | 1.1.5 | Gemini 3.1 Pro | high | 0.031 | 71 (backend turns; CLI does not expose per-tool counts) | `rollouts/gemini-3.1-pro_v320_antigravity.txt` |
+| harness | harness version | model | score | tool-call turns | trajectory |
+|---|---|---|---|---|---|
+| Claude Code | 2.1.215 | opus-4.8 | 0.080 | 112 (102 frame reads + 10 scripts) | `rollouts/opus-4.8_v320.answer.json` |
+| Codex CLI | 0.130.0 | gpt-5.6-sol | 0.064 | 297 (atomic; 17 exec / 24 turns — see note) | `rollouts/codex-gpt5.6sol_v320.txt` |
+| Antigravity CLI | 1.1.5 | Gemini 3.1 Pro | 0.031 | 71 (backend turns; CLI does not expose per-tool counts) | `rollouts/gemini-3.1-pro_v320_antigravity.txt` |
 
 Baselines (task is solvable but not guessable):
 
@@ -27,7 +27,7 @@ Best real-agent score = 0.080. All three strong code agents score **< 0.10 at th
 
 ## Reasoning workload & tool use
 
-Per-run compute. The Codex CLI was run with `reasoning effort: none` (see log header), unlike the lol_minimap calibration where it ran at `high`; opus and Gemini ran at their default high reasoning.
+Per-run compute.
 
 | Model @ framework | tool calls | notes |
 |---|---|---|
@@ -53,7 +53,7 @@ Each agent ran in its own dir OUTSIDE the repo (`C:/sc2_v320_{codex,opus,ag}`) c
 
 ## Note on the Codex run (atomic tool-call count)
 
-The Codex row's `tool-call turns = 297` is the **lowest atomic-level tool-call count**: each of the 17 `exec` shell commands is a PowerShell loop that invokes ffmpeg/ffprobe many times (frame × tile batches), so the harness-level `exec` count (17) and the assistant-turn count (24) badly understate the actual tool use. The 297 atomic invocations (288 ffmpeg + 9 ffprobe) were counted from `rollouts/codex-gpt5.6sol_v320.txt` by summing each exec's loop bounds:
+The Codex row's `tool-call turns = 297` is the **lowest atomic-level tool-call count**: The 297 atomic invocations (288 ffmpeg + 9 ffprobe) were counted from `rollouts/codex-gpt5.6sol_v320.txt` by summing each exec's loop bounds:
 
 | exec line | command structure | ffmpeg/ffprobe calls |
 |---|---|---|
