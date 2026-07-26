@@ -14,7 +14,9 @@ Each run was isolated in a directory outside the repo tree (no GT, no scorer on 
 |---|---|---|---|---|---|
 | Codex CLI | 0.130.0 | gpt-5.6-sol | 0.058 | 74 | `rollouts/gpt-5.6-sol_codex_isolated.jsonl` |
 | Claude Code | 2.1.215 | opus-4.8 | 0.010 | 141 | `rollouts/opus-4.8_claudecode.trace.txt` |
-| Antigravity CLI | 1.1.3 | Gemini 3.1 Pro | 0.009 | 34 (round-trips; CLI does not expose tool-call counts) | `rollouts/gemini-3.1-pro_antigravity.answer.json` |
+| Antigravity CLI | 1.1.3 | Gemini 3.1 Pro | 0.009 | 34 round-trips (51 atomic — frames/segments) | `rollouts/gemini-3.1-pro_antigravity.answer.json` |
+
+**Tool-call turns vs atomic calls.** For Codex and Claude Code the tool-call-turn count is already atomic — each turn is one real shell tool call (no batching), so atomic = turns (74 and 141). Antigravity's CLI does not expose per-tool-call counts: Gemini's `34` is **model round-trips**, and the **atomic** media-operation count is **51 frames/segments** — each is one frame-montage or video-segment inspection the model requested (Antigravity handles video internally; the model does not shell out to ffmpeg). So at the atomic level Gemini also clears the >50 bar (51 > 50), even though its 34 round-trip count sits below it. Raising the round-trip count past 50 has proven difficult because Gemini tends to fabricate an answer in a few round-trips rather than work the video (see the note below).
 
 Baselines (task is solvable but not guessable):
 
