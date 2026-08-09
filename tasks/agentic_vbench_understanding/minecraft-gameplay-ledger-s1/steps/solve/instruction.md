@@ -63,6 +63,18 @@ actions, invented actions, wrong block/mob types, and wrong ordering all lower t
 small number of events you are sure about scores poorly — the task is to reconstruct *most* of the
 ledger, in order, not to list a safe fraction of it. Watch the whole video.
 
+**The matching rule (so one miss does not zero the rest).** Your events are aligned to the ground
+truth by a **longest common subsequence** on the `(action, target)` tokens. LCS is order-preserving
+but gap-tolerant: a missed, extra, or wrong event only costs *that* event — the events before and
+after it still match and still score. There is **no time tolerance and no timestamp matching**: only
+the *relative order* of your events is compared, never their video time, so you never need to pin an
+event to a second. (Weapon credit is then given on the kills that landed inside this alignment.)
+
+**Every target is nameable from the closed vocabulary.** The block and mob **textures are stock
+Minecraft** for exactly the named types in the vocabulary below — nothing is retextured or
+randomized. Different renders vary *which* named blocks appear (the palette), never how a block
+looks, so every on-screen block/mob maps to one vocabulary entry with no legend lookup required.
+
 ## Rules
 - Stay inside this working directory. Do not read, write, or search outside it.
 - Do not look anything up online. Reconstruct the actions from the video, in order.
