@@ -316,20 +316,52 @@ bot.once('spawn', async () => {
     log('TREES_CLEARED'); return false;
   }
 
+  // Mine a block ONLY when the camera has clear line of sight to it — a block dug from behind a
+  // trunk, leaves, or another block is recorded as `mine` but the viewer sees the occluder, not the
+  // target. That is the mining twin of the placement fairness gate. Reposition around the block to
+  // find a clear view first; if none exists, do not mine it (return false so the caller finds
+  // another). `t` is the block's centre.
+  async function mineVisible(f) {
+    const t = f.position.offset(0.5, 0.5, 0.5);
+    await backOff(t, 3.0);
+    await smoothLookAt(t, 0.0, 4);
+    if (!losClear(t, false)) {
+      // step around the block: out along a few compass directions at its own height, look, re-test
+      for (const [ox, oz] of [[3,0],[-3,0],[0,3],[0,-3],[4,2],[-4,-2],[2,-4],[-2,4]]) {
+        const sx = Math.floor(f.position.x + 0.5 + ox), sz = Math.floor(f.position.z + 0.5 + oz);
+        const surf = surfaceOf(sx, sz);
+        if (!surf || !DRY.has(surf.name)) continue;
+        bot.chat(`/tp Builder ${sx + 0.5} ${surf.position.y + 1} ${sz + 0.5}`); await sleep(550);
+        await smoothLookAt(t, 0.0, 4); await sleep(150);
+        if (losClear(t, false)) break;
+      }
+      if (!losClear(t, false)) return false;   // genuinely unshowable — skip, do not mine
+    }
+    await sleep(500);                           // settle on the block before the swing
+    try { bot.swingArm('right'); } catch (_) {}
+    const nm = f.name;
+    await bot.dig(f);
+    rec('mine', nm);
+    await sleep(400);
+    return true;
+  }
+
   async function gatherCategory(name, count, maxDist=90) {
     const set = cat[name]; let got=0, miss=0;
+    const skip = new Set();   // blocks we could not show unoccluded — don't re-pick them
     await equip(name==='wood'?'diamond_axe':'diamond_pickaxe');
-    while (got<count && miss<5) {
-      const b = bot.findBlock({ matching:x=>x&&set.has(x.name), maxDistance:maxDist, count:1 });
+    while (got<count && miss<6) {
+      const b = bot.findBlock({ matching:x=>x&&set.has(x.name)&&!skip.has(x.position.toString()),
+                                maxDistance:maxDist, count:1 });
       if(!b){ miss++; await sleep(120); continue; }
       // Stop ~3.5 blocks short: standing right against the target fills the whole frame
       // with one texture, which is useless footage. Reach is ~5 blocks, so this still digs.
       await gotoNear(b.position,3.5);
-      await backOff(b.position, 3.0);
       try{ const f=bot.blockAt(b.position);
-        if(f&&set.has(f.name)&&bot.canDigBlock(f)){ await smoothLookAt(f.position.offset(0.5,0.5,0.5), 0.0);
-          await sleep(650);                       // settle on the block (no crack anim in this renderer)
-          const nm=f.name; await bot.dig(f); rec('mine',nm); got++; await sleep(450); }
+        if(f&&set.has(f.name)&&bot.canDigBlock(f)){
+          if (await mineVisible(f)) got++;                       // only counts when it was visible
+          else { skip.add(b.position.toString()); miss++; }      // occluded -> skip, try another
+        }
         else miss++;
       }catch(e){log('dig '+e.message); miss++;}
     }
@@ -842,18 +874,20 @@ bot.once('spawn', async () => {
       for (let yy=y; yy<=y+2; yy++){
         const b=bot.blockAt(new Vec3(x,yy,z));
         if (b && b.name!=='air' && bot.canDigBlock(b)) {
-          await lookAtLow(b.position.offset(0.5,0.5,0.5), 0.0);
-          try{ await bot.dig(b); rec('mine',b.name); }catch(_){}
+          // the frontmost shaft block the bot is cutting into — visible by construction, but gate on
+          // LOS anyway so nothing behind an already-cut face is recorded unseen.
+          const t=b.position.offset(0.5,0.5,0.5); await lookAtLow(t,0.0);
+          if (losClear(t,false)) { try{ bot.swingArm('right'); await bot.dig(b); rec('mine',b.name); }catch(_){} }
         }
       }
       // Light the step we just cut. This is visible on camera, so it is a real ledger event.
       await placeVisible(x, y, z, 'torch', x + 2, z);
       await gotoNear({x,y:y+1,z},1,5000);
-      // mine the ore exposed in the side wall of this step
+      // mine the ore exposed in the side wall of this step, only when it is in clear sight
       const o = bot.blockAt(new Vec3(x+1,y,z));
       if (o && o.name.endsWith('_ore') && bot.canDigBlock(o)) {
-        await lookAtLow(o.position.offset(0.5,0.5,0.5), 0.0);
-        try{ await bot.dig(o); rec('mine',o.name); }catch(_){}
+        const ot=o.position.offset(0.5,0.5,0.5); await lookAtLow(ot,0.0);
+        if (losClear(ot,false)) { try{ bot.swingArm('right'); await bot.dig(o); rec('mine',o.name); }catch(_){} }
       }
     }
     // Climb back to the surface before the phase's closing survey. Ending the session deep in the
