@@ -350,10 +350,24 @@ bot.once('spawn', async () => {
     const set = cat[name]; let got=0, miss=0;
     const skip = new Set();   // blocks we could not show unoccluded — don't re-pick them
     await equip(name==='wood'?'diamond_axe':'diamond_pickaxe');
+    // Match by NAME only: mineflayer runs the matcher during iteration with `position` not yet
+    // populated, so referencing x.position in the matcher rejects every block. Use findBlocks
+    // (returns populated Vec3 positions) and drop skipped ones in JS.
+    const pick = () => bot.findBlocks({ matching:x=>x&&set.has(x.name), maxDistance:maxDist, count:64 })
+                          .find(v => !skip.has(v.toString())) || null;
     while (got<count && miss<6) {
-      const b = bot.findBlock({ matching:x=>x&&set.has(x.name)&&!skip.has(x.position.toString()),
-                                maxDistance:maxDist, count:1 });
-      if(!b){ miss++; await sleep(120); continue; }
+      let pos = pick();
+      if(!pos){ // nothing pickable from here -- relocate toward the nearest matching block, then retry
+        const near = bot.findBlocks({ matching:x=>x&&set.has(x.name), maxDistance:maxDist, count:1 })[0];
+        const p = bot.entity.position;
+        if(near){ bot.chat(`/tp Builder ${near.x} ${near.y+30} ${near.z}`); }
+        else { const ang=miss*1.7; bot.chat(`/tp Builder ${Math.floor(p.x+Math.cos(ang)*24)} ${Math.floor(p.y)+40} ${Math.floor(p.z+Math.sin(ang)*24)}`); }
+        await sleep(600); await landDry(bot.entity.position.x, bot.entity.position.z);
+        pos = pick();
+        if(!pos){ miss++; await sleep(120); continue; }
+      }
+      const b = bot.blockAt(pos);
+      if(!b){ miss++; continue; }
       // Stop ~3.5 blocks short: standing right against the target fills the whole frame
       // with one texture, which is useless footage. Reach is ~5 blocks, so this still digs.
       await gotoNear(b.position,3.5);
