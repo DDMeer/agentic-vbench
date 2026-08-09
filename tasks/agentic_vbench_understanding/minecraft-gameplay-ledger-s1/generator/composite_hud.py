@@ -32,7 +32,23 @@ def duration_of(path):
         r = subprocess.run([probe, "-v", "error", "-show_entries", "format=duration",
                             "-of", "csv=p=0", str(path)], capture_output=True, text=True)
         if r.returncode == 0 and r.stdout.strip():
-            return float(r.stdout.strip())
+            try:
+                return float(r.stdout.strip())   # 'N/A' (unfinalised webm header) -> fall through
+            except ValueError:
+                pass
+        # fall back to counting decoded frames when the container carries no duration
+        r = subprocess.run([probe, "-v", "error", "-count_frames", "-select_streams", "v:0",
+                            "-show_entries", "stream=nb_read_frames,avg_frame_rate",
+                            "-of", "csv=p=0", str(path)], capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            try:
+                nf, rate = r.stdout.strip().split(",")[:2]
+                num, den = (rate.split("/") + ["1"])[:2]
+                fps = float(num) / float(den or 1)
+                if fps > 0:
+                    return int(nf) / fps
+            except (ValueError, ZeroDivisionError):
+                pass
     return 1e6
 
 dur = duration_of(raw)
