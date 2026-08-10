@@ -15,7 +15,9 @@ The frozen task addresses them as follows:
 - For each roster target, every closed-vocabulary activity attached to its
   accepted geometry component is included.
 - One-minute segments from both source clips are interleaved. Scored evidence
-  runs from 1.9 seconds through 534.0 seconds of the ten-minute montage.
+  runs from 1.9 seconds through 534.0 seconds of the ten-minute montage. This
+  creates an exhaustive full-video search burden but not cross-event reasoning,
+  so the final task is classified as hard perception rather than understanding.
 - The deterministic scorer grants soft temporal credit from midpoint accuracy,
   interval IoU, and duration agreement, while retaining exact target and
   activity labels and one-to-one matching.
@@ -28,3 +30,10 @@ The first visual audit found that two proposed vehicle references were one
 continuous person whose annotation tracks did not overlap. Both references and
 all five of their events were removed instead of introducing a manual identity
 join. The frozen package therefore contains ten targets and 29 assignments.
+
+Final code review also found two verifier-lifecycle attacks. Submission file
+validation now blocks symlinks, hardlinks, FIFOs, and oversized files, while
+ground truth is absent from `/tests` and stored at a root-only image path. The
+evaluated agent runs as non-root and the verifier runs as root. A detached
+watcher regression confirmed that a surviving agent process cannot read ground
+truth after Harbor uploads verifier code.

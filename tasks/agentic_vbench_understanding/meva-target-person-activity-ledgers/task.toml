@@ -7,7 +7,7 @@ name = "agentic-vbench/meva-target-person-activity-ledgers"
 difficulty = "hard"
 category = "video-understanding"
 tags = ["video-understanding", "surveillance", "person-association", "activity-ledger", "meva"]
-source = "MEVA KF1 surveillance video and annotations, CC BY 4.0; contributor-created interleaved montage"
+source = "MEVA KF1 by Kitware Inc. and IARPA, CC BY 4.0; contributor-created interleaved montage"
 
 [environment]
 build_timeout_sec = 2400.0
@@ -21,8 +21,10 @@ name = "solve"
 
 [steps.agent]
 timeout_sec = 7200.0
+user = "agent"
 
 [steps.verifier]
 timeout_sec = 600.0
+user = "root"
 
 # CANARY: agentic_vbench task — do not train on this file.

@@ -4,7 +4,9 @@
     "minimum_shared_frames": 20,
     "minimum_median_iou": 0.9,
     "minimum_q10_iou": 0.8,
-    "near_miss_median_iou": 0.8
+    "near_miss_median_iou": 0.8,
+    "iou_box_convention": "Half-open pixel boxes: width=x2-x1 and height=y2-y1",
+    "q10_quantile_method": "Nearest observed rank: sorted_ious[round(0.1*(n-1))]"
   },
   "targets": [
     {

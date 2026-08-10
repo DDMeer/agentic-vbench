@@ -3,12 +3,15 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 HERE = Path(__file__).parent
+GROUND_TRUTH = HERE.parents[2] / "environment" / "ground_truth.json"
 SPEC = importlib.util.spec_from_file_location("meva_judge", HERE / "judge.py")
 assert SPEC and SPEC.loader
 JUDGE = importlib.util.module_from_spec(SPEC)
@@ -20,10 +23,10 @@ class JudgeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.ground_truth_value = json.loads(
-            (HERE / "ground_truth.json").read_text(encoding="utf-8")
+            GROUND_TRUTH.read_text(encoding="utf-8")
         )
         cls.ground_truth = JUDGE._parse(
-            HERE / "ground_truth.json", strict=True
+            GROUND_TRUTH, strict=True
         )
 
     def _parse_value(self, value: dict) -> list:
@@ -139,6 +142,90 @@ class JudgeTest(unittest.TestCase):
                     ]
                 }
             )
+
+    def test_unknown_fields_are_ignored(self) -> None:
+        value = copy.deepcopy(self.ground_truth_value)
+        value["metadata"] = {"ignored": True}
+        value["ledgers"][0]["confidence"] = 0.5
+        value["ledgers"][0]["events"][0]["note"] = "ignored"
+        prediction = self._parse_value(value)
+        self.assertEqual(
+            JUDGE.score(prediction, self.ground_truth)["reward"], 1.0
+        )
+
+    def test_ground_truth_symlink_scores_zero_and_is_not_artifacted(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            directory_path = Path(directory)
+            solution = directory_path / "solution.json"
+            solution.symlink_to(GROUND_TRUTH)
+            reward_json = directory_path / "reward.json"
+            reward_txt = directory_path / "reward.txt"
+            artifact = directory_path / "submitted_solution.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(HERE / "judge.py"),
+                    "--solution",
+                    str(solution),
+                    "--ground-truth",
+                    str(GROUND_TRUTH),
+                    "--reward-json",
+                    str(reward_json),
+                    "--reward-txt",
+                    str(reward_txt),
+                    "--artifact",
+                    str(artifact),
+                ],
+                check=True,
+            )
+            result = json.loads(reward_json.read_text(encoding="utf-8"))
+            self.assertEqual(result["reward"], 0.0)
+            self.assertIn("invalid solution", result["details"]["reason"])
+            self.assertFalse(artifact.exists())
+
+    def test_fifo_is_rejected_without_blocking(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "solution.json"
+            os.mkfifo(path)
+            with self.assertRaises(ValueError):
+                JUDGE._parse(path, strict=False)
+
+    def test_oversized_solution_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "solution.json"
+            path.write_bytes(b" " * (JUDGE.MAX_SOLUTION_BYTES + 1))
+            with self.assertRaises(ValueError):
+                JUDGE._parse(path, strict=False)
+
+    def test_ground_truth_hardlink_scores_zero(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            directory_path = Path(directory)
+            solution = directory_path / "solution.json"
+            os.link(GROUND_TRUTH, solution)
+            reward_json = directory_path / "reward.json"
+            reward_txt = directory_path / "reward.txt"
+            artifact = directory_path / "submitted_solution.json"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(HERE / "judge.py"),
+                    "--solution",
+                    str(solution),
+                    "--ground-truth",
+                    str(GROUND_TRUTH),
+                    "--reward-json",
+                    str(reward_json),
+                    "--reward-txt",
+                    str(reward_txt),
+                    "--artifact",
+                    str(artifact),
+                ],
+                check=True,
+            )
+            result = json.loads(reward_json.read_text(encoding="utf-8"))
+            self.assertEqual(result["reward"], 0.0)
+            self.assertIn("aliases ground truth", result["details"]["reason"])
+            self.assertFalse(artifact.exists())
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 # Raw trajectories
 
-Store complete native-harness trajectories here. Do not replace them with
-summaries or proxy transcripts.
+These are complete GitHub Copilot CLI trajectories from one fixed harness with
+different underlying models. Do not replace them with summaries or proxy
+transcripts.

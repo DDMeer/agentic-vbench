@@ -1,37 +1,25 @@
 {
   "date": "2026-08-10",
-  "native_harnesses": [
-    {
-      "harness": "Codex CLI",
-      "version": "0.147.0",
-      "required_model": "GPT-5.6 Sol",
-      "status": "blocked",
-      "reason": "CLI is installed but has no authenticated account in this environment."
-    },
-    {
-      "harness": "Claude Code",
-      "version": "2.1.220",
-      "required_model": "Opus 4.8",
-      "status": "blocked",
-      "reason": "CLI is installed but has no authenticated account in this environment."
-    },
-    {
-      "harness": "Antigravity",
-      "version": "1.1.11",
-      "required_model": "Gemini 3.5 Flash",
-      "status": "blocked",
-      "reason": "CLI requires an interactive Google OAuth login that is unavailable to the autonomous run."
-    }
-  ],
-  "auditable_fallback": {
+  "calibration_harness": {
     "harness": "GitHub Copilot CLI",
     "version": "1.0.79-9",
+    "status": "complete",
     "models": [
-      "gpt-5.6-sol",
       "claude-opus-4.8",
-      "gemini-3.5-flash"
+      "claude-sonnet-5",
+      "gemini-3.1-pro-preview"
     ],
-    "isolation": "Fresh task container, 4 CPUs, 8 GB memory, no public network, allowlisted Copilot API proxy, complete raw trajectory and proxy log.",
-    "disclosure": "Fallback runs are not relabeled as native-harness trajectories."
-  }
+    "reasoning": {
+      "claude-opus-4.8": "xhigh",
+      "claude-sonnet-5": "xhigh",
+      "gemini-3.1-pro-preview": "high"
+    },
+    "isolation": "Fresh task container, 4 CPUs, 8 GB memory, non-root agent user, root-only verifier tests, no public network, allowlisted Copilot API proxy, complete raw trajectory."
+  },
+  "policy_note": "Contributor-selected fixed-harness calibration. This differs from the current family README's native Antigravity, Codex CLI, and Claude Code routing and therefore requires explicit maintainer acceptance.",
+  "excluded_failed_attempts": [
+    "Gemini 3.1 Pro Preview exceeded its provider image limit before a controlled retry succeeded.",
+    "GPT-5.6 Sol and GPT-5.5 produced no solution before trajectory-size safety stops.",
+    "GPT-5 Mini had one unsupported reasoning configuration, one model-stream failure, and was replaced by Claude Sonnet 5."
+  ]
 }

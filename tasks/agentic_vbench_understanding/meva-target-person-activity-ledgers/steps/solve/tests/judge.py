@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
+import stat
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -19,7 +21,8 @@ ACTIVITY_TYPES = {
     "person_closes_vehicle_door",
 }
 MIDPOINT_TOLERANCE_S = 3.0
-MEDIA_DURATION_S = 600.133333
+MEDIA_DURATION_S = 600.0
+MAX_SOLUTION_BYTES = 1_000_000
 
 
 @dataclass(frozen=True)
@@ -30,41 +33,60 @@ class Event:
     end_time_s: float
 
 
-def _parse(path: Path, strict: bool) -> list[Event]:
-    value: Any = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(value, dict) or set(value) != {"ledgers"}:
-        raise ValueError("top level must contain only ledgers")
+def _read_regular_file(path: Path) -> tuple[bytes, os.stat_result]:
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NONBLOCK", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    descriptor = os.open(path, flags)
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ValueError("solution must be a regular file")
+        if metadata.st_size > MAX_SOLUTION_BYTES:
+            raise ValueError("solution exceeds size limit")
+        chunks = []
+        total = 0
+        while True:
+            chunk = os.read(descriptor, min(65536, MAX_SOLUTION_BYTES + 1 - total))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            total += len(chunk)
+            if total > MAX_SOLUTION_BYTES:
+                raise ValueError("solution exceeds size limit")
+        return b"".join(chunks), metadata
+    finally:
+        os.close(descriptor)
+
+
+def _parse_bytes(raw: bytes, strict: bool) -> list[Event]:
+    value: Any = json.loads(raw.decode("utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("top level must be an object")
     if not isinstance(value["ledgers"], list):
         raise ValueError("ledgers must be a list")
 
     seen_references: set[str] = set()
     events: list[Event] = []
     for ledger in value["ledgers"]:
-        if not isinstance(ledger, dict) or set(ledger) != {
-            "reference_id",
-            "events",
-        }:
+        if not isinstance(ledger, dict):
             raise ValueError("each ledger must contain reference_id and events")
-        reference_id = ledger["reference_id"]
+        reference_id = ledger.get("reference_id")
         if reference_id not in REFERENCE_IDS:
             raise ValueError("unknown reference_id")
         if reference_id in seen_references:
             raise ValueError("duplicate reference_id")
         seen_references.add(reference_id)
-        if not isinstance(ledger["events"], list):
+        if not isinstance(ledger.get("events"), list):
             raise ValueError("events must be a list")
         for raw_event in ledger["events"]:
-            if not isinstance(raw_event, dict) or set(raw_event) != {
-                "activity_type",
-                "start_time_s",
-                "end_time_s",
-            }:
+            if not isinstance(raw_event, dict):
                 raise ValueError("invalid event schema")
-            activity_type = raw_event["activity_type"]
+            activity_type = raw_event.get("activity_type")
             if activity_type not in ACTIVITY_TYPES:
                 raise ValueError("unknown activity_type")
-            if isinstance(raw_event["start_time_s"], bool) or isinstance(
-                raw_event["end_time_s"], bool
+            if isinstance(raw_event.get("start_time_s"), bool) or isinstance(
+                raw_event.get("end_time_s"), bool
             ):
                 raise ValueError("times must be numeric")
             start = float(raw_event["start_time_s"])
@@ -88,6 +110,15 @@ def _parse(path: Path, strict: bool) -> list[Event]:
     if strict and seen_references != set(REFERENCE_IDS):
         raise ValueError("ground truth must contain every reference")
     return events
+
+
+def _load(path: Path, strict: bool) -> tuple[list[Event], bytes, os.stat_result]:
+    raw, metadata = _read_regular_file(path)
+    return _parse_bytes(raw, strict), raw, metadata
+
+
+def _parse(path: Path, strict: bool) -> list[Event]:
+    return _load(path, strict)[0]
 
 
 def _temporal_weight(prediction: Event, gold: Event) -> float:
@@ -209,15 +240,30 @@ def main() -> None:
     parser.add_argument("--ground-truth", required=True, type=Path)
     parser.add_argument("--reward-json", required=True, type=Path)
     parser.add_argument("--reward-txt", required=True, type=Path)
+    parser.add_argument("--artifact", type=Path)
     args = parser.parse_args()
 
+    gold, _, gold_metadata = _load(args.ground_truth, strict=True)
     reason = "ok"
+    prediction_bytes = None
     try:
-        predictions = _parse(args.solution, strict=False)
+        predictions, prediction_bytes, prediction_metadata = _load(
+            args.solution, strict=False
+        )
+        if (
+            prediction_metadata.st_dev,
+            prediction_metadata.st_ino,
+        ) == (gold_metadata.st_dev, gold_metadata.st_ino):
+            raise ValueError("solution aliases ground truth")
     except Exception as exc:
         predictions = []
+        prediction_bytes = None
         reason = f"invalid solution: {exc}"
-    gold = _parse(args.ground_truth, strict=True)
+    if args.artifact is not None:
+        args.artifact.parent.mkdir(parents=True, exist_ok=True)
+        args.artifact.unlink(missing_ok=True)
+        if prediction_bytes is not None:
+            args.artifact.write_bytes(prediction_bytes)
     result = score(predictions, gold)
     result["details"]["reason"] = reason
     args.reward_json.parent.mkdir(parents=True, exist_ok=True)

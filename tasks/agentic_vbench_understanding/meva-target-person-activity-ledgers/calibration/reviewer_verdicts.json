@@ -1,0 +1,22 @@
+{
+  "date": "2026-08-10",
+  "reviewers": [
+    {
+      "scope": "data, ground truth, observability, licensing, and leakage",
+      "verdict": "accept",
+      "summary": "Pinned hashes match; montage is exactly 18,000 frames and 600 seconds; all 47 unique boundaries align at offset zero; all 10 targets and 29 events are observable and complete; attribution, provenance, geometry linkage, and leakage checks pass."
+    },
+    {
+      "scope": "Harbor package, Docker, scorer, security, tests, and artifacts",
+      "verdict": "accept",
+      "summary": "Ground truth is outside the tests upload in a root-only image path; non-root agent and root verifier are separated; symlink, hardlink, FIFO, oversized-input, and surviving-watcher attacks are blocked; unit and Harbor anchors pass."
+    },
+    {
+      "scope": "benchmark construct, difficulty, calibration, claims, and submission readiness",
+      "verdict": "conditional_accept",
+      "condition": "Maintainer approval of the disclosed fixed-Copilot-harness methodology, which differs from the current family README's native-harness routing.",
+      "summary": "The task is honestly classified as hard perception; intrinsic data, scorer, media, licensing, alignment, difficulty, and anti-shortcut requirements pass."
+    }
+  ],
+  "review_note": "These are independent AI-agent reviews checked against canonical files and executable tests; they are not represented as human annotation."
+}

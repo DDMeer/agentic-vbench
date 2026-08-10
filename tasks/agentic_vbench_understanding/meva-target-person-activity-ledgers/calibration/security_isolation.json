@@ -1,0 +1,29 @@
+{
+  "status": "pass",
+  "agent_user": "agent",
+  "verifier_user": "root",
+  "ground_truth": {
+    "container_path": "/opt/verifier/ground_truth.json",
+    "parent_mode": "0700",
+    "file_mode": "0600",
+    "present_in_tests_upload": false
+  },
+  "submission_file_controls": [
+    "O_NOFOLLOW",
+    "O_NONBLOCK",
+    "regular-file check",
+    "1 MB size limit",
+    "ground-truth inode alias rejection",
+    "artifact validated bytes only"
+  ],
+  "tests": {
+    "unit_tests_passed": 14,
+    "symlink_attack": "blocked",
+    "hardlink_attack": "blocked",
+    "fifo_input": "blocked without waiting",
+    "oversized_input": "blocked",
+    "detached_watcher_after_tests_upload": "blocked",
+    "root_oracle_reward": 1.0,
+    "empty_reward": 0.0
+  }
+}

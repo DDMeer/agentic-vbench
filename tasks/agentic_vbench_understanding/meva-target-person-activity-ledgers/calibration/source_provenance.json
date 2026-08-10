@@ -1,6 +1,10 @@
 {
   "dataset": {
     "name": "Multiview Extended Video with Activities (MEVA)",
+    "creators": [
+      "Kitware Inc.",
+      "Intelligence Advanced Research Projects Activity (IARPA)"
+    ],
     "homepage": "https://mevadata.org/",
     "readme": "https://mevadata.org/resources/README-meva-kf1-data.html",
     "license": "CC BY 4.0",
@@ -23,10 +27,10 @@
     "commit": "421841a75577b697c314e952e585aecbb1b99e17"
   },
   "adaptation": {
-    "description": "Each source was split into five one-minute segments. Segments were interleaved source A, source B, then concatenated, encoded as silent H.264 1080p, and padded to 600.133333 seconds.",
-    "media_url": "https://github.com/JordanPeng/agentic-vbench/releases/download/meva-target-person-activity-ledgers-v1/meva_activity_montage.mp4",
-    "media_sha256": "8806786a769e46ece722ba42264357f702e6eb45f3a78fefeae7b10f2a6a1cbd",
-    "roster_url": "https://github.com/JordanPeng/agentic-vbench/releases/download/meva-target-person-activity-ledgers-v1/meva_roster.tar.gz",
+    "description": "Each source was split into five exact 1,800-frame segments at 30 fps. Segments were interleaved source A, source B, concatenated, and encoded as a silent 18,000-frame H.264 1080p artifact lasting exactly 600 seconds.",
+    "media_url": "https://huggingface.co/datasets/Jordan8717/agentic-vbench-meva-activity-ledgers/resolve/c3c7b0dc1d8cba7834564350b90d0c96b4178d46/meva_activity_montage.mp4",
+    "media_sha256": "2d51338a954cb726037116b9b9715ef8dccb7c242753a0e709a03c266fbce344",
+    "roster_url": "https://huggingface.co/datasets/Jordan8717/agentic-vbench-meva-activity-ledgers/resolve/c3c7b0dc1d8cba7834564350b90d0c96b4178d46/meva_roster.tar.gz",
     "roster_sha256": "1b2d92993f8509c71688ae6721b76a50a3dc82a419dce222ef80b84fb3de1487"
   },
   "ground_truth": {
@@ -37,7 +41,9 @@
       "minimum_shared_frames": 20,
       "minimum_median_iou": 0.9,
       "minimum_q10_iou": 0.8,
-      "exclude_components_touching_near_miss": true
+      "exclude_components_touching_near_miss": true,
+      "iou_box_convention": "Half-open pixel boxes: width=x2-x1 and height=y2-y1.",
+      "q10_quantile_method": "Nearest observed rank: sorted_ious[round(0.1*(n-1))]."
     },
     "audit_files": [
       "ground_truth_audit.json",

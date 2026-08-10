@@ -9,7 +9,7 @@ read_when: Reviewing the task media, ground truth, scorer, or calibration eviden
 ```yaml
 task: agentic_vbench_understanding/meva-target-person-activity-ledgers
 
-cognitive_level: understanding
+cognitive_level: perception
 
 modalities_required:
   video: Target identity, activity type, temporal extent, and target-event association are visible only in the surveillance footage.
@@ -55,27 +55,27 @@ scorer:
   null_reward: 0.0
 
 difficulty:
-  strong_agent_reward: 0.003116
-  strong_agent_reward_range: "0.000000-0.003116 across three auditable fallback models"
-  tool_call_turns: 62
-  agent_model: "GitHub Copilot CLI 1.0.79-9 fallback runs with GPT-5.6 Sol, Claude Opus 4.8, and Gemini 3.5 Flash; native harness authentication blockers are disclosed in calibration/harness_status.json."
+  strong_agent_reward: 0.0
+  strong_agent_reward_range: "0.000000 across three successful Copilot CLI model configurations"
+  tool_call_turns: 59
+  agent_model: "GitHub Copilot CLI 1.0.79-9 with Claude Opus 4.8, Claude Sonnet 5, and Gemini 3.1 Pro Preview."
 
 anti_shortcut:
   single_frame: 0.0
   video_only: not applicable; audio is not used
   audio_only: not applicable; audio is not used
   no_media: 0.0
-  frame_dump_no_tools: 0.0
+  frame_dump_no_tools: 0.001106
 
 input:
-  url: https://github.com/JordanPeng/agentic-vbench/releases/download/meva-target-person-activity-ledgers-v1/meva_activity_montage.mp4
-  sha256: 8806786a769e46ece722ba42264357f702e6eb45f3a78fefeae7b10f2a6a1cbd
-  length_min: 10.002
+  url: https://huggingface.co/datasets/Jordan8717/agentic-vbench-meva-activity-ledgers/resolve/c3c7b0dc1d8cba7834564350b90d0c96b4178d46/meva_activity_montage.mp4
+  sha256: 2d51338a954cb726037116b9b9715ef8dccb7c242753a0e709a03c266fbce344
+  length_min: 10.0
   resolution: 1080
 ```
 
-Input credit: MEVA / Kitware, CC BY 4.0. The montage is a contributor-created
-adaptation; see `ATTRIBUTION.md`.
+Input credit: MEVA by Kitware Inc. and IARPA, CC BY 4.0. The montage is a
+contributor-created adaptation; see `ATTRIBUTION.md`.
 
 ## Prompt-writing checks
 
@@ -85,3 +85,6 @@ adaptation; see `ATTRIBUTION.md`.
   stated.
 - The instruction does not expose annotation provenance or score weights.
 - The agent is forbidden from online lookup and cross-camera identity claims.
+- This is intentionally classified as hard perception: the difficulty comes
+  from exhaustive ten-minute search, fine-grained activity localization, and
+  roster-grounded target association rather than cross-event reasoning.
