@@ -37,12 +37,16 @@ scorer:
     targets_wrong: 0.026    # actions right, every target replaced by "stone"
 
 difficulty:
-  strong_agent_reward: 0.164   # Codex gpt-5.6-sol (xhigh), fresh run under the F2 instruction
-  tool_call_turns: 241
+  strong_agent_reward: 0.355   # Codex gpt-5.6-sol (xhigh) on the SHIPPED v32 video; rollout in
+                               # calibration/rollouts/codex_v32_*
+  tool_call_turns: 808
   agent_model: "codex gpt-5.6-sol, model_reasoning_effort=xhigh"
-  note: "recall-limited: 0.79 precision but 0.13 recall — a strong agent identifies what it
-         watches but does not watch the whole 53-min video. Not <0.10; honest MEDIUM. See
-         calibration/scores.md for the length-vs-difficulty analysis (v30 19min -> v31 53min)."
+  note: "RECALL-LIMITED and run-dependent. On the shipped v32 (628 events) Codex scored 0.355
+         (precision 0.60, recall 0.32, 808 tool calls, 337 events reported); an earlier run on the
+         equivalent v31 (633 events) scored 0.164 (precision 0.79, recall 0.13, 241 tool calls).
+         The score is bounded by how much of the 53-min video the agent chooses to watch, so it
+         varies ~0.16-0.36 across runs — an honest MEDIUM either way, not <0.10. n=1 per render;
+         see calibration/scores.md."
 
 anti_shortcut:
   single_frame: 0.0             # Codex given one mid-video frame: correctly wrote an empty ledger
@@ -109,10 +113,12 @@ into the ground truth.
 
 ## Known limitations
 
-- **The task is a MEDIUM, not sub-0.10.** Codex scores 0.164 (F2, 53-min video). The difficulty is
-  recall-limited: 0.79 precision, 0.13 recall. Order-aware LCS-F2 is deliberately generous to a
-  confident partial answer, so a strong agent that reconstructs ~13% in order scores ~0.16. Recall
-  weighting (F2, beta=2) was adopted to punish confident-partial answers; it lowered the number only
+- **The task is a MEDIUM, not sub-0.10.** Codex scores **0.355 on the shipped v32** (precision 0.60,
+  recall 0.32, 808 tool calls) — an earlier v31 run scored 0.164 (recall 0.13). The difficulty is
+  recall-limited and run-dependent: the reward tracks how much of the 53-min video the agent watches
+  (recall 0.13 -> 0.32 moved the score 0.16 -> 0.36), so it lands ~0.16-0.36. Order-aware LCS-F2 is
+  deliberately generous to a confident partial answer. Recall weighting (F2, beta=2) punishes
+  confident-partial answers; it lowered the number only
   slightly because the agent reports more events when recall is weighted. See calibration/scores.md.
 - Order-aware scoring leaves part of the reward recoverable from the target multiset alone; the
   shuffled ablation at **0.245** quantifies that ceiling — a property (reproducing the exact

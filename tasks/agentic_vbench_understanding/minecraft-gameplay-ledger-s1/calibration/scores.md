@@ -157,3 +157,12 @@ passes):
 
 The proposal issue has deliberately **not** been filed, because claiming "<0.10 for all three
 agents" would be false.
+
+## v32 (occlusion-safe re-render) — fresh Codex calibration, 2026-08-09
+On the SHIPPED v32 video (628 events), Codex gpt-5.6-sol (xhigh) scored **0.355** in 808 tool
+calls: it reported **337 events** (recall **0.32**) at precision **0.60**, weapon-F1 0.35. This is
+higher than the earlier v31 run (0.164, recall 0.13, 241 tool calls) — the same task, but this run
+watched far more of the video. The number is **recall-limited and run-dependent** (~0.16–0.36
+depending on how much of the 53 min the agent covers), n=1 per render. Rollout:
+`calibration/rollouts/codex_v32_*`. Honest standing unchanged: a MEDIUM ordered-reconstruction task
+a strong agent only partly solves, not sub-0.10.
