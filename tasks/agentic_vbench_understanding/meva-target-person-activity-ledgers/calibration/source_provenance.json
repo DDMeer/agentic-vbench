@@ -1,0 +1,47 @@
+{
+  "dataset": {
+    "name": "Multiview Extended Video with Activities (MEVA)",
+    "homepage": "https://mevadata.org/",
+    "readme": "https://mevadata.org/resources/README-meva-kf1-data.html",
+    "license": "CC BY 4.0",
+    "license_url": "https://mevadata.org/resources/MEVA-data-license.txt"
+  },
+  "sources": [
+    {
+      "role": "object_handling",
+      "url": "https://mevadata-public-01.s3.amazonaws.com/drops-123-r13/2018-03-09/10/2018-03-09.10-15-00.10-20-00.school.G299.r13.avi",
+      "sha256": "9f25ee3c5a4f582fe3287e7b1727450f33f3ef9c557eba2cd7dc5a9519ee6ab7"
+    },
+    {
+      "role": "vehicle_access",
+      "url": "https://mevadata-public-01.s3.amazonaws.com/drops-123-r13/2018-03-11/16/2018-03-11.16-10-01.16-15-01.school.G339.r13.avi",
+      "sha256": "3f4978d593a61a42dc735283a75d99a3d21e569e1e83ac18c7b20e39f4496bc7"
+    }
+  ],
+  "annotation_repository": {
+    "url": "https://gitlab.kitware.com/meva/meva-data-repo.git",
+    "commit": "421841a75577b697c314e952e585aecbb1b99e17"
+  },
+  "adaptation": {
+    "description": "Each source was split into five one-minute segments. Segments were interleaved source A, source B, then concatenated, encoded as silent H.264 1080p, and padded to 600.133333 seconds.",
+    "media_url": "https://github.com/JordanPeng/agentic-vbench/releases/download/meva-target-person-activity-ledgers-v1/meva_activity_montage.mp4",
+    "media_sha256": "8806786a769e46ece722ba42264357f702e6eb45f3a78fefeae7b10f2a6a1cbd",
+    "roster_url": "https://github.com/JordanPeng/agentic-vbench/releases/download/meva-target-person-activity-ledgers-v1/meva_roster.tar.gz",
+    "roster_sha256": "1b2d92993f8509c71688ae6721b76a50a3dc82a419dce222ef80b84fb3de1487"
+  },
+  "ground_truth": {
+    "sha256": "9566e49b6f89ffcb5f10f2a05d7176260d47e4c04589682269ebaea78a339231",
+    "target_count": 10,
+    "event_assignment_count": 29,
+    "linkage_rule": {
+      "minimum_shared_frames": 20,
+      "minimum_median_iou": 0.9,
+      "minimum_q10_iou": 0.8,
+      "exclude_components_touching_near_miss": true
+    },
+    "audit_files": [
+      "ground_truth_audit.json",
+      "normalized_events.csv"
+    ]
+  }
+}

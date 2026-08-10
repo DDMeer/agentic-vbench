@@ -1,0 +1,585 @@
+{
+  "review_id": "visual-review-a",
+  "reviewed_at_utc": "2026-08-10T01:54:10Z",
+  "overall": "accept",
+  "package_acceptable": true,
+  "summary": {
+    "references_reviewed": 10,
+    "gt_assignments_reviewed": 29,
+    "accepted_assignments": 29,
+    "disputed_assignments": 0,
+    "missed_candidates": 0,
+    "repair_scope": []
+  },
+  "current_input_snapshot": {
+    "cache_policy": "Parsed the current GT and roster afresh after repair; current reference IDs and event tuples, not prior numbering, are authoritative in this report.",
+    "reference_ids": [
+      "reference_001",
+      "reference_002",
+      "reference_003",
+      "reference_004",
+      "reference_005",
+      "reference_006",
+      "reference_007",
+      "reference_008",
+      "reference_009",
+      "reference_010"
+    ],
+    "ground_truth_sha256": "9566e49b6f89ffcb5f10f2a05d7176260d47e4c04589682269ebaea78a339231",
+    "asset_ground_truth_sha256": "9566e49b6f89ffcb5f10f2a05d7176260d47e4c04589682269ebaea78a339231",
+    "oracle_solution_sha256": "9566e49b6f89ffcb5f10f2a05d7176260d47e4c04589682269ebaea78a339231",
+    "ground_truth_copies_match": true,
+    "roster_json_sha256": "014029b85ff60991e9be83479483011ac9e4cd4cc3f7b1e87ee2e234c86ce7e1",
+    "roster_archive_sha256": "1b2d92993f8509c71688ae6721b76a50a3dc82a419dce222ef80b84fb3de1487",
+    "roster_target_count": 10,
+    "roster_archive_entries": 11,
+    "montage_sha256": "8806786a769e46ece722ba42264357f702e6eb45f3a78fefeae7b10f2a6a1cbd"
+  },
+  "repair_verification": {
+    "status": "accept",
+    "current_gt_target_count": 10,
+    "current_gt_event_count": 29,
+    "ids_are_contiguous_reference_001_to_reference_010": true,
+    "roster_ids_match_gt_ids": true,
+    "removed_collision_sequence_has_no_current_assignments": true,
+    "removed_or_stale_ids_in_current_gt": [],
+    "removed_or_stale_ids_in_roster_archive": [],
+    "manifest_counts_match": true,
+    "provenance_hashes_match": true,
+    "verifier_unit_tests": "9 passed"
+  },
+  "montage": {
+    "duration_s": 600.133333,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fps": 30.0,
+    "frame_count": 18004,
+    "timestamp_mapping": {
+      "status": "accept",
+      "rule": "montage seconds map linearly to zero-based frame index at 30 fps",
+      "pts_continuity": "18004 monotonically spaced frames at 0.033333 s; no irregular deltas",
+      "hash_matches_reviewed_media": true
+    }
+  },
+  "per_reference": [
+    {
+      "reference_id": "reference_001",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 4,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            386.033,
+            393.767
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            392.8,
+            398.767
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            392.9,
+            393.767
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 4,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            397.567,
+            398.2
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current black-clad target is identifiable; two distinct transport legs, pickup, and placement are visible despite the short carry-interval overlap at the handoff."
+    },
+    {
+      "reference_id": "reference_002",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            1.933,
+            11.6
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            2.1,
+            2.8
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            10.033,
+            10.7
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current green-top target is identifiable; pickup, bulky carry, and placement are visible at moderate distance."
+    },
+    {
+      "reference_id": "reference_003",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_opens_vehicle_door",
+          "gt_interval_s": [
+            309.633,
+            312.2
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_enters_vehicle",
+          "gt_interval_s": [
+            309.633,
+            316.067
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_closes_vehicle_door",
+          "gt_interval_s": [
+            314.067,
+            316.067
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current black-clad target at the silver sedan is identifiable; opening, entry, and closure form one visible access chain."
+    },
+    {
+      "reference_id": "reference_004",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            492.3,
+            495.433
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            492.9,
+            493.667
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            494.7,
+            495.333
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current blue-clad target is identifiable; pickup, short heavy carry, and placement are visible."
+    },
+    {
+      "reference_id": "reference_005",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            147.4,
+            148.1
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            147.4,
+            163.867
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            162.433,
+            163.1
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current gray-clad target is identifiable; pickup, sustained heavy carry, and placement are visible."
+    },
+    {
+      "reference_id": "reference_006",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 2,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_enters_vehicle",
+          "gt_interval_s": [
+            465.267,
+            473.2
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_closes_vehicle_door",
+          "gt_interval_s": [
+            470.967,
+            473.2
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current vehicle target is identifiable; entry and the later door closure are observable, though long-shot."
+    },
+    {
+      "reference_id": "reference_007",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            286.433,
+            287.233
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            286.433,
+            291.4
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            290.333,
+            291.0
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current black-clad target is identifiable; pickup, heavy carry, and placement are visible among nearby participants."
+    },
+    {
+      "reference_id": "reference_008",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            531.433,
+            532.2
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            531.433,
+            533.967
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            533.233,
+            533.967
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current black-clad target is identifiable; pickup, short heavy carry, and placement are visible around the wheeled object."
+    },
+    {
+      "reference_id": "reference_009",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 3,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            251.067,
+            251.867
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            251.067,
+            261.067
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 3,
+          "activity_type": "person_puts_down_object",
+          "gt_interval_s": [
+            260.067,
+            261.067
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current light/gray-top target is identifiable; pickup, transport, and placement are visible despite partial foreground obstruction."
+    },
+    {
+      "reference_id": "reference_010",
+      "status": "accept",
+      "roster_identity_observable": true,
+      "event_count": 2,
+      "events": [
+        {
+          "event_index": 1,
+          "activity_type": "person_picks_up_object",
+          "gt_interval_s": [
+            126.0,
+            127.2
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        },
+        {
+          "event_index": 2,
+          "activity_type": "person_carries_heavy_object",
+          "gt_interval_s": [
+            126.0,
+            138.3
+          ],
+          "status": "accept",
+          "identity_match": "accept",
+          "activity_match": "accept",
+          "interval_observability": "accept",
+          "duplicate_or_ambiguous": "no",
+          "confidence": "high"
+        }
+      ],
+      "missed_candidates": [],
+      "note": "Current dark-top target is identifiable; pickup and sustained heavy carry are visible; no unsupported placement is assigned."
+    }
+  ],
+  "disputed_events": [],
+  "missed_candidates": [],
+  "non_blocking_artifact_note": "The report-only ground-truth-audit image directory still contains unreferenced reference_011.jpg and reference_012.jpg from an earlier build. They are absent from current GT, roster, archive, audit JSON, and package manifests and were not used in this review.",
+  "methodology": {
+    "fresh_current_file_check": "Loaded the current 10-ledger GT, current roster.json, all ten current roster JPEGs, current ground_truth_audit.json, normalized_events.csv, manifest, provenance, and roster archive.",
+    "assignment_check": "Inspected all 29 current assignments using direct current-montage extractions keyed by current reference ID and current event midpoint, current source audit panels, and temporal context for each exact activity/time tuple.",
+    "roster_check": "Compared each of the ten current roster crops with its target appearance, scene position, object/vehicle context, and nearby people in the current montage.",
+    "complete_scan": "Reconciled the unchanged montage hash with the prior full 600.133 s scans at 1.0 s and 2.0 s cadence; the repaired current roster is a strict subset and no clear missed closed-vocabulary occurrence was found for its ten targets.",
+    "consistency_check": "Verified task GT, asset GT, and oracle are byte-identical; roster archive matches current roster.json and ten JPEGs; manifest/provenance hashes and 10/29 counts agree; removed 433.2-448.5 s collision sequence has no current assignment.",
+    "decision_rule": "Accept only if every current assignment is visibly attributable and separable, current roster/GT/package metadata agree, and no clear missed occurrence remains."
+  }
+}

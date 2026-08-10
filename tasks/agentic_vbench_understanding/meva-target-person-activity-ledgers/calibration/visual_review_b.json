@@ -1,0 +1,426 @@
+{
+  "review_id": "visual-review-b",
+  "review_type": "focused_independent_reaudit_after_duplicate_removal",
+  "overall": "accept",
+  "summary": "The repair is successful. The updated roster contains 10 distinct video-local targets and excludes both former black-minivan duplicate references. All 29 retained events bind to the renumbered targets, show an allowed activity, and remain aligned to montage-relative timestamps. No remaining reference collision or obvious missed qualifying event was found.",
+  "inputs": {
+    "montage": "released meva_activity_montage.mp4",
+    "roster": "released meva_roster.tar.gz",
+    "ground_truth": "steps/solve/tests/ground_truth.json",
+    "instruction": "steps/solve/instruction.md",
+    "provenance_audit": "calibration/ground_truth_audit.json"
+  },
+  "video_properties": {
+    "width_px": 1920,
+    "height_px": 1080,
+    "frame_rate_fps": 30.0,
+    "duration_s": 600.133333,
+    "silent": true
+  },
+  "repair_verification": {
+    "roster_reference_count": 10,
+    "ground_truth_ledger_count": 10,
+    "ground_truth_event_count": 29,
+    "reference_ids": [
+      "reference_001",
+      "reference_002",
+      "reference_003",
+      "reference_004",
+      "reference_005",
+      "reference_006",
+      "reference_007",
+      "reference_008",
+      "reference_009",
+      "reference_010"
+    ],
+    "removed_black_minivan_duplicate_present_in_roster": false,
+    "former_duplicate_events_present_in_ground_truth": false,
+    "remaining_video_local_reference_collisions": [],
+    "renumbering_binding_status": "confirmed",
+    "retained_event_alignment": "29_of_29_confirmed"
+  },
+  "renumbering_verified": {
+    "reference_001": "former_reference_002",
+    "reference_002": "former_reference_003",
+    "reference_003": "former_reference_004",
+    "reference_004": "former_reference_005",
+    "reference_005": "former_reference_006",
+    "reference_006": "former_reference_007",
+    "reference_007": "former_reference_008",
+    "reference_008": "former_reference_009",
+    "reference_009": "former_reference_011",
+    "reference_010": "former_reference_012"
+  },
+  "methodology": {
+    "independence": "No other visual reviewer report was read or used.",
+    "scope": "Focused repair re-audit because the montage is unchanged and only roster/ground-truth membership and numbering changed.",
+    "roster_review": "Inspected all 10 updated roster JPEGs and verified one-to-one IDs reference_001 through reference_010. Compared each crop directly to its action scene at native 1920x1080 resolution.",
+    "event_review": "Decoded frames before, during, and after every retained interval, not merely a subset: 29 of 29 events were checked. Dense 0.5 s sequences were used for crowded gym bindings and temporal continuity.",
+    "collision_review": "Explicitly compared co-scene pairs reference_005/reference_010 (120-180 s), reference_007/reference_009 (240-300 s), and reference_004/reference_008 (480-540 s). They are distinct by clothing, location, and simultaneous/continuous trajectories. The former 433-449 s black-minivan subject has no updated roster reference.",
+    "timestamp_basis": "All event times were interpreted as seconds from montage start and checked against decoded montage frames.",
+    "label_basis": "Only the six instruction-defined labels were accepted; overlapping pickup/carry/put-down and vehicle entry/door closure were checked separately.",
+    "omission_check": "Revisited each retained target-local scene and the former duplicate scene for obvious allowed activities outside the 29 listed intervals. No missed candidate attributable to an updated roster target was found.",
+    "limitations": "References 007, 009, and 010 are relatively small or low-detail in crowded gym views. At native 1080p, temporal tracking and scene position remain sufficient for an evaluated agent; this is a difficulty observation, not a repair issue."
+  },
+  "allowed_label_definitions_status": {
+    "person_picks_up_object": "consistent_with_visible_lift_from_support_or_floor",
+    "person_carries_heavy_object": "consistent_with_visible_transport_of_bulky_folding_chair_or_seating_object",
+    "person_puts_down_object": "consistent_with_visible_lowering_or_placement_to_support_or_floor",
+    "person_opens_vehicle_door": "consistent_with_visible_door_opening",
+    "person_enters_vehicle": "consistent_with_outside_to_inside_transition",
+    "person_closes_vehicle_door": "consistent_with_visible_door_closure"
+  },
+  "blocking_issues": [],
+  "nonblocking_observations": [
+    {
+      "references": [
+        "reference_007",
+        "reference_009",
+        "reference_010"
+      ],
+      "finding": "Small, low-detail, or intermittently occluded gym targets increase difficulty, but each remains identifiable at native 1080p through temporal continuity and scene context."
+    }
+  ],
+  "per_target_findings": [
+    {
+      "reference_id": "reference_001",
+      "finding": "accept",
+      "identifiability_at_1080p": "adequate_but_crowded",
+      "identifiability_rationale": "The target and two chair transports remain trackable at 1080p despite overlap from people and chair stacks in the 386-399 s cluster.",
+      "events_checked": [
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 386.033,
+          "ground_truth_end_time_s": 393.767,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "First bulky chair/stack transport is visible in the crowded seating cluster."
+        },
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 392.8,
+          "ground_truth_end_time_s": 398.767,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "A second distinct object transport begins near 392.8 s and continues to the placement area."
+        },
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 392.9,
+          "ground_truth_end_time_s": 393.767,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The lift is visible near 393 s while the target handles the second bulky seating object."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 397.567,
+          "ground_truth_end_time_s": 398.2,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "Placement/lowering is visible near 397.6-398.2 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_002",
+      "finding": "accept",
+      "identifiability_at_1080p": "adequate",
+      "identifiability_rationale": "The green top and localized right-side chair-row trajectory distinguish the target throughout the 1.9-11.6 s action.",
+      "events_checked": [
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 1.933,
+          "ground_truth_end_time_s": 11.6,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target transports a folding chair/bulky seating object across the right side of the gym."
+        },
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 2.1,
+          "ground_truth_end_time_s": 2.8,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The lift from the chair area is visible near 2.1-2.8 s."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 10.033,
+          "ground_truth_end_time_s": 10.7,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target lowers the object into the chair row near 10.0-10.7 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_003",
+      "finding": "accept",
+      "identifiability_at_1080p": "adequate",
+      "identifiability_rationale": "Dark clothing with a pale hood/upper-back patch and the blue-sedan position provide a stable identity match during entry.",
+      "events_checked": [
+        {
+          "activity_type": "person_opens_vehicle_door",
+          "ground_truth_start_time_s": 309.633,
+          "ground_truth_end_time_s": 312.2,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target opens the blue sedan door at the listed montage time."
+        },
+        {
+          "activity_type": "person_enters_vehicle",
+          "ground_truth_start_time_s": 309.633,
+          "ground_truth_end_time_s": 316.067,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target moves from outside into the blue sedan."
+        },
+        {
+          "activity_type": "person_closes_vehicle_door",
+          "ground_truth_start_time_s": 314.067,
+          "ground_truth_end_time_s": 316.067,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "Door closure is visible as the target finishes entering."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_004",
+      "finding": "accept",
+      "identifiability_at_1080p": "high",
+      "identifiability_rationale": "The blue tracksuit and white shoes are distinctive against nearby subjects; pickup, carry, and placement are clear.",
+      "events_checked": [
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 492.3,
+          "ground_truth_end_time_s": 495.433,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The blue-clad target visibly transports a chair/bulky object over the short interval."
+        },
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 492.9,
+          "ground_truth_end_time_s": 493.667,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The pickup is clear near 493 s."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 494.7,
+          "ground_truth_end_time_s": 495.333,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The object is set down near 495 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_005",
+      "finding": "accept",
+      "identifiability_at_1080p": "adequate_but_crowded",
+      "identifiability_rationale": "The gray outfit is trackable through the 147-164 s chair cluster, with only intermittent crowd occlusion.",
+      "events_checked": [
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 147.4,
+          "ground_truth_end_time_s": 148.1,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The gray-clad target lifts a chair/bulky seating object in the right-side cluster."
+        },
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 147.4,
+          "ground_truth_end_time_s": 163.867,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "Continuous transport through the chair area is visible, with intermittent occlusion."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 162.433,
+          "ground_truth_end_time_s": 163.1,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "Lowering/placement is visible near 162.4-163.1 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_006",
+      "finding": "accept",
+      "identifiability_at_1080p": "adequate",
+      "identifiability_rationale": "The dark-clad light-haired target is localized at the open silver-sedan door and remains trackable until the door closes.",
+      "events_checked": [
+        {
+          "activity_type": "person_enters_vehicle",
+          "ground_truth_start_time_s": 465.267,
+          "ground_truth_end_time_s": 473.2,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target moves into the silver sedan through the already-open door."
+        },
+        {
+          "activity_type": "person_closes_vehicle_door",
+          "ground_truth_start_time_s": 470.967,
+          "ground_truth_end_time_s": 473.2,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The door closes from the occupant position by about 473 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_007",
+      "finding": "accept",
+      "identifiability_at_1080p": "marginal_but_usable",
+      "identifiability_rationale": "The black outfit and pale headwear are visible but several nearby people have similar tones; continuous motion and chair interaction support the binding at 1080p.",
+      "events_checked": [
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 286.433,
+          "ground_truth_end_time_s": 287.233,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The lift is visible in the dense chair group near 286.4-287.2 s."
+        },
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 286.433,
+          "ground_truth_end_time_s": 291.4,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target carries the bulky seating object several steps."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 290.333,
+          "ground_truth_end_time_s": 291.0,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "Placement is visible near 290.3-291.0 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_008",
+      "finding": "accept",
+      "identifiability_at_1080p": "adequate_but_crowded",
+      "identifiability_rationale": "The target is visible in the 531-534 s chair cluster and remains distinguishable from the blue-clad reference_004 in the same source scene.",
+      "events_checked": [
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 531.433,
+          "ground_truth_end_time_s": 532.2,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The short pickup is visible near 531.4-532.2 s."
+        },
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 531.433,
+          "ground_truth_end_time_s": 533.967,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target transports the chair/bulky object inside the group."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 533.233,
+          "ground_truth_end_time_s": 533.967,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The object is lowered near 533.2-534.0 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_009",
+      "finding": "accept",
+      "identifiability_at_1080p": "marginal_but_usable",
+      "identifiability_rationale": "The roster crop is dark and low-detail and the target is small in the 251-261 s group; stage-side location and continuous object motion make the ledger usable at native 1080p.",
+      "events_checked": [
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 251.067,
+          "ground_truth_end_time_s": 251.867,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target lifts a chair/bulky seating object in the stage-side group."
+        },
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 251.067,
+          "ground_truth_end_time_s": 261.067,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target transports it through the chair row; visibility is marginal but continuous motion is consistent."
+        },
+        {
+          "activity_type": "person_puts_down_object",
+          "ground_truth_start_time_s": 260.067,
+          "ground_truth_end_time_s": 261.067,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "Placement is visible near 260.1-261.1 s."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    },
+    {
+      "reference_id": "reference_010",
+      "finding": "accept",
+      "identifiability_at_1080p": "marginal_but_usable",
+      "identifiability_rationale": "The target is small and partly occluded near the stage in the 126-138 s sequence, but the roster location and uninterrupted chair transport support identification at native 1080p.",
+      "events_checked": [
+        {
+          "activity_type": "person_picks_up_object",
+          "ground_truth_start_time_s": 126.0,
+          "ground_truth_end_time_s": 127.2,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The target lifts a chair/bulky object near 126.0-127.2 s."
+        },
+        {
+          "activity_type": "person_carries_heavy_object",
+          "ground_truth_start_time_s": 126.0,
+          "ground_truth_end_time_s": 138.3,
+          "visual_status": "confirmed",
+          "timestamp_status": "montage_relative_interval_visually_aligned",
+          "note": "The transport remains visible until about 138.3 s; no completed put-down is visible before the annotated action ends."
+        }
+      ],
+      "issues": [],
+      "missed_candidates": []
+    }
+  ],
+  "missed_candidates": [],
+  "final_findings": [
+    "The former duplicate person at the black minivan is absent from all 10 updated roster images.",
+    "No pair of remaining references depicts the same person within one uninterrupted video-local occurrence.",
+    "The renumbered roster-to-ledger binding is correct for reference_001 through reference_010.",
+    "All 29 retained event intervals are visually aligned and use allowed labels.",
+    "No exact repair action remains."
+  ]
+}

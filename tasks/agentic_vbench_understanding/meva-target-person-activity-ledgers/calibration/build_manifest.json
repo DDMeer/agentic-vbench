@@ -1,0 +1,47 @@
+{
+  "task_id": "meva-target-person-activity-ledgers",
+  "target_count": 10,
+  "event_assignment_count": 29,
+  "activity_types": [
+    "person_carries_heavy_object",
+    "person_closes_vehicle_door",
+    "person_enters_vehicle",
+    "person_opens_vehicle_door",
+    "person_picks_up_object",
+    "person_puts_down_object"
+  ],
+  "montage": {
+    "path": "released meva_activity_montage.mp4",
+    "sha256": "8806786a769e46ece722ba42264357f702e6eb45f3a78fefeae7b10f2a6a1cbd",
+    "ffprobe": {
+      "programs": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "30/1"
+        }
+      ],
+      "format": {
+        "duration": "600.133333"
+      }
+    }
+  },
+  "roster_archive": {
+    "path": "released meva_roster.tar.gz",
+    "sha256": "1b2d92993f8509c71688ae6721b76a50a3dc82a419dce222ef80b84fb3de1487"
+  },
+  "source_videos": [
+    {
+      "key": "object_handling",
+      "path": "official MEVA source URL; see source_provenance.json",
+      "sha256": "9f25ee3c5a4f582fe3287e7b1727450f33f3ef9c557eba2cd7dc5a9519ee6ab7"
+    },
+    {
+      "key": "vehicle_access",
+      "path": "official MEVA source URL; see source_provenance.json",
+      "sha256": "3f4978d593a61a42dc735283a75d99a3d21e569e1e83ac18c7b20e39f4496bc7"
+    }
+  ]
+}

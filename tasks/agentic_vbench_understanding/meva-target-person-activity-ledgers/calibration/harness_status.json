@@ -1,0 +1,37 @@
+{
+  "date": "2026-08-10",
+  "native_harnesses": [
+    {
+      "harness": "Codex CLI",
+      "version": "0.147.0",
+      "required_model": "GPT-5.6 Sol",
+      "status": "blocked",
+      "reason": "CLI is installed but has no authenticated account in this environment."
+    },
+    {
+      "harness": "Claude Code",
+      "version": "2.1.220",
+      "required_model": "Opus 4.8",
+      "status": "blocked",
+      "reason": "CLI is installed but has no authenticated account in this environment."
+    },
+    {
+      "harness": "Antigravity",
+      "version": "1.1.11",
+      "required_model": "Gemini 3.5 Flash",
+      "status": "blocked",
+      "reason": "CLI requires an interactive Google OAuth login that is unavailable to the autonomous run."
+    }
+  ],
+  "auditable_fallback": {
+    "harness": "GitHub Copilot CLI",
+    "version": "1.0.79-9",
+    "models": [
+      "gpt-5.6-sol",
+      "claude-opus-4.8",
+      "gemini-3.5-flash"
+    ],
+    "isolation": "Fresh task container, 4 CPUs, 8 GB memory, no public network, allowlisted Copilot API proxy, complete raw trajectory and proxy log.",
+    "disclosure": "Fallback runs are not relabeled as native-harness trajectories."
+  }
+}
