@@ -1,39 +1,22 @@
-# Design review and repairs
+# Current design
 
-An independent pre-implementation review identified four risks in the earlier
-target-person ledger sketch:
+The task is hard perception over one ten-minute, 1080p surveillance montage.
+The agent must exhaustively find six allowed activities and assign every
+occurrence to one of ten video-local roster targets.
 
-1. Multi-person transfer labels could be duplicated under two identities.
-2. A selected subset could penalize correct unscored activities.
-3. Two contiguous five-minute clips would weaken the long-horizon claim.
-4. Strict boundary matching could reject genuine visible occurrences.
+- Ground truth contains every closed-vocabulary activity attached to each
+  selected geometry component.
+- Activity-local person tracks are linked only with at least 20 shared frames,
+  median IoU at least 0.90, and nearest-rank q10 IoU at least 0.80.
+- The montage interleaves exact 1,800-frame source segments and contains 18,000
+  frames at 30 fps.
+- The deterministic scorer requires exact target and activity type, then grants
+  temporal credit from midpoint accuracy, interval IoU, and duration agreement
+  under one-to-one matching.
+- Ground truth is stored at a root-only image path outside Harbor's uploaded
+  tests directory. The evaluated agent is non-root and the verifier is root.
+- Submission validation rejects symlinks, hardlinks to ground truth, FIFOs,
+  non-regular files, and files larger than 1 MB.
 
-The frozen task addresses them as follows:
-
-- Multi-person transfer activities are excluded. The closed vocabulary contains
-  only single-target object-handling and vehicle-door activities.
-- For each roster target, every closed-vocabulary activity attached to its
-  accepted geometry component is included.
-- One-minute segments from both source clips are interleaved. Scored evidence
-  runs from 1.9 seconds through 534.0 seconds of the ten-minute montage. This
-  creates an exhaustive full-video search burden but not cross-event reasoning,
-  so the final task is classified as hard perception rather than understanding.
-- The deterministic scorer grants soft temporal credit from midpoint accuracy,
-  interval IoU, and duration agreement, while retaining exact target and
-  activity labels and one-to-one matching.
-
-The final gate is direct observability: two independent reviewers inspect all
-roster targets, every scored event, and the complete montage for missed
-qualifying occurrences before the package is frozen.
-
-The first visual audit found that two proposed vehicle references were one
-continuous person whose annotation tracks did not overlap. Both references and
-all five of their events were removed instead of introducing a manual identity
-join. The frozen package therefore contains ten targets and 29 assignments.
-
-Final code review also found two verifier-lifecycle attacks. Submission file
-validation now blocks symlinks, hardlinks, FIFOs, and oversized files, while
-ground truth is absent from `/tests` and stored at a root-only image path. The
-evaluated agent runs as non-root and the verifier runs as root. A detached
-watcher regression confirmed that a surviving agent process cannot read ground
-truth after Harbor uploads verifier code.
+Independent final reviews accepted all ten targets, all 29 assignments, montage
+alignment, licensing, leakage controls, scorer behavior, and verifier isolation.
