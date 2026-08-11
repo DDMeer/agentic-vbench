@@ -49,6 +49,14 @@ sol_dir = task / "steps/solve/solution"
 # before the bot's final events), so keeping them in the ground truth would ask the agent to report
 # actions the video never shows — the same off-camera unfairness, at the tail. Trim them.
 raw = play["events"]
+# Air is not a nameable block: a mine that resolves to air/cave_air (e.g. the shaft cut an existing
+# cave pocket) shows nothing the agent could report, and the vocabulary is closed. Drop it. (The
+# generator also guards this in rec(); this is defence for older ledgers.)
+AIR_LIKE = {"air", "cave_air", "void_air"}
+_pre = len(raw)
+raw = [e for e in raw if not (e.get("action") == "mine" and e.get("target") in AIR_LIKE)]
+if len(raw) != _pre:
+    print(f"air-filter: dropped {_pre-len(raw)} mine-air event(s) (not nameable blocks)")
 if len(sys.argv) > 3:
     cutoff_ms = float(sys.argv[3]) * 1000.0
     kept = [e for e in raw if e.get("t_ms", 0) <= cutoff_ms]

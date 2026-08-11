@@ -42,7 +42,11 @@ const since = () => T0 ? (Date.now() - T0) : 0;
 function flush() {
   fs.writeFileSync(OUT, JSON.stringify({ n_events: events.length, events, held }, null, 2));
 }
+const AIR_LIKE = new Set(['air', 'cave_air', 'void_air']);
 function rec(action, target, tool) {
+  // Air is not a nameable block: a mine that resolves to air/cave_air (e.g. the shaft cut an
+  // existing cave pocket) is a spurious event the viewer sees nothing of — never record it.
+  if (action === 'mine' && AIR_LIKE.has(target)) { log('EV-skip mine ' + target + ' (air, not a block)'); return; }
   const e = { i: idx++, action, target, t_ms: since() }; if (tool) e.tool = tool;
   events.push(e); flush();
   log('EV ' + action + ' ' + target + (tool ? (' [' + tool + ']') : '') + ' @' + since());
@@ -309,8 +313,14 @@ bot.once('spawn', async () => {
       await gotoNear(b.position, 3.5, 6000);
       try {
         const f = bot.blockAt(b.position);
-        if (f && bot.canDigBlock(f)) { await lookAtLow(f.position.offset(0.5,0.5,0.5), 0.0);
-          const nm = f.name; await bot.dig(f); rec('mine', nm); }
+        if (f && bot.canDigBlock(f)) {
+          const c = f.position.offset(0.5,0.5,0.5);
+          await lookAtLow(c, 0.0);
+          const nm = f.name; const seen = losClear(c, false);
+          await bot.dig(f);                       // dig either way (clears the site)
+          if (seen) rec('mine', nm);              // but RECORD only when the camera had clear LOS
+          else log('treeclear-occluded-skip ' + nm);
+        }
       } catch (_) {}
     }
     log('TREES_CLEARED'); return false;
@@ -685,17 +695,24 @@ bot.once('spawn', async () => {
           }
         }
         const ok = placeSeen(t);
-        try { bot.swingArm('right'); } catch(_){}
-        bot.chat(`/setblock ${b.x} ${b.y} ${b.z} minecraft:${b.block}`);
-        await sleep(340);
-        if (ok) { rec('place', b.block); done++; }
-        else { rec('place', b.block); residual++;                 // still record: world must equal GT
-               log('deferred-residual ' + b.block + ' ' + [b.x,b.y,b.z]); }
+        if (ok) {
+          try { bot.swingArm('right'); } catch(_){}
+          bot.chat(`/setblock ${b.x} ${b.y} ${b.z} minecraft:${b.block}`);
+          await sleep(340);
+          rec('place', b.block); done++;
+        } else {
+          // Unshowable even after every vantage try: SKIP it entirely — do not place and do not
+          // record. This keeps world == ledger (the block is in neither) and guarantees every
+          // recorded placement was framed with clear LOS. A handful of skipped decor/edge blocks
+          // leaves at worst a tiny cosmetic gap; fairness (every scored action visible) wins.
+          residual++;
+          log('deferred-skip-unshown ' + b.block + ' ' + [b.x,b.y,b.z]);
+        }
       }
     }
-    // residual = placed-and-recorded but never framed with clear LOS. It must be small; the orbit
-    // pass then shows the finished structure's exterior, so a residual block is still seen there.
-    log('DEFERRED_DONE recorded=' + done + ' residual=' + residual);
+    // residual = blocks that could not be framed with clear LOS from any vantage, so they were
+    // SKIPPED (not placed, not recorded). Every recorded placement is guaranteed seen.
+    log('DEFERRED_DONE recorded=' + done + ' skipped_unshown=' + residual);
   }
 
 
