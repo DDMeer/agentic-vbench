@@ -37,13 +37,14 @@ scorer:
     targets_wrong: 0.025    # actions right, every target replaced by "stone"
 
 difficulty:
-  strong_agent_reward: recalibrating   # v34 (1005 events, ~95 min); Codex run pending
+  strong_agent_reward: 0.177   # Codex gpt-5.6-sol (xhigh) on the shipped v34; rollout calibration/rollouts/codex_v34_*
   agent_model: "codex gpt-5.6-sol, model_reasoning_effort=xhigh"
   note: "RECALL-LIMITED and run-dependent (recall = agent's ~fixed ~200-300 reconstructed events /
          total). Measured on prior renders of THIS generator: v32 (628 events, 53 min) = 0.355;
          v33 (1046 events, 93 min) = 0.236. v34 is the all-events-visible 1005-event / 95-min build,
-         so ~0.24 is expected; the exact number is re-running on the shipped v34. An honest MEDIUM;
-         the difficulty lever is event count/density, not a metric change. n=1 per render."
+         v34 (1005 events, 95 min, all-visible) = 0.177 (reported 233/1005 events, recall 0.16,
+         precision 0.70, 1308 tool calls). An honest MEDIUM; the difficulty lever is event
+         count/density, not a metric change. Recall is run-dependent, so ~0.16-0.36 across runs. n=1."
 
 anti_shortcut:
   single_frame: 0.0             # Codex given one mid-video frame: correctly wrote an empty ledger
@@ -112,8 +113,8 @@ into the ground truth.
 ## Known limitations
 
 - **The task is a MEDIUM, not sub-0.10.** On prior renders of this generator Codex scored 0.355 (v32,
-  628 events) and 0.236 (v33, 1046 events); the shipped v34 (1005 events, all-visible) is expected
-  ~0.24 (recalibration pending). Recall-limited: the agent reconstructs a roughly fixed absolute
+  628 events) and 0.236 (v33, 1046 events); the shipped v34 (1005 events, all-visible) = 0.177
+  (reported 233/1005 events; recall-limited). Recall-limited: the agent reconstructs a roughly fixed absolute
   number of events, so recall = that / total falls as the ledger grows — event count/density is the
   difficulty lever, not the (already strict, order-aware, recall-weighted) metric. See calibration/scores.md.
 - Order-aware scoring leaves part of the reward recoverable from the target multiset alone; the
