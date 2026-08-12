@@ -9,8 +9,8 @@ summary: minecraft-gameplay-ledger-s1 — reconstruct a player's action ledger, 
 task: agentic_vbench_understanding/minecraft-gameplay-ledger-s1
 
 cognitive_level: understanding
-# Follow a moving first-person session across seven biomes and reconstruct the ordered
-# sequence of deliberate actions — 1005 actions over ~95 minutes — including which weapon
+# Follow a moving first-person session across eight biomes and reconstruct the ordered
+# sequence of deliberate actions — 1135 actions over ~120 minutes — including which weapon
 # was used for each kill. Every recorded action is guaranteed on-camera by construction.
 
 modalities_required:
@@ -32,38 +32,40 @@ scorer:
   oracle_reward: 1.0
   null_reward: 0.0
   measured_ablations:       # same GT, deliberately wrong submissions, under the shipped F2 scorer
-    shuffled_ledger: 0.239  # right multiset, wrong order — order sensitivity, not a shortcut
-    single_token_xN: 0.085  # most common (action,target) repeated
-    targets_wrong: 0.025    # actions right, every target replaced by "stone"
+    shuffled_ledger: 0.221  # right multiset, wrong order — order sensitivity, not a shortcut
+    single_token_xN: 0.056  # most common (action,target) repeated
+    targets_wrong: 0.019    # actions right, every target replaced by "stone"
 
 difficulty:
-  strong_agent_reward: 0.177   # Codex gpt-5.6-sol (xhigh) on the shipped v34; rollout calibration/rollouts/codex_v34_*
+  strong_agent_reward: 0.174   # Codex gpt-5.6-sol (xhigh) on the shipped v36; recall 0.134, precision
+                               # 0.528, 288/1135 events, weapon 0.268; rollout calibration/rollouts/codex_v36_*
   agent_model: "codex gpt-5.6-sol, model_reasoning_effort=xhigh"
   note: "RECALL-LIMITED and run-dependent (recall = agent's ~fixed ~200-300 reconstructed events /
-         total). Measured on prior renders of THIS generator: v32 (628 events, 53 min) = 0.355;
-         v33 (1046 events, 93 min) = 0.236. v34 is the all-events-visible 1005-event / 95-min build,
-         v34 (1005 events, 95 min, all-visible) = 0.177 (reported 233/1005 events, recall 0.16,
-         precision 0.70, 1308 tool calls). An honest MEDIUM; the difficulty lever is event
-         count/density, not a metric change. Recall is run-dependent, so ~0.16-0.36 across runs. n=1."
+         total). Measured on renders of THIS generator: v32 (628 events, 53 min) = 0.355; v33 (1046
+         events, 93 min) = 0.236; v34 (1005 events, 95 min) = 0.177; the shipped v36 (1135 events,
+         120 min, every action re-verified on-camera — see fairness constraints) = 0.174, essentially
+         matching v34. An honest MEDIUM; the difficulty lever is event count/density, not a metric
+         change. Recall is run-dependent, so it varies ~0.16-0.36 across runs. n=1 per render."
 
 anti_shortcut:
   single_frame: 0.0             # Codex given one mid-video frame: correctly wrote an empty ledger
-  most_common_token_xN: 0.081   # the single commonest (action, target), repeated
-  actions_right_targets_stone: 0.026
-  correct_multiset_shuffled: 0.245   # order sensitivity, not a shortcut — see Known limitations
+  most_common_token_xN: 0.056   # the single commonest (action, target), repeated
+  actions_right_targets_stone: 0.019
+  correct_multiset_shuffled: 0.221   # order sensitivity, not a shortcut — see Known limitations
   empty: 0.0
-  frame_dump_no_tools: 0.0      # a 53-min video at 1 fps is >3000 frames, far past any context window
+  frame_dump_no_tools: 0.0      # a 120-min video at 1 fps is >7000 frames, far past any context window
 
 input:
-  url: https://huggingface.co/datasets/explcre/agenticvbench-understanding-materials/resolve/main/minecraft-gameplay-ledger-s1/game_v34.mp4
-  sha256: 6b3052b3fcb48155caeb7e9675d0b1f6f6e8b2319aeaff57f4481e2beaf8e94d
-  length_min: 94.9
+  url: https://huggingface.co/datasets/explcre/agenticvbench-understanding-materials/resolve/main/minecraft-gameplay-ledger-s1/game_v36.mp4
+  sha256: 8393f938b9bc2d0606d1d19552b05661616954b460766c65ee3be8a2531528ad
+  length_min: 120.5
   resolution: 720
-  contents: 1005 events (282 mine, 645 place, 78 kill); 48 distinct block/mob types; biomes forest,
+  contents: 1135 events (206 mine, 839 place, 90 kill); 42 distinct block/mob types; biomes forest,
             beach, desert, snowy tundra, jungle, plains, savanna, badlands (x5 laps, re-rolled
-            palettes); structures built on camera (cabin, well, watchtower); a staircase mine. Every
-            recorded event is guaranteed on-camera (see fairness constraints). The SAME generator
-            scales to any length (628-event 53-min and 248-event 19-min instances also exist).
+            palettes); structures built on camera (cabin with a full gable roof, well, watchtower);
+            a staircase mine. Every recorded event is guaranteed on-camera (see fairness constraints).
+            The SAME generator scales to any length (628-event 53-min and 248-event 19-min instances
+            also exist).
 ```
 
 ## Notes
@@ -74,8 +76,7 @@ input:
   Distinct from VPT/MineRL frame-level inverse dynamics: this is long-horizon and
   event-level, not per-frame action regression.
 - **Order-based scoring** handles the moving camera and the variable-FPS software render.
-  Video time was verified to be an exact offset of event time (checked against two landmarks
-  64 s apart), but order remains the scored quantity.
+  Video time is an offset of event time, but order remains the scored quantity.
 - **The HUD is the real game HUD, and it is evidence.** It is composited from the actual
   Minecraft GUI sprites shipped with prismarine-viewer (`gui/widgets.png` hotbar and
   selector, `gui/icons.png` hearts / hunger / XP bar, the real 16x16 item textures) at
@@ -83,9 +84,12 @@ input:
   XP at y=-32. The highlighted slot tracks the item the player actually held at that moment,
   from the bot's own held-item timeline, so the weapon component is answerable rather than
   guessable. The held item is also drawn first-person in the lower right, and two effects the
-  renderer omits are composited back from the event log: the vanilla block-break crack grows
-  over each dig, and a red hit-flash marks each kill (timing exact; placement centre-anchored
-  because the camera is aimed at the target when it acts).
+  renderer omits are composited back from the event log: a red hit-flash marks each kill, and
+  the vanilla block-break crack grows over each dig. The crack is **projected onto the mined
+  block's exact screen position** from the camera pose recorded at the swing (pinhole model,
+  the viewer's real 75-deg FOV), and scaled by the block's distance, so it sits ON the block —
+  not at a fixed screen point. Timing and placement are both exact; the sprite is the real
+  vanilla `destroy_stage` texture.
 
 ## Fairness constraints enforced during generation
 
@@ -97,47 +101,44 @@ into the ground truth.
    spiders, villagers, foxes, rabbits, horses and llamas are invisible even though the entity
    exists and the camera tracks it. Earlier drafts scored kills on invisible mobs.
 2. **Every scored kill was witnessed.** A kill is recorded only if the mob was present and in
-   range for several consecutive attack ticks with the camera on it. An earlier session
-   contained a panda kill that happened entirely off camera. In the shipped session, 0 of 25
-   kills were rejected by this gate.
-3. **Every scored placement was witnessed.** Before each block the player backs off and, if the
-   block is not in frame, walks around to that block's own side of the structure — which is also how
-   a person builds. A block that STILL cannot be framed with clear line-of-sight from any vantage is
-   **skipped entirely — neither placed nor recorded** — so the ledger and the world stay identical
-   and every recorded placement is provably on-camera. In the shipped v34 session 54 placements
-   were skipped this way.
-4. **No blind-guessable runs.** Build palettes alternate within each layer and the mine is cut
-   through layered strata, so long runs of one repeated block no longer dominate the ledger —
-   closing the earlier weakness where a plausible-house guess partly matched.
+   range for several consecutive attack ticks with the camera on it. In the shipped v36 session
+   35 attempted kills were rejected by this gate (off-camera / not witnessed) and 90 recorded.
+3. **Every scored action is framed dead-centre, not merely on screen.** The viewer's vertical
+   FOV is 75 deg, so a block more than ~24 deg off the view axis is at the frame edge. Before
+   each placement the bot moves to a vantage at the block's OWN height — using creative flight
+   for high courses like the roof — backed off along the block's outward normal, and aims the
+   camera dead-centre with clear line-of-sight; a block that cannot be framed that way from any
+   vantage is **skipped entirely — neither placed nor recorded** (15 in the shipped v36 session),
+   so the world and the ledger stay identical and every recorded placement is provably on-camera.
+   Mines are framed the same way and settled on-camera through the full crack window before the dig.
+4. **No blind-guessable runs.** Build palettes alternate within each layer, the roof timber
+   **rotates per lap** (oak / spruce / birch / jungle / acacia), and the mine is cut through
+   layered strata, so no single (action, block) token dominates the ledger — the most-common-token
+   shortcut is 0.056 (see anti-shortcut).
 
 ## Known limitations
 
 - **The task is a MEDIUM, not sub-0.10.** On prior renders of this generator Codex scored 0.355 (v32,
-  628 events) and 0.236 (v33, 1046 events); the shipped v34 (1005 events, all-visible) = 0.177
-  (reported 233/1005 events; recall-limited). Recall-limited: the agent reconstructs a roughly fixed absolute
-  number of events, so recall = that / total falls as the ledger grows — event count/density is the
-  difficulty lever, not the (already strict, order-aware, recall-weighted) metric. See calibration/scores.md.
+  628 events), 0.236 (v33, 1046 events) and 0.177 (v34, 1005 events). The shipped v36 (1135 events,
+  120 min) is denser and re-verified all-visible; its strong-agent number is being re-measured
+  (see difficulty). Recall-limited: the agent reconstructs a roughly fixed absolute number of events,
+  so recall = that / total falls as the ledger grows — event count/density is the difficulty lever,
+  not the (already strict, order-aware, recall-weighted) metric. See calibration/scores.md.
 - Order-aware scoring leaves part of the reward recoverable from the target multiset alone; the
-  shuffled ablation at **0.245** quantifies that ceiling — a property (reproducing the exact
-  1005-event multiset means watching the whole video), not a shortcut. The genuine shortcuts,
-  most-common-token (0.081) and actions-right-targets-wrong (0.026), are both under 0.15.
+  shuffled ablation at **0.221** quantifies that ceiling — a property (reproducing the exact
+  1135-event multiset means watching the whole video), not a shortcut. The genuine shortcuts,
+  most-common-token (0.056) and actions-right-targets-wrong (0.019), are both well under 0.15.
 - **Weapon credit is gated on ledger alignment.** Scored independently it was nearly free (two weapon
-  classes): an all-"stone" answer scored ledger 0.03 and weapon 1.0. Credit is now granted only on
+  classes): an all-"stone" answer scored ledger 0.02 and weapon 1.0. Credit is now granted only on
   kills inside the ledger's LCS alignment; the oracle stays at exactly 1.0.
 - **The closed vocabulary is asserted against the ledger at build time.** The staircase mine records
   the real blocks it digs, so the vocabulary must cover the terrain of every biome on the route, not
   just the gather categories. `build_p1_gt_v11.py` refuses to emit a task whose ground truth contains
-  an unlisted target — it caught `brown_terracotta` in badlands on a real session.
-- 2.4% of frames are dominated by a single colour (distant vistas and sky), measured with
-  `generator/frame_audit.py`; mean dominant-colour share is 0.242. Run-to-run variation on
-  that metric is ±1–2 points and is driven by spawn terrain, so it is reported rather than optimised
-  against.
+  an unlisted target.
 - **Every structure is verified visible from the camera.** The generator raycasts to each finished
-  build and checks the first block hit belongs to it (`ORBIT_SHOWN n/m`). Placements the camera
-  cannot frame with clear line-of-sight from any vantage are **skipped — not placed, not recorded**
-  (54 in the shipped v34 session), so nothing exists in the finished build that is absent from the
-  ledger and no recorded placement is off-camera. Each element is built as one screen-left-to-right
-  run from a fixed vantage so the fill direction matches the camera, and the space above every placed
-  block is cleared so none is tucked under an overhang.
+  build and checks the first block hit belongs to it (`ORBIT_SHOWN n/m`; all 15 structures shown in
+  the shipped session). Placements the camera cannot frame with clear line-of-sight from any vantage
+  are **skipped — not placed, not recorded** (15 in the shipped v36 session), so nothing exists in the
+  finished build that is absent from the ledger and no recorded placement is off-camera.
 - **Spurious air-mines are dropped.** A shaft cut that resolves to `air`/`cave_air` (an existing cave
-  pocket) is not a nameable block; both `rec()` in the generator and the GT builder drop it (3 in v34).
+  pocket) is not a nameable block; both `rec()` in the generator and the GT builder drop it (0 in v36).

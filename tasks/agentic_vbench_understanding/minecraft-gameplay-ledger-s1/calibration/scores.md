@@ -1,4 +1,35 @@
-# Calibration — minecraft-gameplay-ledger-s1 (v30)
+# Calibration — minecraft-gameplay-ledger-s1
+
+## Current shipped: v36 (2026-08-12) — observability rework
+
+`game_v36.mp4`, sha256 `8393f938…531528ad`, 120.5 min, **1135 events** (206 mine / 839 place / 90 kill),
+42 distinct block+mob types, 8 biomes ×5 laps, structures (cabin with a full gable roof, well,
+watchtower) + a staircase mine, 1280×720 @ 25 fps, no audio.
+
+Rework (addressing "every scored action must be TRULY on-camera"): every placement and mine is now
+framed **dead-centre** (tight 24-deg cone + clear line-of-sight) from a vantage at the block's OWN
+height — creative flight for high courses like the roof — so nothing is recorded at the frame edge or
+skipped off-camera; the vanilla block-break crack is **projected** onto the mined block's exact screen
+position (was centre-anchored); the roof is a full gable whose timber **rotates per lap** (oak / spruce
+/ birch / jungle / acacia) so no single token dominates.
+
+| run | reward | ledger | weapon | notes |
+|---|---|---|---|---|
+| oracle | **1.0000** | 1.0000 | 1.0000 | harness path (`solve.sh` → `judge.py`); verified |
+| correct multiset, shuffled | 0.2207 | 0.2361 | 0.1333 | order sensitivity, not a shortcut |
+| single most-common token ×N | **0.0562** | 0.0661 | 0.0000 | under 0.15 (was 0.151 before the per-lap roof-wood rotation) |
+| actions right, targets "stone" | 0.0187 | 0.0220 | 0.0000 | under 0.15 |
+| empty | 0.0 | — | — | |
+| **Codex gpt-5.6-sol (xhigh)** | **0.174** | 0.157 | 0.268 | recall 0.134, precision 0.528, 288/1135 events reported; rollout `calibration/rollouts/codex_v36_*` |
+
+Generation fairness (v36 session): **15 placements skipped** as unframable (not placed, not recorded),
+**35 kills rejected** off-camera (90 recorded), **all 15 structures verified visible** (ORBIT_SHOWN),
+0 air-mines. Recall-limited + run-dependent as on prior renders; v36 (1135 ev, denser than v34's 1005)
+measured **0.174**, essentially matching v34's 0.177 — the recall-cap model holds.
+
+---
+
+## History
 
 **Scorer:** `reward = 0.85 · LCS-F1(action, target) + 0.15 · weapon-F1 over LCS-aligned kills`,
 order-aware. The weapon component changed in v30 — see *Scorer correction* below — so **v23 numbers

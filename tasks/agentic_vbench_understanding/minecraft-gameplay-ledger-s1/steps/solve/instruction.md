@@ -47,7 +47,8 @@ Blocks (mine/place): `oak_log`, `birch_log`, `spruce_log`, `jungle_log`, `acacia
 `white_terracotta`, `red_terracotta`, `yellow_terracotta`, `brown_terracotta`,
 `light_gray_terracotta`, `red_sandstone`, `coarse_dirt`, `podzol`, `clay`, `coal_ore`, `iron_ore`,
 `gold_ore`, `redstone_ore`, `diamond_ore`, `lapis_ore`, `emerald_ore`, `oak_planks`,
-`spruce_planks`, `birch_planks`, `jungle_planks`, `oak_stairs`, `oak_fence`, `glass`, `oak_door`, `torch`.
+`spruce_planks`, `birch_planks`, `jungle_planks`, `acacia_planks`, `oak_stairs`, `spruce_stairs`,
+`birch_stairs`, `jungle_stairs`, `acacia_stairs`, `oak_fence`, `glass`, `oak_door`, `torch`.
 
 Mobs (kill): `cow`, `pig`, `sheep`, `chicken`, `wolf`, `mooshroom`, `polar_bear`, `turtle`,
 `panda`.

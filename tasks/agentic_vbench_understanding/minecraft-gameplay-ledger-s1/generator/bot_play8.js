@@ -43,13 +43,22 @@ function flush() {
   fs.writeFileSync(OUT, JSON.stringify({ n_events: events.length, events, held }, null, 2));
 }
 const AIR_LIKE = new Set(['air', 'cave_air', 'void_air']);
-function rec(action, target, tool) {
+function rec(action, target, tool, viz) {
   // Air is not a nameable block: a mine that resolves to air/cave_air (e.g. the shaft cut an
   // existing cave pocket) is a spurious event the viewer sees nothing of — never record it.
   if (action === 'mine' && AIR_LIKE.has(target)) { log('EV-skip mine ' + target + ' (air, not a block)'); return; }
   const e = { i: idx++, action, target, t_ms: since() }; if (tool) e.tool = tool;
+  if (viz) e.viz = viz;   // camera pose so the FX compositor can project the effect onto the block
   events.push(e); flush();
   log('EV ' + action + ' ' + target + (tool ? (' [' + tool + ']') : '') + ' @' + since());
+}
+// Camera pose + target-block centre at the instant an action is recorded. The FX compositor uses it
+// to project the block to its exact screen position, so the break-crack sits ON the mined block
+// rather than at a fixed screen point. Attached only to events that composite an effect (mines).
+function vizOf(cx, cy, cz) {
+  const p = bot.entity.position;
+  return { bx: cx, by: cy, bz: cz, ex: p.x, ey: p.y + 1.62, ez: p.z,
+           yaw: bot.entity.yaw, pitch: bot.entity.pitch };
 }
 // Timeline of what the player is holding, so the composited HUD highlights the real slot.
 function recHeld(item) {
@@ -221,8 +230,8 @@ bot.once('spawn', async () => {
 
   // Kept for its call sites; now a thin eased wrapper. The `steps` argument becomes a duration hint
   // (more requested steps -> a longer, gentler turn) but the actual pacing is turnTo's ease-in-out.
-  async function smoothLookAt(target, dy=0.4, steps=6) {
-    const { yaw, pitch } = aimFor(target, dy, true);
+  async function smoothLookAt(target, dy=0.4, steps=6, clampDown=true) {
+    const { yaw, pitch } = aimFor(target, dy, clampDown);
     await turnTo(yaw, pitch, Math.max(360, steps * 110));
   }
 
@@ -315,10 +324,11 @@ bot.once('spawn', async () => {
         const f = bot.blockAt(b.position);
         if (f && bot.canDigBlock(f)) {
           const c = f.position.offset(0.5,0.5,0.5);
-          await lookAtLow(c, 0.0);
-          const nm = f.name; const seen = losClear(c, false);
+          await smoothLookAt(c, 0.0, 5, false); await sleep(650);   // dead-centre + settle for the full
+          const nm = f.name; const seen = aimAngle(c).ang < CONE_MINE && losClear(c, false);  // crack window
+          const vz = seen ? vizOf(c.x, c.y, c.z) : null;
           await bot.dig(f);                       // dig either way (clears the site)
-          if (seen) rec('mine', nm);              // but RECORD only when the camera had clear LOS
+          if (seen) rec('mine', nm, undefined, vz);   // but RECORD only when centred with clear LOS
           else log('treeclear-occluded-skip ' + nm);
         }
       } catch (_) {}
@@ -333,25 +343,28 @@ bot.once('spawn', async () => {
   // another). `t` is the block's centre.
   async function mineVisible(f) {
     const t = f.position.offset(0.5, 0.5, 0.5);
-    await backOff(t, 3.0);
-    await smoothLookAt(t, 0.0, 4);
-    if (!losClear(t, false)) {
-      // step around the block: out along a few compass directions at its own height, look, re-test
-      for (const [ox, oz] of [[3,0],[-3,0],[0,3],[0,-3],[4,2],[-4,-2],[2,-4],[-2,4]]) {
+    await backOff(t, 2.8);
+    await smoothLookAt(t, 0.0, 5, false);                 // dead-centre, allowed to look UP at a log
+    const centred = () => { const a = aimAngle(t); return a.ang < CONE_MINE && a.dist <= 4.3 && losClear(t, false); };
+    if (!centred()) {
+      // step around the block -- out along a few compass directions at its own height -- until it is
+      // both centred and in clear sight; if none exists, do not mine it (the crack must sit ON it).
+      for (const [ox, oz] of [[3,0],[-3,0],[0,3],[0,-3],[3,2],[-3,-2],[2,-3],[-2,3]]) {
         const sx = Math.floor(f.position.x + 0.5 + ox), sz = Math.floor(f.position.z + 0.5 + oz);
         const surf = surfaceOf(sx, sz);
         if (!surf || !DRY.has(surf.name)) continue;
-        bot.chat(`/tp Builder ${sx + 0.5} ${surf.position.y + 1} ${sz + 0.5}`); await sleep(550);
-        await smoothLookAt(t, 0.0, 4); await sleep(150);
-        if (losClear(t, false)) break;
+        bot.chat(`/tp Builder ${sx + 0.5} ${surf.position.y + 1} ${sz + 0.5}`); await sleep(520);
+        await smoothLookAt(t, 0.0, 5, false); await sleep(140);
+        if (centred()) break;
       }
-      if (!losClear(t, false)) return false;   // genuinely unshowable — skip, do not mine
+      if (!centred()) return false;                        // genuinely unshowable -- skip, do not mine
     }
-    await sleep(500);                           // settle on the block before the swing
+    await sleep(700);                           // settle on the block for the full crack window
     try { bot.swingArm('right'); } catch (_) {}
     const nm = f.name;
-    await bot.dig(f);
-    rec('mine', nm);
+    const vz = vizOf(t.x, t.y, t.z);            // capture the aim BEFORE the block vanishes
+    try { await bot.dig(f); } catch (e) { log('dig ' + e.message); return false; }
+    rec('mine', nm, undefined, vz);
     await sleep(400);
     return true;
   }
@@ -378,9 +391,15 @@ bot.once('spawn', async () => {
       }
       const b = bot.blockAt(pos);
       if(!b){ miss++; continue; }
+      // A far pick sits in an UNLOADED chunk the pathfinder cannot route to, which used to thrash
+      // (~6 slow "decide path" failures per biome-gather = the main render stall). Drop in right next
+      // to it first (loads its chunk, makes the approach short), then walk the last few blocks.
+      if (bot.entity.position.distanceTo(pos) > 12) {
+        bot.chat(`/tp Builder ${pos.x} ${pos.y+30} ${pos.z}`); await sleep(500); await landDry(pos.x, pos.z);
+      }
       // Stop ~3.5 blocks short: standing right against the target fills the whole frame
       // with one texture, which is useless footage. Reach is ~5 blocks, so this still digs.
-      await gotoNear(b.position,3.5);
+      await gotoNear(b.position,3.5,6000);
       try{ const f=bot.blockAt(b.position);
         if(f&&set.has(f.name)&&bot.canDigBlock(f)){
           if (await mineVisible(f)) got++;                       // only counts when it was visible
@@ -561,15 +580,53 @@ bot.once('spawn', async () => {
     return `dist=${dist.toFixed(1)} ang=${ang.toFixed(0)}`;
   }
   const DEFERRED = [];                        // blocks the camera missed; placed in a second pass
-  function placeInView(t) {
+  // Every scored action must sit clearly inside the frame, not at its edge. The viewer's vertical FOV
+  // is 75 deg (half 37.5), so a target beyond ~26 deg off the view axis is near the frame edge. These
+  // cones keep each placement/mine inside the readable central region; MAXD_PLACE keeps it near enough
+  // to read. (The break-crack is then projected onto the mined block's exact screen position by
+  // fx_overlay, so it lands ON the block wherever in the frame it is.)
+  const CONE_PLACE = 24, CONE_MINE = 26, MAXD_PLACE = 9;
+  // Angle (deg) of `t` off the current view axis, and its distance from the eye.
+  function aimAngle(t) {
     const eye = bot.entity.position.offset(0, 1.62, 0);
     const d = t.minus(eye);
-    const dist = Math.sqrt(d.x*d.x + d.y*d.y + d.z*d.z);
-    if (dist < 1.0 || dist > 14) return false;
+    const dist = Math.sqrt(d.x*d.x + d.y*d.y + d.z*d.z) || 1e-6;
     const yaw = bot.entity.yaw, pitch = bot.entity.pitch;
     const f = { x: -Math.sin(yaw)*Math.cos(pitch), y: Math.sin(pitch), z: Math.cos(yaw)*Math.cos(pitch) };
-    const dot = (d.x*f.x + d.y*f.y + d.z*f.z) / (dist || 1);
-    return Math.acos(Math.max(-1, Math.min(1, dot))) < 55 * Math.PI / 180;
+    const dot = (d.x*f.x + d.y*f.y + d.z*f.z) / dist;
+    return { ang: Math.acos(Math.max(-1, Math.min(1, dot))) * 180 / Math.PI, dist };
+  }
+  // Put the camera where `t` is centred in frame with clear line of sight, THEN the caller acts.
+  // The vantage is at the block's OWN height -- creative flight for anything well above the ground --
+  // and backed off along the block's outward normal (from the structure centre cx,cz), so the look is
+  // near-level and the block lands dead-centre. This is what makes every placement unmistakably seen
+  // and the composited break-crack sit ON the mined block. Returns false if no such vantage exists
+  // (the caller then skips the block rather than acting off-camera). `ds` = back-off distances to try;
+  // `maxD` = the farthest the block may be and still count as readable.
+  async function frameFromHeight(t, cx, cz, tightDeg, ds, maxD) {
+    const gs = surfaceOf(Math.round(t.x), Math.round(t.z));
+    const gy = gs ? gs.position.y + 1 : Math.round(t.y);
+    const high = t.y > gy + 2.5;
+    const ok = () => { const a = aimAngle(t); return a.ang < tightDeg && a.dist >= 1.5 && a.dist <= maxD && losClear(t, true); };
+    // 1) already framed from here? just re-aim dead-centre -- keeps a run a smooth pan, no jump cut.
+    await smoothLookAt(t, 0, 5, false); await sleep(90);
+    if (ok()) return true;
+    // 2) reposition to a height-matched vantage backed off along the block's outward normal.
+    let nx = t.x - cx, nz = t.z - cz; const L = Math.hypot(nx, nz) || 1; nx /= L; nz /= L;
+    if (high) bot.creative.startFlying(); else bot.creative.stopFlying();
+    const lat = [[0,0], [-nz,nx], [nz,-nx], [-nz*1.8,nx*1.8], [nz*1.8,-nx*1.8]];
+    for (const d of ds) {
+      for (const [lx, lz] of lat) {
+        const vx = t.x + nx*d + lx, vz = t.z + nz*d + lz;
+        let vy;
+        if (high) vy = Math.max(gy, Math.round(t.y - 1.4));
+        else { const su = surfaceOf(Math.round(vx), Math.round(vz)); vy = su ? su.position.y + 1 : gy; }
+        bot.chat(`/tp Builder ${vx.toFixed(2)} ${vy} ${vz.toFixed(2)}`); await sleep(high ? 240 : 300);
+        await smoothLookAt(t, 0, 5, false); await sleep(110);
+        if (ok()) return true;
+      }
+    }
+    return false;
   }
   // Natural terrain that must never sit ON TOP of a block we are placing: a placed block with grass
   // or a leaf directly above it looks tucked under an overhang and is hard to read. Clear it first.
@@ -588,130 +645,47 @@ bot.once('spawn', async () => {
   async function placeVisible(x, y, z, block, cx, cz) {
     const t = new Vec3(x + 0.5, y + 0.5, z + 0.5);
     await clearAbove(x, y, z);                  // no grass/overhang tucked above the placed block
-    await backOff(t, 3.0);                     // don't stand on top of what we are building
-    await lookAtLow(t, 0.0);
-    // Reposition when the block is not yet cleanly visible — cone OR occluded — so a block behind an
-    // already-built wall is walked around inline, not just handed to the deferred pass.
-    if (!placeSeen(t)) {
-      let dx = x + 0.5 - cx, dz = z + 0.5 - cz;
-      const L = Math.hypot(dx, dz) || 1; dx /= L; dz /= L;
-      for (const d of [4.5, 5.5, 6.5]) {
-        const sx = Math.floor(x + dx * d), sz = Math.floor(z + dz * d);
-        const surf = surfaceOf(sx, sz);
-        if (!surf) continue;
-        const sy = surf.position.y + 1;
-        const a1 = bot.blockAt(new Vec3(sx, sy, sz)), a2 = bot.blockAt(new Vec3(sx, sy + 1, sz));
-        if (!(a1 && a2 && a1.name === 'air' && a2.name === 'air')) continue;
-        await gotoNear({ x: sx, y: sy, z: sz }, 1, 5000);
-        if (bot.entity.position.distanceTo(new Vec3(sx + 0.5, sy, sz + 0.5)) > 4) {
-          bot.chat(`/tp Builder ${sx + 0.5} ${sy} ${sz + 0.5}`); await sleep(700);
-        }
-        await lookAtLow(t, 0.0);
-        if (placeSeen(t)) break;
-      }
-    }
-    await sleep(220);
-    // "seen" now means in the view cone AND not hidden behind something — a cone-only test passed
-    // blocks sitting behind an already-built wall, which is why some placed blocks were not actually
-    // visible. losClear allows an adjacent neighbour (the block is placed against existing structure)
-    // but rejects a wall meaningfully in front. Occluded blocks are DEFERRED, not placed unseen, so
-    // world state and the ledger still agree.
-    if (!placeSeen(t)) {
+    // Frame the block dead-centre from a height-matched vantage (flying for high courses like the
+    // roof). If it cannot be framed with clear LOS from any vantage, DEFER it -- never place unseen,
+    // so world state and the ledger always agree.
+    if (!(await frameFromHeight(t, cx, cz, CONE_PLACE, [4.5, 5.5, 3.8, 6.5], MAXD_PLACE))) {
       DEFERRED.push({ x, y, z, block, cx, cz });
       log('place-deferred ' + block + ' ' + [x, y, z] + ' ' + placeWhy(t));
       return;
     }
-    try { bot.swingArm('right'); } catch(_){}   // a real building motion the spectator camera sees
+    try { bot.swingArm('right'); } catch(_){}   // a real building motion the camera sees
     bot.chat(`/setblock ${x} ${y} ${z} minecraft:${block}`);
     await sleep(400);
-    rec('place', block);
+    rec('place', block.split('[')[0], undefined, vizOf(t.x, t.y, t.z));   // base name, not [facing=..]
   }
-  // A placement is genuinely watchable only if it is both in the cone and in clear line of sight.
-  function placeSeen(t) { return placeInView(t) && losClear(t, true); }
 
   // Second pass over everything the camera missed: reposition until each block is genuinely in
   // view, then place and record it. Anything still impossible after this is placed and logged as
   // an accepted residual, and it is asserted to be a small number.
   async function finishDeferred() {
+    bot.creative.stopFlying();                        // land after the (possibly flying) inline pass
     if (!DEFERRED.length) { log('DEFERRED none'); return; }
     const todo = DEFERRED.splice(0, DEFERRED.length);
     log('DEFERRED_PASS ' + todo.length);
-    // Group by which SIDE of the structure the block sits on and serve each side from one vantage.
-    // Teleport-hopping to a fresh viewpoint per block would mean ~300 jump cuts in three minutes,
-    // which reads as glitching rather than building; walking to four vantages looks like a builder
-    // circling their work, and it is the same footage cost as one orbit lap.
-    const side = b => {
-      const dx = b.x + 0.5 - b.cx, dz = b.z + 0.5 - b.cz;
-      return Math.abs(dx) > Math.abs(dz) ? (dx > 0 ? 'E' : 'W') : (dz > 0 ? 'S' : 'N');
-    };
-    const OFF = { E: [7, 0], W: [-7, 0], S: [0, 7], N: [0, -7] };
-    const groups = new Map();
-    for (const b of todo) { const k = side(b); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(b); }
-
+    // bottom-to-top so a course is never framed through the course above it that is not placed yet.
+    todo.sort((a, b) => (a.y - b.y) || (a.x - b.x) || (a.z - b.z));
     let done = 0, residual = 0;
-    for (const [k, blocks] of groups) {
-      const [ox, oz] = OFF[k];
-      const vx = Math.floor(blocks[0].cx + ox), vz = Math.floor(blocks[0].cz + oz);
-      const surf = surfaceOf(vx, vz);
-      if (surf) {
-        // walk there so the camera pans naturally; fall back to a tp only if pathfinding fails
-        await gotoNear({ x: vx, y: surf.position.y + 1, z: vz }, 2, 9000);
-        if (bot.entity.position.distanceTo(new Vec3(vx + 0.5, surf.position.y + 1, vz + 0.5)) > 5) {
-          bot.chat(`/tp Builder ${vx + 0.5} ${surf.position.y + 1} ${vz + 0.5}`); await sleep(800);
-        }
-      }
-      // nearest-first within the group keeps the camera sweeping smoothly instead of jumping about
-      const eye0 = bot.entity.position;
-      blocks.sort((a, b2) => (Math.hypot(a.x - eye0.x, a.z - eye0.z) - Math.hypot(b2.x - eye0.x, b2.z - eye0.z)));
-      log('DEFERRED_SIDE ' + k + ' n=' + blocks.length + ' from ' + [vx, vz]);
-      for (const b of blocks) {
-        const t = new Vec3(b.x + 0.5, b.y + 0.5, b.z + 0.5);
-        await smoothLookAt(t, 0.0, 3);
-        await sleep(160);
-        // if the block is still occluded from the group vantage, stand right in FRONT of the block's
-        // own exterior face — a couple of blocks out along its outward normal — where no other wall
-        // can get between the camera and it. Offsetting from the centre (as before) put the camera
-        // far enough back that an adjacent wall occluded corner blocks; offsetting from the BLOCK and
-        // staying close fixes that. Interior blocks (a torch inside the house) are only visible from
-        // inside, so also try a spot just inward. Stand on any solid ground, not only "dry" terrain.
-        if (!placeSeen(t)) {
-          let rx = b.x + 0.5 - b.cx, rz = b.z + 0.5 - b.cz;
-          const L = Math.hypot(rx, rz) || 1; rx /= L; rz /= L;
-          const tries = [[rx*2, rz*2], [rx*2.5, rz*2.5], [rx*3.5, rz*3.5],   // close, straight out
-                         [rx*2 - rz*1.5, rz*2 + rx*1.5], [rx*2 + rz*1.5, rz*2 - rx*1.5],  // front corners
-                         [-rx*2, -rz*2]];                                     // inside (torches)
-          for (const [ox2, oz2] of tries) {
-            const sx = Math.floor(b.x + 0.5 + ox2), sz = Math.floor(b.z + 0.5 + oz2);
-            let sy = null;
-            for (const dy of [0, 1, -1, 2]) {                                 // stand near the block's height
-              const foot = bot.blockAt(new Vec3(sx, b.y + dy - 1, sz));
-              const air = bot.blockAt(new Vec3(sx, b.y + dy, sz));
-              if (foot && air && foot.name !== 'air' && !WET.has(foot.name) && air.name === 'air') { sy = b.y + dy; break; }
-            }
-            if (sy == null) continue;
-            bot.chat(`/tp Builder ${sx + 0.5} ${sy} ${sz + 0.5}`); await sleep(550);
-            await smoothLookAt(t, 0.0, 3); await sleep(130);
-            if (placeSeen(t)) break;
-          }
-        }
-        const ok = placeSeen(t);
-        if (ok) {
-          try { bot.swingArm('right'); } catch(_){}
-          bot.chat(`/setblock ${b.x} ${b.y} ${b.z} minecraft:${b.block}`);
-          await sleep(340);
-          rec('place', b.block); done++;
-        } else {
-          // Unshowable even after every vantage try: SKIP it entirely — do not place and do not
-          // record. This keeps world == ledger (the block is in neither) and guarantees every
-          // recorded placement was framed with clear LOS. A handful of skipped decor/edge blocks
-          // leaves at worst a tiny cosmetic gap; fairness (every scored action visible) wins.
-          residual++;
-          log('deferred-skip-unshown ' + b.block + ' ' + [b.x,b.y,b.z]);
-        }
+    for (const b of todo) {
+      const t = new Vec3(b.x + 0.5, b.y + 0.5, b.z + 0.5);
+      if (await frameFromHeight(t, b.cx, b.cz, CONE_PLACE, [4.5, 5.5, 3.8, 6.5, 3.0], MAXD_PLACE)) {
+        try { bot.swingArm('right'); } catch(_){}
+        bot.chat(`/setblock ${b.x} ${b.y} ${b.z} minecraft:${b.block}`);
+        await sleep(340);
+        rec('place', b.block.split('[')[0], undefined, vizOf(t.x, t.y, t.z)); done++;
+      } else {
+        // Unshowable from every vantage: SKIP entirely -- not placed, not recorded -- so world ==
+        // ledger and every recorded placement is provably on-camera. A few skipped decor/edge blocks
+        // leave at worst a tiny cosmetic gap; fairness (every scored action visible) wins.
+        residual++;
+        log('deferred-skip-unshown ' + b.block + ' ' + [b.x, b.y, b.z]);
       }
     }
-    // residual = blocks that could not be framed with clear LOS from any vantage, so they were
-    // SKIPPED (not placed, not recorded). Every recorded placement is guaranteed seen.
+    bot.creative.stopFlying();
     log('DEFERRED_DONE recorded=' + done + ' skipped_unshown=' + residual);
   }
 
@@ -739,7 +713,7 @@ bot.once('spawn', async () => {
     for (const bl of blocks) await placeVisible(bl.x, bl.y, bl.z, bl.b, cx, cz);
   }
 
-  async function buildHouse() {
+  async function buildHouse(lap = 0) {
     await moveToOpenSite(8);
     const q = bot.entity.position.floored(); const X=q.x+2, Y=q.y, Z=q.z;
     const CX = X + 2.5, CZ = Z + 2.5;
@@ -774,21 +748,43 @@ bot.once('spawn', async () => {
       if(run.length) await placeRun(run, e.face, CX, CZ);
     }
     await P(X+2,Y,Z,'oak_door');
-    // gable roof as two runs (each slope viewed from its own side), ridge last.
+    // A proper gable roof: two stair slopes ascending to a ridge, oriented so each reads as a slope,
+    // with a one-block eave overhang front and back and the triangular gable ends filled so it looks
+    // like a closed roof rather than a skeleton. Built from elevated (flying) vantages via
+    // frameFromHeight, so every roof block is framed dead-centre and none is skipped off-camera.
+    // Roof timber ROTATES per lap so no single (place, <wood>_stairs) token dominates the ledger --
+    // a 42-stair gable repeated in ONE wood across 5 laps was the most-common token at 17.8% (mono
+    // ablation 0.15). Rotating over 5 woods spreads it to ~42 each. All are vanilla 1.16 blocks the
+    // viewer renders; recorded as the base name (the [facing=..] state is stripped in rec()).
+    const RW = ['oak','spruce','birch','jungle','acacia'][((lap % 5) + 5) % 5];
     const roofW=[], roofE=[], ridge=[];
-    for(let dz=0;dz<S;dz++){
-      roofW.push({x:X+0,y:Y+3,z:Z+dz,b:'oak_stairs'}); roofW.push({x:X+1,y:Y+4,z:Z+dz,b:'oak_stairs'});
-      roofE.push({x:X+S-1,y:Y+3,z:Z+dz,b:'oak_stairs'}); roofE.push({x:X+S-2,y:Y+4,z:Z+dz,b:'oak_stairs'});
-      ridge.push({x:X+2,y:Y+5,z:Z+dz,b:'oak_planks'});
+    for(let dz=-1;dz<=S;dz++){                                     // dz -1..S = 1-block eave overhang
+      const zz=Z+dz;
+      roofW.push({x:X-1,y:Y+3,z:zz,b:`${RW}_stairs[facing=east]`});     // west eave, then slope up to ridge
+      roofW.push({x:X+0,y:Y+3,z:zz,b:`${RW}_stairs[facing=east]`});
+      roofW.push({x:X+1,y:Y+4,z:zz,b:`${RW}_stairs[facing=east]`});
+      roofE.push({x:X+S,  y:Y+3,z:zz,b:`${RW}_stairs[facing=west]`});   // east eave, then slope up to ridge
+      roofE.push({x:X+S-1,y:Y+3,z:zz,b:`${RW}_stairs[facing=west]`});
+      roofE.push({x:X+S-2,y:Y+4,z:zz,b:`${RW}_stairs[facing=west]`});
+      ridge.push({x:X+2,y:Y+5,z:zz,b:`${RW}_planks`});
+    }
+    const gable=[];
+    for(const zz of [Z-1, Z+S]){                                  // fill each triangular gable end
+      gable.push({x:X+1,y:Y+3,z:zz,b:`${RW}_planks`});
+      gable.push({x:X+2,y:Y+3,z:zz,b:`${RW}_planks`});
+      gable.push({x:X+3,y:Y+3,z:zz,b:`${RW}_planks`});
+      gable.push({x:X+2,y:Y+4,z:zz,b:`${RW}_planks`});
     }
     await placeRun(roofW, [-1,0], CX, CZ);
     await placeRun(roofE, [ 1,0], CX, CZ);
-    await placeRun(ridge, [0,1], CX, CZ);
+    await placeRun(gable, [0,-1], CX, CZ);
+    await placeRun(ridge, [0, 1], CX, CZ);
     await P(X+4,Y+3,Z+1,'cobblestone'); await P(X+4,Y+4,Z+1,'cobblestone');     // chimney
     await P(X+2,Y,Z+2,'torch'); await P(X+2,Y+2,Z+2,'torch');
     for(let dx=0;dx<3;dx++) await P(X+dx,Y,Z-2,'oak_fence');                    // garden fence
     log('HOUSE_DONE');
     await finishDeferred();
+    bot.creative.stopFlying();
     await orbitAndShow(new Vec3(X + 2.5, Y + 1, Z + 2.5), 9, 6, 3);   // 7x7 house
   }
   // A stone watchtower: a second, different structure so the build vocabulary is not just
@@ -907,8 +903,8 @@ bot.once('spawn', async () => {
         if (b && b.name!=='air' && bot.canDigBlock(b)) {
           // the frontmost shaft block the bot is cutting into — visible by construction, but gate on
           // LOS anyway so nothing behind an already-cut face is recorded unseen.
-          const t=b.position.offset(0.5,0.5,0.5); await lookAtLow(t,0.0);
-          if (losClear(t,false)) { try{ bot.swingArm('right'); await bot.dig(b); rec('mine',b.name); }catch(_){} }
+          const t=b.position.offset(0.5,0.5,0.5); await smoothLookAt(t,0.0,5,false); await sleep(650);
+          if (aimAngle(t).ang < CONE_MINE && losClear(t,false)) { const vz=vizOf(t.x,t.y,t.z); try{ bot.swingArm('right'); await bot.dig(b); rec('mine',b.name,undefined,vz); }catch(_){} }
         }
       }
       // Light the step we just cut. This is visible on camera, so it is a real ledger event.
@@ -917,8 +913,8 @@ bot.once('spawn', async () => {
       // mine the ore exposed in the side wall of this step, only when it is in clear sight
       const o = bot.blockAt(new Vec3(x+1,y,z));
       if (o && o.name.endsWith('_ore') && bot.canDigBlock(o)) {
-        const ot=o.position.offset(0.5,0.5,0.5); await lookAtLow(ot,0.0);
-        if (losClear(ot,false)) { try{ bot.swingArm('right'); await bot.dig(o); rec('mine',o.name); }catch(_){} }
+        const ot=o.position.offset(0.5,0.5,0.5); await smoothLookAt(ot,0.0,5,false); await sleep(650);
+        if (aimAngle(ot).ang < CONE_MINE && losClear(ot,false)) { const vz=vizOf(ot.x,ot.y,ot.z); try{ bot.swingArm('right'); await bot.dig(o); rec('mine',o.name,undefined,vz); }catch(_){} }
       }
     }
     // Climb back to the surface before the phase's closing survey. Ending the session deep in the
@@ -957,7 +953,7 @@ bot.once('spawn', async () => {
       // build on open terrain, not among the trees we were just chopping
       if(!await tpToBiome('plains')) await tpToBiome('savanna');
       await survey(4,500);
-      await buildHouse();
+      await buildHouse(lap);
       bot.chat('/summon minecraft:iron_golem ~ ~1 ~5'); await sleep(1500);   // village guardian
       await survey(6,700); });
     await phase(L + 'combat_showcase', async()=>{ await huntMelee('chicken'); await huntBow('cow');

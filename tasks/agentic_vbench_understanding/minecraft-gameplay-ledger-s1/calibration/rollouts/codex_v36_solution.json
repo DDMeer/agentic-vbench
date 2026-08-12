@@ -1,0 +1,1245 @@
+{
+  "events": [
+    {
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "oak_stairs"
+    },
+    {
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "mine",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "mine",
+      "target": "oak_leaves"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "mine",
+      "target": "coarse_dirt"
+    },
+    {
+      "action": "mine",
+      "target": "stone"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "action": "kill",
+      "target": "chicken",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "pig",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "mine",
+      "target": "stone"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "kill",
+      "target": "chicken",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "chicken",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "chicken",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "dark_oak_log"
+    },
+    {
+      "action": "mine",
+      "target": "podzol"
+    },
+    {
+      "action": "mine",
+      "target": "coarse_dirt"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "kill",
+      "target": "pig",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "mine",
+      "target": "cobblestone"
+    },
+    {
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "oak_log"
+    },
+    {
+      "action": "mine",
+      "target": "birch_log"
+    },
+    {
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "mine",
+      "target": "coarse_dirt"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "place",
+      "target": "stone_bricks"
+    },
+    {
+      "action": "place",
+      "target": "cobblestone"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "oak_log"
+    },
+    {
+      "action": "place",
+      "target": "oak_planks"
+    },
+    {
+      "action": "place",
+      "target": "glass"
+    },
+    {
+      "action": "place",
+      "target": "oak_door"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "acacia_stairs"
+    },
+    {
+      "action": "place",
+      "target": "torch"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "turtle",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "sand"
+    },
+    {
+      "action": "mine",
+      "target": "cactus"
+    },
+    {
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "snow"
+    },
+    {
+      "action": "mine",
+      "target": "ice"
+    },
+    {
+      "action": "kill",
+      "target": "polar_bear",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "panda",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "mine",
+      "target": "jungle_log"
+    },
+    {
+      "action": "kill",
+      "target": "sheep",
+      "tool": "bow"
+    },
+    {
+      "action": "kill",
+      "target": "mooshroom",
+      "tool": "sword"
+    },
+    {
+      "action": "mine",
+      "target": "grass_block"
+    },
+    {
+      "action": "mine",
+      "target": "dirt"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "coarse_dirt"
+    },
+    {
+      "action": "mine",
+      "target": "terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "sword"
+    },
+    {
+      "action": "kill",
+      "target": "cow",
+      "tool": "bow"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    },
+    {
+      "action": "mine",
+      "target": "orange_terracotta"
+    }
+  ]
+}
