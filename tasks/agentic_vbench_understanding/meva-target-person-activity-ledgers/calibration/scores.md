@@ -3,6 +3,13 @@
 The frozen verifier scores 29 activity assignments for ten video-local roster
 targets.
 
+## Submission status
+
+All three required rows clear the measured difficulty gate. The maintainer
+approved the VS Code Claude Agent SDK session as equivalent to Claude Code for
+this contribution. The Antigravity score uses an adjudicated schema-only repair:
+the repair changed three key names and no references, activities, or times.
+
 ## Anchors
 
 | harness | version | run | score |
@@ -10,31 +17,35 @@ targets.
 | Harbor | 0.6.6 | exact oracle | 1.000000 |
 | Harbor | 0.6.6 | empty submission | 0.000000 |
 
-## Fixed-harness model comparison
+## Required agent calibration
 
-Calibration uses GitHub Copilot CLI as one consistent harness while changing the
-underlying model. Each run uses a fresh task container, four CPUs, 8 GB memory,
-disabled public internet, an allowlisted Copilot API proxy, and a complete raw
-trajectory.
+| harness | harness version | model | reasoning | score | tool-call turns | trajectory |
+|---|---|---|---|---:|---:|---|
+| Codex CLI | 0.147.0 | GPT-5.6 Sol | high | 0.009443 | 80 | `rollouts/codex-gpt-5.6-sol.jsonl` |
+| VS Code Claude Agent SDK | Copilot Chat 0.60.0 | Claude Opus 4.8 | high | 0.004100 | 115 parent; 554 including nested agents | `rollouts/claude-opus-4.8-vscode-agent-sdk.jsonl` |
+| Antigravity CLI | 1.1.12 | Gemini 3.6 Flash High | high | 0.003459 | 220 | `rollouts/antigravity-gemini-3.6-flash-high.jsonl` |
 
-This contributor-selected methodology differs from the current family README's
-native Antigravity, Codex CLI, and Claude Code routing. Any future PR must request
-explicit maintainer acceptance of the fixed-harness comparison.
+The Codex run used the frozen task image with four CPUs, 8 GB memory, blocked
+model-issued shell egress, no prior history, and a complete native JSONL
+trajectory. Its solution contained nine assignments and the verifier returned
+`reason: ok`.
 
-| harness | version | model | reasoning | score | tool calls | assistant turns | trajectory |
-|---|---|---|---|---:|---:|---:|---|
-| GitHub Copilot CLI | 1.0.79-9 | Claude Opus 4.8 | xhigh | 0.000000 | 39 | 28 | `rollouts/claude-opus-4.8_copilot.jsonl` |
-| GitHub Copilot CLI | 1.0.79-9 | Claude Sonnet 5 | xhigh | 0.000000 | 70 | 59 | `rollouts/claude-sonnet-5_copilot.jsonl` |
-| GitHub Copilot CLI | 1.0.79-9 | Gemini 3.1 Pro Preview | high | 0.000000 | 65 | 65 | `rollouts/gemini-3.1-pro-preview_copilot.jsonl` |
+The Claude run used a fresh folder-isolated session with no prior history. The
+raw AHP stream records the exact `claude-opus-4.8` model and high thinking level,
+115 parent tool calls, ten nested agent channels, and 439 nested tool calls. All
+ten nested turns completed. Audit of parent and nested inputs found no verifier,
+ground-truth, sibling-row, or public-network access.
 
-Gemini's provider accepts at most ten images. Its run used a provider-only
-runtime constraint limiting the run to nine image views. Opus and Sonnet used
-a 30-minute runtime constraint requiring a best-effort submission by 20
-minutes. These constraints contain no answer information.
-
-Failed GPT and initial Gemini attempts are preserved in the managed result
-ledger but excluded from the successful comparison table. Their exact failure
-reasons are summarized in `harness_status.json`.
+The Antigravity run used GCP Agent Platform ADC billing and the frozen task image
+with four CPUs, 8 GB memory, blocked model-issued shell egress, hidden ADC
+credentials, no prior Antigravity history, and a complete native JSONL
+trajectory. The primary trajectory ended `SUCCESS` after 220 tool calls. Its
+populated output used `ledger`, `start_time`, and `end_time` instead of the three
+required schema keys. A narrowly scoped follow-up changed only those key names;
+canonical JSON comparison proved all semantic values unchanged, and the verifier
+then returned `reason: ok` with score `0.003459`. Both supplemental trajectories
+ended with a post-response sandbox transport error and remain flagged for manual
+review in the managed result package.
 
 ## Required degraded-input runs
 
@@ -53,6 +64,7 @@ reasons are summarized in `harness_status.json`.
 | correct target activity types at wrong times | 0.000116 |
 | all events shifted by five seconds | 0.000470 |
 
-Per-run rewards, solutions, proxy audits, hashes, commands, and failed attempts
-are persisted in the managed result package. The contribution keeps one raw
-trajectory per successful model plus the required degraded-input trajectories.
+Per-run rewards, solutions, audits, hashes, commands, and failed attempts remain
+in the managed result package outside the contribution. The PR tree keeps one
+complete raw trajectory per accepted required harness plus the measured
+degraded-input trajectories.

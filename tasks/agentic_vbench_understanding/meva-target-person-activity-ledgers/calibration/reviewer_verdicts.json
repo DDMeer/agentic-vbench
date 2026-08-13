@@ -1,5 +1,5 @@
 {
-  "date": "2026-08-10",
+  "date": "2026-08-12",
   "reviewers": [
     {
       "scope": "data, ground truth, observability, licensing, and leakage",
@@ -14,9 +14,9 @@
     {
       "scope": "benchmark construct, difficulty, calibration, claims, and submission readiness",
       "verdict": "conditional_accept",
-      "condition": "Maintainer approval of the disclosed fixed-Copilot-harness methodology, which differs from the current family README's native-harness routing.",
-      "summary": "The task is honestly classified as hard perception; intrinsic data, scorer, media, licensing, alignment, difficulty, and anti-shortcut requirements pass."
+      "condition": "Complete a valid isolated Antigravity run and resolve the source-host policy by moving the media or obtaining an explicit exception.",
+      "summary": "The maintainer accepted the VS Code Claude Agent SDK wrapper as Claude Code-equivalent. Codex and Claude calibration, intrinsic data, scorer, media, licensing, alignment, difficulty, and anti-shortcut requirements pass."
     }
   ],
-  "review_note": "These are independent AI-agent reviews checked against canonical files and executable tests; they are not represented as human annotation."
+  "review_note": "These are independent AI-agent reviews checked against canonical files and executable tests; they are not represented as human annotation. The maintainer harness acceptance is contributor-reported."
 }

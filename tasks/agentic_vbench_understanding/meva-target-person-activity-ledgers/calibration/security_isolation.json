@@ -1,5 +1,5 @@
 {
-  "status": "pass",
+  "status": "verifier_pass_agent_calibration_complete_with_antigravity_manual_review",
   "agent_user": "agent",
   "verifier_user": "root",
   "ground_truth": {
@@ -25,5 +25,34 @@
     "detached_watcher_after_tests_upload": "blocked",
     "root_oracle_reward": 1.0,
     "empty_reward": 0.0
+  },
+  "agent_calibration": {
+    "codex": {
+      "status": "pass",
+      "shell_network": "blocked",
+      "forbidden_path_attempts": 0,
+      "authentication_visible_to_model_tools": false
+    },
+    "claude": {
+      "status": "pass_observed_with_maintainer_harness_approval",
+      "isolation_mode": "folder",
+      "parent_tool_calls": 115,
+      "nested_agent_channels": 10,
+      "nested_tool_calls": 439,
+      "forbidden_path_attempts": 0,
+      "public_network_attempts": 0,
+      "complete_parent_and_nested_trajectory": true
+    },
+    "antigravity": {
+      "status": "pass_with_adjudicated_schema_only_repair",
+      "runtime_isolation": "passed",
+      "shell_network": "blocked",
+      "forbidden_path_attempts": 0,
+      "public_network_attempts": 0,
+      "authentication_visible_to_model_tools": false,
+      "primary_trajectory_complete": true,
+      "primary_terminal_status": "SUCCESS",
+      "supplemental_transport_errors_require_manual_review": true
+    }
   }
 }

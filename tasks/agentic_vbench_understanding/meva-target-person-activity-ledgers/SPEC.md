@@ -55,10 +55,10 @@ scorer:
   null_reward: 0.0
 
 difficulty:
-  strong_agent_reward: 0.0
-  strong_agent_reward_range: "0.000000 across three successful Copilot CLI model configurations"
-  tool_call_turns: 59
-  agent_model: "GitHub Copilot CLI 1.0.79-9 with Claude Opus 4.8, Claude Sonnet 5, and Gemini 3.1 Pro Preview."
+  strong_agent_reward: 0.009443
+  strong_agent_reward_range: "0.004100-0.009443 across accepted Codex and Claude runs"
+  tool_call_turns: 80
+  agent_model: "Codex CLI 0.147.0 with GPT-5.6 Sol; maintainer-approved VS Code Claude Agent SDK with Claude Opus 4.8."
 
 anti_shortcut:
   single_frame: 0.0
