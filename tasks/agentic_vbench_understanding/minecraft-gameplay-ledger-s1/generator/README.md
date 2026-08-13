@@ -27,7 +27,7 @@ Both drive the **same** `bot_play8.js`; only `MC_VERSION`, `MC_PORT` and `NO_VIE
 1. Paper 1.16.5 on :25577, `online-mode=false`, `doTileDrops=false` — dropped items render as magenta
    boxes in prismarine-viewer.
 2. `bot_play8.js <out.json> <GO> <DONE>` — waits for `GO`, then gathers in a forest, hunts with sword
-   and bow, builds a house / watchtower / farm, digs a mine, and tours seven biomes. Writes the
+   and bow, builds a cabin / watchtower / well, digs a staircase mine, and tours eight biomes. Writes the
    ledger to `out.json` and a verbose decision log to `out.json.crash.log`.
 3. `capture_mc.py <outdir> <GO> <DONE> <max_s>` — records the viewer page, writes `GO`, waits for
    `DONE`.
@@ -48,11 +48,12 @@ its log without watching it.
 - **Kills** count only if the mob was in range *and* in line of sight for ≥3 ticks of the fight (≥2
   for bow). A post-hoc geometry check was tried first and is invalid: animals flee, so where one died
   says nothing about where it was fought.
-- **Placements** must be within 55° of the view axis and 1–14 blocks out. Blocks the camera misses are
-  **deferred**, not silently placed: `finishDeferred()` walks back, frames each one, and places it for
-  real. Earlier versions `/setblock` them unseen, which put ~10% of the finished building in the world
-  but not in the ground truth — so an agent listing what it saw was penalised for blocks it could
-  never have watched being placed.
+- **Placements** are framed dead-centre before they happen: the bot flies to a vantage at the block's
+  own height, backs off along its outward normal, and aims within ~24° with clear line of sight (the
+  viewer's vertical FOV is 75°, so a wider cone would put the block at the frame edge). A block that
+  cannot be framed that way from any vantage is **skipped entirely — not placed and not recorded**
+  (`finishDeferred()`), so the finished world and the ledger stay identical and every recorded
+  placement is provably on-camera. Each mined block's break-crack is projected onto its screen position.
 - **Build sites** must be flat and clear: no log or leaf anywhere in the footprint, ≥85% of columns
   within one block of centre height, spread ≤3. Otherwise the walls end up half-buried or screened by
   trees. If nothing nearby qualifies the ground is levelled and the trees felled — itself real
@@ -77,7 +78,9 @@ its log without watching it.
 
 ## Notes
 
-- The render is variable-FPS under software GL, so scoring is **order-based (LCS-F1)**, never
-  timestamped. `composite_hud.py` re-encodes to CFR 25 fps for the deliverable.
+- The render is variable-FPS under software GL, so scoring is an **order-preserving LCS on
+  `(action, target)` within a ±10 s time window** (recall-weighted F2 + a weapon score): the window
+  makes the order real without depending on exact frame timing. `build_p1_gt_v11.py` maps each event's
+  `t_ms` to a video time `t` via the capture OFFSET; `composite_hud.py` re-encodes to CFR 25 fps.
 - Launch server, bot and capture as detached processes; the bot blocks on the `GO` file, so recording
   always starts before the first action.

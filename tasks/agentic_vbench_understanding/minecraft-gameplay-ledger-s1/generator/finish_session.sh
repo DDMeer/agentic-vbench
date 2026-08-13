@@ -41,7 +41,7 @@ RAWDUR=$(/pkg/ffmpeg/4.2.2/bin/ffprobe -v error -show_entries format=duration -o
 CUTOFF=$(/usr/bin/python3 -c "print(max(0.0, $RAWDUR - $OFFSET - 0.3))")
 echo "raw_capture=${RAWDUR}s offset=${OFFSET}s -> GT cutoff ${CUTOFF}s (GO-relative)"
 if [ -n "$TASK_DIR" ]; then
-  /usr/bin/python3 "$TOOLS/build_p1_gt_v11.py" "$PLAY" "$TASK_DIR" "$CUTOFF"
+  /usr/bin/python3 "$TOOLS/build_p1_gt_v11.py" "$PLAY" "$TASK_DIR" "$OFFSET" "$CUTOFF"
 fi
 
 /pkg/ffmpeg/4.2.2/bin/ffprobe -v error -show_entries stream=width,height,r_frame_rate \

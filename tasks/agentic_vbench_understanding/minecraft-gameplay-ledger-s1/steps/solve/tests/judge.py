@@ -1,47 +1,62 @@
 #!/usr/bin/env python3
 """Grade a Minecraft first-person gameplay-ledger reconstruction. Pure stdlib, deterministic.
 
-The video is a ~10-minute FIRST-PERSON recording of a player exploring a generated
-Minecraft world: walking, looking around, mining blocks (the camera turns to each block
-as it breaks), and fighting a mob. The agent reconstructs the ORDERED ledger of the
-player's deliberate actions: the chronological sequence of (action, target), where
-action is `mine` (a block is broken; target = block type) or `kill` (a mob is defeated;
-target = mob type).
+The video is a long FIRST-PERSON recording of a player exploring a generated Minecraft world:
+walking, looking around, mining blocks (the camera turns to each block as it breaks), placing
+blocks to build structures, and fighting mobs with a sword or a bow. The agent reconstructs the
+ordered ledger of deliberate actions: for each event, `action` (mine / place / kill), `target`
+(block or mob type), `t` (the time in the video, in seconds, at which it happens), and for kills
+the `tool` (sword / bow).
 
-Scoring is order-aware (LCS) so the moving first-person camera and the render frame-rate
-are irrelevant: F1 = 2*LCS / (len_pred + len_gt) over the (action, target) token
-sequence. Misses, invented actions, wrong block/mob types, and reorderings all lower it.
-reward = LCS-F1.
+Scoring is an ORDER-PRESERVING, TIME-WINDOWED, RECALL-WEIGHTED F-beta over the (action, target)
+sequence: a predicted event may align to a ground-truth event only if the (action, target) tokens
+match AND the predicted time is within +/-TIME_TOL seconds of the true time; among all such matches
+the score is the longest common subsequence (so alignment stays monotone in time and one missed /
+extra / wrong event costs only that event). This is the maintainer-requested "order-preserving LCS
+plus a time tolerance": the time window makes the ORDER real — a ledger with the right multiset but
+the wrong timing (events shuffled onto the wrong parts of the video) can no longer collect credit.
 
-Why order (not timestamps): a first-person session has a moving camera and the software
-render is variable-FPS, so the reliable machine-exact ground truth is the ORDER of the
-player's actions (mineflayer events). The task stays hard and shortcut free: ~90 actions
-over ~10 minutes in first person, block/mob identity read from the rendered textures, no
-HUD — a single frame or a still cannot recover the ordered action sequence.
+    reward = 0.85 * F2(action, target; time-windowed LCS)  +  0.15 * weapon-F1 over aligned kills
 
-A second, weighted component scores COMBAT STYLE: for the kill events only, the ordered
-sequence of the weapon used (`sword` for a melee kill — the player is adjacent and swings
-— vs `bow` for a ranged kill, where arrows fly and the mob dies at a distance). This is
-read from the video the same way a human would: engagement distance, flying arrows, and
-the highlighted hotbar slot.
+beta=2 weights recall 2x precision (reconstructing the WHOLE ledger is the task). The oracle
+(every event at its true time) scores exactly 1.0; empty / all-wrong / wrong-time answers score ~0.
+The +/-10 s window absorbs the agent's time-reading imprecision and the render's timing jitter while
+staying far tighter than the ~238 min span, so a shuffled ledger cannot align.
 
-    reward = 0.85 * LCS-F1(action, target)  +  0.15 * LCS-F1(kill weapons)
-
-Ground truth (ordered tokens) is baked verifier-side at /tests/ground_truth.json.
+Ground truth (ordered tokens with per-event video time `t`) is baked verifier-side at
+/tests/ground_truth.json.
 """
 import argparse, json, re
 from pathlib import Path
 GT_PATH = Path(__file__).with_name("ground_truth.json")
+TIME_TOL = 10.0   # seconds; a prediction aligns only within this window of the true event time
 
 def norm(s): return re.sub(r"[^a-z0-9]", "", str(s).lower())
 
 def act_norm(a):
     a = norm(a)
     if a in ("mine","mined","break","broke","dig","dug"): return "mine"
+    if a in ("place","placed","put","set","build","built"): return "place"
     if a in ("kill","killed","mobkill","defeat","defeated","slay","slew"): return "kill"
     return a
 
 def token(ev): return (act_norm(ev.get("action") or ev.get("event")), norm(ev.get("target") or ev.get("block")))
+
+def parse_time(ev):
+    """Video time of an event in seconds, or None if absent/unparseable. Accepts a number of seconds
+    or a clock string 'mm:ss' / 'h:mm:ss' (also '1m20s')."""
+    v = ev.get("t", ev.get("time", ev.get("timestamp", ev.get("video_time"))))
+    if v is None: return None
+    if isinstance(v, (int, float)): return float(v)
+    s = str(v).strip()
+    if re.fullmatch(r"\d+(\.\d+)?", s): return float(s)
+    m = re.fullmatch(r"(?:(\d+):)?(\d{1,2}):(\d{1,2}(?:\.\d+)?)", s)
+    if m:
+        h = float(m.group(1) or 0); return h*3600 + float(m.group(2))*60 + float(m.group(3))
+    m = re.fullmatch(r"(?:(\d+)h)?(?:(\d+)m)?(?:(\d+(?:\.\d+)?)s)?", s)
+    if m and any(m.groups()):
+        return float(m.group(1) or 0)*3600 + float(m.group(2) or 0)*60 + float(m.group(3) or 0)
+    return None
 
 def weapon_norm(w):
     w = norm(w)
@@ -49,44 +64,28 @@ def weapon_norm(w):
     if "sword" in w or "melee" in w or "blade" in w: return "sword"
     return w
 
-def weapon_seq(evs):
-    """Ordered weapon tokens for the kill events (combat-style component)."""
-    out = []
-    for e in evs:
-        if not isinstance(e, dict): continue
-        if act_norm(e.get("action") or e.get("event")) != "kill": continue
-        out.append(weapon_norm(e.get("tool") or e.get("weapon") or ""))
-    return out
+def matches(pt, pta, gt, gta):
+    """Predicted (token pt, time pta) may align to GT (token gt, time gta): same token, in window."""
+    if pt != gt: return False
+    if pta is None or gta is None: return False
+    return abs(pta - gta) <= TIME_TOL
 
-def lcs_len(a, b):
-    n, m = len(a), len(b)
-    if n == 0 or m == 0: return 0
-    prev = [0]*(m+1)
-    for i in range(1, n+1):
-        cur = [0]*(m+1); ai = a[i-1]
-        for j in range(1, m+1):
-            cur[j] = prev[j-1]+1 if ai == b[j-1] else (prev[j] if prev[j] >= cur[j-1] else cur[j-1])
-        prev = cur
-    return prev[m]
-
-def lcs_pairs(a, b):
-    """Matched (i, j) index pairs of one longest common subsequence of a and b."""
-    n, m = len(a), len(b)
+def windowed_lcs_pairs(P, Pt, G, Gt):
+    """Matched (i, j) pairs of a longest common subsequence under the token+time-window match rule."""
+    n, m = len(P), len(G)
     if n == 0 or m == 0: return []
     tbl = [[0]*(m+1) for _ in range(n+1)]
     for i in range(1, n+1):
-        ai = a[i-1]
-        row, prev = tbl[i], tbl[i-1]
+        pi, pti = P[i-1], Pt[i-1]; row, prev = tbl[i], tbl[i-1]
         for j in range(1, m+1):
-            row[j] = prev[j-1]+1 if ai == b[j-1] else (prev[j] if prev[j] >= row[j-1] else row[j-1])
+            if matches(pi, pti, G[j-1], Gt[j-1]): row[j] = prev[j-1]+1
+            else: row[j] = prev[j] if prev[j] >= row[j-1] else row[j-1]
     out, i, j = [], n, m
     while i > 0 and j > 0:
-        if a[i-1] == b[j-1] and tbl[i][j] == tbl[i-1][j-1]+1:
+        if matches(P[i-1], Pt[i-1], G[j-1], Gt[j-1]) and tbl[i][j] == tbl[i-1][j-1]+1:
             out.append((i-1, j-1)); i -= 1; j -= 1
-        elif tbl[i-1][j] >= tbl[i][j-1]:
-            i -= 1
-        else:
-            j -= 1
+        elif tbl[i-1][j] >= tbl[i][j-1]: i -= 1
+        else: j -= 1
     return out[::-1]
 
 def main():
@@ -96,49 +95,39 @@ def main():
     ap.add_argument("--reward-txt", required=True, type=Path)
     a = ap.parse_args()
     gt_raw = json.loads(GT_PATH.read_text())["events"]
-    gt = [token(e) for e in gt_raw]; gt_w = weapon_seq(gt_raw)
-    reason = "ok"; preds = []; pred_raw = []; pred_w = []
+    G = [token(e) for e in gt_raw]; Gt = [parse_time(e) for e in gt_raw]
+    reason = "ok"; pred_raw = []; P = []; Pt = []
     try:
         raw = json.loads(a.solution.read_text()).get("events", [])
         if not isinstance(raw, list): raise ValueError("events not a list")
         pred_raw = [e for e in raw if isinstance(e, dict)]
-        preds = [token(e) for e in pred_raw]
-        pred_w = weapon_seq(raw)
+        P = [token(e) for e in pred_raw]; Pt = [parse_time(e) for e in pred_raw]
     except Exception as exc:  # noqa: BLE001
         reason = f"unreadable solution.json: {exc}"
-    # Ledger score is an ORDER-AWARE, RECALL-WEIGHTED F-beta over the (action, target) sequence.
-    # beta=2 weights recall 2x precision: the task is to reconstruct the WHOLE ledger, and a
-    # confident partial answer (high precision, low recall) is most of the task left undone. Under
-    # plain F1 an agent that correctly named 11% of events in order scored 0.20; F2 scores that 0.14,
-    # matching the intuition that finding one event in nine is not "20% solved". Oracle (perfect
-    # recall and precision) is still exactly 1.0, and an empty or all-wrong answer is still 0.
-    BETA = 2.0
-    lcs = lcs_len(preds, gt); np_, ng = len(preds), len(gt)
-    prec = (lcs / np_) if np_ else 0.0
-    rec = (lcs / ng) if ng else 0.0
-    b2 = BETA * BETA
-    f1 = ((1 + b2) * prec * rec / (b2 * prec + rec)) if (b2 * prec + rec) > 0 else 0.0
 
-    # Weapon credit is earned only on kills the submission actually IDENTIFIED — i.e. kill events
-    # that fall inside the ledger's LCS alignment. Scoring the weapon sequence independently made it
-    # nearly free: there are only two weapon classes, so an LCS-F1 over that sequence stays high even
-    # when the ledger is wrong. Measured on v30, a submission that named every block "stone" scored
-    # ledger 0.028 yet collected weapon 1.000, lifting a useless answer to reward 0.174; shuffling
-    # the ledger still collected weapon 0.722. Neither can now claim credit it did not earn.
-    pairs = lcs_pairs(preds, gt)
-    nw_p, nw_g = len(pred_w), len(gt_w)
-    aligned = [(i, j) for (i, j) in pairs if gt[j][0] == "kill"]
-    wl = sum(1 for i, j in aligned
+    pairs = windowed_lcs_pairs(P, Pt, G, Gt)
+    lcs = len(pairs); np_, ng = len(P), len(G)
+    n_timed = sum(1 for t in Pt if t is not None)
+    prec = (lcs/np_) if np_ else 0.0
+    rec = (lcs/ng) if ng else 0.0
+    b2 = 4.0
+    f1 = ((1+b2)*prec*rec/(b2*prec+rec)) if (b2*prec+rec) > 0 else 0.0
+
+    # Weapon credit only on kills inside the alignment (a kill you never localized earns nothing).
+    aligned_kills = [(i, j) for (i, j) in pairs if G[j][0] == "kill"]
+    wl = sum(1 for i, j in aligned_kills
              if weapon_norm(pred_raw[i].get("tool") or pred_raw[i].get("weapon") or "")
              == weapon_norm(gt_raw[j].get("tool") or gt_raw[j].get("weapon") or ""))
+    nw_g = sum(1 for t in G if t[0] == "kill"); nw_p = sum(1 for t in P if t[0] == "kill")
     f1w = (2*wl/(nw_p+nw_g)) if (nw_p+nw_g) else 0.0
     reward = 0.85*f1 + 0.15*f1w
-    det = {"reason": reason, "n_ground_truth": ng, "n_predicted": np_, "lcs": lcs,
-           "ledger_precision": round(prec,4), "ledger_recall": round(rec,4), "beta": BETA,
+    det = {"reason": reason, "n_ground_truth": ng, "n_predicted": np_, "n_predicted_timed": n_timed,
+           "time_tol_s": TIME_TOL, "aligned": lcs,
+           "ledger_precision": round(prec,4), "ledger_recall": round(rec,4), "beta": 2.0,
            "ledger_fbeta": round(f1,4), "n_gt_kills": nw_g, "n_pred_kills": nw_p,
-           "aligned_kills": len(aligned), "weapon_correct": wl, "weapon_f1": round(f1w,4),
-           "note": "reward = 0.85*LCS-Fbeta(action,target; beta=2, recall-weighted) "
-                   "+ 0.15*weapon-F1 over LCS-aligned kills"}
+           "aligned_kills": len(aligned_kills), "weapon_correct": wl, "weapon_f1": round(f1w,4),
+           "note": "reward = 0.85*F2(action,target; order-preserving LCS within +/-%gs time window) "
+                   "+ 0.15*weapon-F1 over aligned kills" % TIME_TOL}
     a.reward_json.parent.mkdir(parents=True, exist_ok=True)
     a.reward_json.write_text(json.dumps({"reward": round(reward,4), "details": det}, indent=2))
     a.reward_txt.write_text(f"{round(reward,4)}\n")

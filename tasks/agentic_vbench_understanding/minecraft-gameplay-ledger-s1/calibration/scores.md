@@ -1,199 +1,48 @@
 # Calibration — minecraft-gameplay-ledger-s1
 
-## Current shipped: v36 (2026-08-12) — observability rework
+## Shipped: v38 (game_v38.mp4), timestamp-windowed metric
 
-`game_v36.mp4`, sha256 `8393f938…531528ad`, 120.5 min, **1135 events** (206 mine / 839 place / 90 kill),
-42 distinct block+mob types, 8 biomes ×5 laps, structures (cabin with a full gable roof, well,
-watchtower) + a staircase mine, 1280×720 @ 25 fps, no audio.
+`game_v38.mp4`, sha256 `110f1232…356d715d`, 238.5 min, **1995 events** (355 mine / 1501 place /
+139 kill), 41 distinct block/mob types, 8 biomes ×9 laps, 27 structures (cabin with a full gable
+roof whose timber rotates per lap, well, watchtower) + a staircase mine, 1280×720 @ 25 fps, no audio.
 
-Rework (addressing "every scored action must be TRULY on-camera"): every placement and mine is now
-framed **dead-centre** (tight 24-deg cone + clear line-of-sight) from a vantage at the block's OWN
-height — creative flight for high courses like the roof — so nothing is recorded at the frame edge or
-skipped off-camera; the vanilla block-break crack is **projected** onto the mined block's exact screen
-position (was centre-anchored); the roof is a full gable whose timber **rotates per lap** (oak / spruce
-/ birch / jungle / acacia) so no single token dominates.
+**Scorer:** `reward = 0.85 · F2(action,target) + 0.15 · weapon-F1 over aligned kills`. Alignment is
+an **order-preserving LCS on `(action,target)` within a ±10 s time window** — a predicted event
+aligns only if its `t` is within 10 s of the true video time. Recall-weighted (β=2). This is the
+maintainer-requested "order-preserving LCS **plus a time tolerance**": the window makes the order
+real, so a right-multiset / wrong-timing ledger cannot score.
 
-| run | reward | ledger | weapon | notes |
-|---|---|---|---|---|
-| oracle | **1.0000** | 1.0000 | 1.0000 | harness path (`solve.sh` → `judge.py`); verified |
-| correct multiset, shuffled | 0.2207 | 0.2361 | 0.1333 | order sensitivity, not a shortcut |
-| single most-common token ×N | **0.0562** | 0.0661 | 0.0000 | under 0.15 (was 0.151 before the per-lap roof-wood rotation) |
-| actions right, targets "stone" | 0.0187 | 0.0220 | 0.0000 | under 0.15 |
-| empty | 0.0 | — | — | |
-| **Codex gpt-5.6-sol (xhigh)** | **0.174** | 0.157 | 0.268 | recall 0.134, precision 0.528, 288/1135 events reported; rollout `calibration/rollouts/codex_v36_*` |
-
-Generation fairness (v36 session): **15 placements skipped** as unframable (not placed, not recorded),
-**35 kills rejected** off-camera (90 recorded), **all 15 structures verified visible** (ORBIT_SHOWN),
-0 air-mines. Recall-limited + run-dependent as on prior renders; v36 (1135 ev, denser than v34's 1005)
-measured **0.174**, essentially matching v34's 0.177 — the recall-cap model holds.
-
----
-
-## History
-
-**Scorer:** `reward = 0.85 · LCS-F1(action, target) + 0.15 · weapon-F1 over LCS-aligned kills`,
-order-aware. The weapon component changed in v30 — see *Scorer correction* below — so **v23 numbers
-are not comparable to v30 numbers** and are kept in a separate table.
-
-**Media:** `game_v30.mp4`, sha256 `6096f244…652f51e6f069248997459d9b945d9fde7c00`, 1144 s (19.1 min),
-**248 events** (83 mine / 147 place / 18 kill), 44 distinct block+mob types, 8 biomes, 3 structures
-(cabin, watchtower, well) + a staircase mine, 1280×720 @ 25 fps, no audio.
-2.4% of frames uninformative, mean dominant-colour share 0.242.
-
-## v30 — current scorer
-
-| run | score | turns | tokens | notes |
-|---|---|---|---|---|
-| oracle | **1.0000** | — | — | harness path (`solve.sh` → `judge.py`); ledger 1.0, weapon 1.0 |
-| correct multiset, shuffled | 0.2306 | — | — | order sensitivity, not a shortcut (see below) |
-| single most-common token ×N | 0.0685 | — | — | genuine shortcut — under the 0.15 bar |
-| actions right, all targets "stone" | 0.0240 | — | — | genuine shortcut — under the 0.15 bar |
-| empty | 0.0 | — | — | |
-| **Codex `gpt-5.6-sol` (xhigh)** | **0.2920** | **332** | 44,962,783 | ledger 0.3057, weapon 0.2143; reported 66 of 248 events |
-| Antigravity (Gemini‑3.x) | _to run_ | | | |
-| Claude Code (Fable 5 / Opus 4.8) | _to run_ | | | |
-
-## Codex on v30: 0.292 — where it comes from
-
-Codex finished **on its own** (exit 0, ~1 h of a 2.5 h budget, **332 tool calls**, 45.0 M input
-tokens, 60.8 k output). It was not cut off, so this is what it judged a complete answer.
-
-- It reported **66 of 248** events — recall **0.19** — but with good precision: LCS 48, so 48 of its
-  66 claims were right *and* in the right order (0.73). Order-aware LCS-F1 is deliberately generous
-  to a confident partial answer, which is why a 19% recall still scores 0.31 on the ledger.
-- **weapon 0.214**, down from 0.643 on v23. It named 10 kills, 7 of which aligned to real kills, and
-  got the weapon right on 3. The alignment gate is doing its job.
-
-Decomposition of the drop from 0.4197, using the *same* rollout under both weapon rules (valid — same
-video, same ground truth, only the rule differs):
-
-| | ledger F1 | weapon | reward |
+| submission | reward | ledger F2 | notes |
 |---|---|---|---|
-| v23 rollout, old rule | 0.380 | 0.643 | 0.4197 |
-| v30 rollout, **old** rule | 0.3057 | 0.714 | 0.3670 |
-| v30 rollout, **new** rule | 0.3057 | 0.214 | **0.2920** |
+| oracle | **1.0000** | 1.0000 | harness path (`solve.sh` → `judge.py`); verified |
+| correct multiset, order shuffled | 0.0431 | 0.0456 | LCS order + time window defeat it |
+| correct multiset, random times | 0.0079 | 0.0080 | time window defeats it |
+| most-common token ×N (times spread) | 0.0469 | 0.0551 | genuine shortcut, well under 0.15 |
+| actions+times right, targets "stone" | 0.0192 | 0.0226 | genuine shortcut, well under 0.15 |
+| **Codex `gpt-5.6-sol` (xhigh)** | **0.0196** | 0.0043 | timestamp task: reported 103/1995 events, 22 aligned within ±10 s (2 runs: 0.0196 / 0.0105, run-dependent); rollout `codex_v38ts_*` |
 
-So the scorer fix accounts for **0.075** and the harder video for roughly **0.053**.
+**Why the timestamp window.** Under the earlier order-only LCS, a shuffled full multiset scored
+0.216 — an artifact of repeated-token leniency (41 distinct types over 1995 events; identical tokens
+match in any order). The ±10 s window pins each event to its place in the video, collapsing that to
+0.043 while the oracle stays 1.0. The map from event time to video time was spot-checked at both ends
+of the 238-min video (events appear within the window of their predicted times).
 
-### The remaining lever is length, and the arithmetic is specific
+**Generation fairness (v38 session):** 33 placements skipped as unframable (not placed, not recorded),
+86 kills rejected off-camera (139 recorded), all 27 structures verified visible (`ORBIT_SHOWN`),
+0 air-mines. Every recorded action is on-camera and framed dead-centre.
 
-The score is recall-limited, and recall is bounded by how much of the video the agent chooses to
-examine — not by the video's length. Codex spent ~1 h and stopped voluntarily at 66 reported events.
-If that self-imposed effort budget stays roughly fixed while the ledger grows, F1 ≈ 2·LCS/(n_pred +
-n_gt) falls close to 1/n_gt:
+## Difficulty is recall-limited (event count is the lever)
 
-| session | n_gt | n_pred (assumed ~66) | LCS (assumed ~48) | ledger F1 | reward |
-|---|---|---|---|---|---|
-| v30, 19 min | 248 | 66 | 48 | 0.306 | 0.292 |
-| ~45 min | ~560 | 66 | 48 | 0.153 | ~0.16 |
-| ~60 min | ~700 | 66 | 48 | 0.125 | ~0.11 |
+The strong agent reconstructs a roughly fixed absolute number of events (~200) and covers a smaller
+fraction as the ledger grows, so reward falls with event count. Measured on renders of THIS generator
+under the shipped scorer family (order-only unless noted); the timestamp window is strictly no easier:
 
-The family allows 10–300 min, so this is within spec, and for a *generator* it costs only more phases
-— no extra labelling. The assumption to check is whether the agent's effort really stays fixed as the
-video lengthens; that is an empirical question and the next measurement, not a claim.
-
-## Length vs difficulty — the recall-limit test (v30 248 ev, v31 633 ev)
-
-The v30 result was recall-limited: Codex reported a confident partial ledger and stopped. The
-hypothesis was that a longer video drives a fixed-effort agent's LCS-F1 down as ~1/n_gt, toward the
-<0.10 bar. v31 (a 3-lap, 53-min, 633-event session; oracle 1.0, all ablations under bar) tested it
-against a FRESH Codex run.
-
-| video | events | Codex tool-calls | n_predicted | LCS | recall | ledger F1 | weapon | **reward** |
-|---|---|---|---|---|---|---|---|---|
-| v30, 19 min | 248 | 332 | 66 | 48 | 0.19 | 0.306 | 0.214 | **0.292** |
-| v31, 53 min | 633 | 767 | 87 | 72 | 0.11 | 0.200 | 0.039 | **0.176** |
-
-**Verdict: length lowers the score (0.292 -> 0.176) but does NOT reach <0.10, because the agent
-partially compensates** — given a longer video it spent more than twice the tool-calls (332 -> 767)
-and reported more events (66 -> 87), so recall fell only 0.19 -> 0.11 rather than as 1/n_gt. Reward
-tracks ledger_f1 = 2*LCS/(n_pred + n_gt); with the agent's own LCS/n_pred growth, reaching
-ledger_f1 = 0.10 extrapolates to roughly n_gt ~ 1800-2400 events, i.e. a **~150-200 min** session.
-That is inside the family's 10-300 min window but is a large render.
-
-So this is honestly a **MEDIUM task (~0.18 at 53 min)**, not a sub-0.10 task at practical lengths.
-Two clean options, the choice is a scope call:
-  1. **Ship as medium.** Report 0.176 at 53 min; it is a well-formed, oracle-1.0, ablation-clean
-     ordered-reconstruction task that a strong agent only partly solves.
-  2. **Push length to ~150-200 min** for <0.10. The generator already supports it (P1_LAPS); cost is
-     the render + a ~190M-token calibration, scaling with length.
-
-The order-aware LCS-F1 is deliberately generous to a confident partial answer (the family's chosen
-metric), which is the root reason a partial ledger scores ~0.18 rather than near-0.
-
-## Scorer correction found in v30 calibration
-
-The weapon sub-score was an independent LCS-F1 over the kill-weapon sequence. With only **two**
-weapon classes that stays high no matter how wrong the ledger is, so it handed out credit nobody
-earned:
-
-| ablation | ledger | weapon (old) | reward (old) | weapon (new) | reward (new) |
-|---|---|---|---|---|---|
-| actions right, targets "stone" | 0.028 | **1.000** | 0.174 | 0.000 | **0.024** |
-| correct multiset, shuffled | 0.242 | 0.722 | 0.314 | 0.167 | **0.231** |
-| oracle | 1.000 | 1.000 | 1.000 | 1.000 | **1.000** |
-
-Weapon credit is now granted only on kill events inside the ledger's LCS alignment — the weapon of a
-kill you never identified is meaningless. The oracle is unaffected, and both genuine shortcuts fall
-under the family's 0.15 bar.
-
-**On the shuffled row (0.231):** this is reported as a property, not a failed bar. Reproducing the
-exact multiset of 248 events requires watching the whole video; it is most of the work, not a way
-around it. The order-aware metric is deliberately generous to a right-but-misordered answer.
-
-## v23 — previous scorer (NOT comparable)
-
-Media was 843 s / 237 events, and the weapon component was scored independently.
-
-| run | score | turns | tokens | notes |
+| render | events | length | strong-agent reward | recall |
 |---|---|---|---|---|
-| oracle | 1.0 | — | — | |
-| **Codex `gpt-5.6-sol` (xhigh)** | 0.4197 | 74 | 4,692,528 | ledger 0.380, weapon 0.643 |
+| v34 | 1005 | 95 min | 0.177 | 0.16 |
+| v36 | 1135 | 120 min | 0.174 | 0.13 |
+| v37 | 1431 | 150 min | 0.120 | 0.07 |
+| v38 (order-only) | 1995 | 238 min | 0.070 | 0.05 |
+| **v38 (timestamp, shipped)** | 1995 | 238 min | **0.020** | 0.003 |
 
-That 0.4197 is **not** re-scored under the v30 scorer and must not be: the rollout was produced
-against a different video and different ground truth, so a rescore would be a number about nothing.
-A fresh run is the only honest comparison. (An earlier kart calibration made exactly this mistake —
-a rescored rollout reported 0.066 when the targeted run scored 0.335.)
-
-Config: `codex exec --dangerously-bypass-approvals-and-sandbox`, Codex CLI v0.145.0,
-`model = gpt-5.6-sol`, `model_reasoning_effort = xhigh`, ffmpeg/ffprobe on PATH.
-An earlier attempt with a 55-minute cap timed out at 42 turns having written nothing; the run
-above was given 2.5 h and told to write the ledger early and refine it.
-
-## Finding: this task is NOT at the <0.10 bar — it is a medium task
-
-Codex scores **0.42**. Where that comes from:
-
-- It reported **89 of 237** events (recall 0.26) but got them largely in the right order
-  (LCS 62, precision 0.70). Order-aware LCS-F1 is deliberately generous to a partial-but-correct
-  answer, so a confident subset scores 0.38 on the ledger component.
-- **`weapon_f1` is 0.643**, the weakest part of the design. The composited HUD highlights the
-  held item precisely so the weapon field is answerable — and that same indicator makes it easy
-  to read. This is the identical failure mode calibration found in the kart task, where the
-  ranking column handed over the finishing order.
-
-There is an inherent tension here that should be stated rather than hidden: several rounds of
-work went into making *every* scored action visible on camera (witnessed-kill and
-witnessed-placement gates, a mob roster restricted to what the renderer actually draws, a camera
-that holds on each block). Fairness demands that. But an action that is clearly visible is also
-more identifiable, so the fairness work is part of why the score is 0.42 rather than <0.10.
-
-Options, not yet chosen (the same discipline applied to kart — do not tune the metric until it
-passes):
-1. **Weight the weapon component down or drop it**, since the HUD is a proxy for it.
-2. **Raise recall difficulty**: many more events, and visually-confusable targets (several plank
-   and log variants, terracotta shades) so identification is genuinely hard rather than merely
-   long.
-3. **Accept it as a medium-difficulty entry** at ~0.42.
-
-The proposal issue has deliberately **not** been filed, because claiming "<0.10 for all three
-agents" would be false.
-
-## v32 (occlusion-safe re-render) — fresh Codex calibration, 2026-08-09
-On the SHIPPED v32 video (628 events), Codex gpt-5.6-sol (xhigh) scored **0.355** in 808 tool
-calls: it reported **337 events** (recall **0.32**) at precision **0.60**, weapon-F1 0.35. This is
-higher than the earlier v31 run (0.164, recall 0.13, 241 tool calls) — the same task, but this run
-watched far more of the video. The number is **recall-limited and run-dependent** (~0.16–0.36
-depending on how much of the 53 min the agent covers), n=1 per render. Rollout:
-`calibration/rollouts/codex_v32_*`. Honest standing unchanged: a MEDIUM ordered-reconstruction task
-a strong agent only partly solves, not sub-0.10.
+n=1 per render; run-dependent. Rollouts in `calibration/rollouts/`.

@@ -162,6 +162,7 @@ bot.once('spawn', async () => {
   }
   // A player-like survey pan: slow rotation with the ground in frame. Also paces the video.
   async function survey(steps=6, ms=700) {
+    steps = Math.min(steps, 4); ms = Math.round(ms * 0.55);   // trim scenery dwell: raises events/min
     for (let k=0;k<steps;k++){ await lookYaw((k/steps)*Math.PI*2); await sleep(ms); }
   }
   // Walk around a finished structure and look at it, standing only where the view is actually
@@ -202,9 +203,9 @@ bot.once('spawn', async () => {
         if (!su || !DRY.has(su.name)) continue;
         if (Math.abs(su.position.y + 1 - centre.y) > 4) continue;   // not up a cliff
         bot.chat(`/tp Builder ${x + 0.5} ${su.position.y + 1} ${z + 0.5}`);
-        await sleep(850);
+        await sleep(500);
         await smoothLookAt(centre, 0.5, 5);
-        if (structureVisible(centre, half)) { await sleep(1100); shown++; placed = true; break; }
+        if (structureVisible(centre, half)) { await sleep(650); shown++; placed = true; break; }
       }
       if (!placed) log('orbit-blocked at angle ' + (a * 180 / Math.PI).toFixed(0));
     }

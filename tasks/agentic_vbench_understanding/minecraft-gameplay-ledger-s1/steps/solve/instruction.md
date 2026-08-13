@@ -1,8 +1,8 @@
 # Minecraft First-Person Gameplay Ledger Reconstruction
 
 You are given one video at `/workspace/materials/game.mp4`: a first-person recording of a
-Minecraft session. The player travels across several biomes (forest, desert, snowy tundra,
-jungle, badlands), gathers many kinds of block, **builds a house block-by-block on camera**,
+Minecraft session. The player travels across eight biomes (forest, beach, desert, snowy tundra,
+jungle, plains, savanna, badlands), gathers many kinds of block, **builds a house block-by-block on camera**,
 hunts animals with a **diamond sword** and with a **bow and arrow**, and finally digs a
 staircase mine and extracts every ore it exposes.
 
@@ -25,11 +25,11 @@ Write `/workspace/output/solution.json`, actions in chronological order:
 ```json
 {
   "events": [
-    {"action": "mine",  "target": "oak_log"},
-    {"action": "kill",  "target": "cow",   "tool": "sword"},
-    {"action": "place", "target": "stone_bricks"},
-    {"action": "kill",  "target": "chicken", "tool": "bow"},
-    {"action": "mine",  "target": "iron_ore"}
+    {"action": "mine",  "target": "oak_log",      "t": 142.5},
+    {"action": "kill",  "target": "cow",   "tool": "sword", "t": 210.0},
+    {"action": "place", "target": "stone_bricks", "t": 305.2},
+    {"action": "kill",  "target": "chicken", "tool": "bow", "t": 480.7},
+    {"action": "mine",  "target": "iron_ore",     "t": 12530.0}
   ]
 }
 ```
@@ -37,6 +37,9 @@ Write `/workspace/output/solution.json`, actions in chronological order:
 - `action`: `mine`, `place`, or `kill`.
 - `target`: a block type (mine/place) or a mob type (kill), from the vocabulary below.
 - `tool`: `sword` or `bow` — required on `kill` events, ignored elsewhere.
+- `t`: the time in the **video**, in seconds from the start, at which the action happens (a
+  number, e.g. `142.5`; a `mm:ss` / `h:mm:ss` clock string is also accepted). Required on every
+  event — it does not have to be exact, within ~10 s is enough (see scoring).
 
 ## Vocabulary (closed)
 
@@ -64,12 +67,15 @@ actions, invented actions, wrong block/mob types, and wrong ordering all lower t
 small number of events you are sure about scores poorly — the task is to reconstruct *most* of the
 ledger, in order, not to list a safe fraction of it. Watch the whole video.
 
-**The matching rule (so one miss does not zero the rest).** Your events are aligned to the ground
-truth by a **longest common subsequence** on the `(action, target)` tokens. LCS is order-preserving
-but gap-tolerant: a missed, extra, or wrong event only costs *that* event — the events before and
-after it still match and still score. There is **no time tolerance and no timestamp matching**: only
-the *relative order* of your events is compared, never their video time, so you never need to pin an
-event to a second. (Weapon credit is then given on the kills that landed inside this alignment.)
+**The matching rule (order-preserving + time-windowed).** Your events are aligned to the ground
+truth by a **longest common subsequence** on the `(action, target)` tokens, with one added
+constraint: a predicted event can align to a ground-truth event only if its time `t` is within
+**±10 seconds** of the true time. LCS is order-preserving but gap-tolerant, so a missed, extra, or
+wrong event costs only *that* event — the events before and after it still match. The ±10 s window
+makes the ordering real: a ledger with the right blocks but the wrong timing (events pinned to the
+wrong parts of the video) cannot collect credit. You do **not** need exact times — within ~10 s of
+when each action happens in the video is enough. (Weapon credit is then given on the kills that land
+inside this alignment.)
 
 **Every target is nameable from the closed vocabulary.** The block and mob **textures are stock
 Minecraft** for exactly the named types in the vocabulary below — nothing is retextured or
