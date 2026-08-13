@@ -44,10 +44,6 @@
       "exclude_components_touching_near_miss": true,
       "iou_box_convention": "Half-open pixel boxes: width=x2-x1 and height=y2-y1.",
       "q10_quantile_method": "Nearest observed rank: sorted_ious[round(0.1*(n-1))]."
-    },
-    "audit_files": [
-      "ground_truth_audit.json",
-      "normalized_events.csv"
-    ]
+    }
   }
 }

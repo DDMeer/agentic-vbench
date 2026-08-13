@@ -19,16 +19,16 @@ All three required rows clear the measured difficulty gate.
 | harness | harness version | model | reasoning | score | tool-call turns | trajectory |
 |---|---|---|---|---:|---:|---|
 | Codex CLI | 0.147.0 | GPT-5.6 Sol | high | 0.009443 | 80 | `rollouts/codex-gpt-5.6-sol.jsonl` |
-| VS Code Claude Agent SDK | Copilot Chat 0.60.0 | Claude Opus 4.8 | high | 0.004100 | 115 parent; 554 including nested agents | `rollouts/claude-opus-4.8-vscode-agent-sdk.jsonl` |
+| VS Code Claude Agent SDK | 0.60.0 | Claude Opus 4.8 | high | 0.004100 | 115 parent; 554 including nested agents | `rollouts/claude-opus-4.8.jsonl` |
 | Antigravity CLI | 1.1.12 | Gemini 3.6 Flash High | high | 0.003459 | 220 | `rollouts/antigravity-gemini-3.6-flash-high.jsonl` |
 
 ## Required degraded-input runs
 
-| ablation | model / harness | score | trajectory |
-|---|---|---:|---|
-| no media | GPT-5.6 Sol / GitHub Copilot CLI 1.0.79-9 | 0.000000 | `rollouts/ablation-no-media.jsonl` |
-| single frame | GPT-5.6 Sol / GitHub Copilot CLI 1.0.79-9 | 0.000000 | `rollouts/ablation-single-frame.jsonl` |
-| one-frame-per-second dump, no inspection tools | GPT-5.6 Sol / GitHub Copilot CLI 1.0.79-9 | 0.001106 | `rollouts/ablation-frame-dump-no-tools.jsonl` |
+| ablation | score |
+|---|---:|
+| no media | 0.000000 |
+| single frame | 0.000000 |
+| one-frame-per-second dump, no inspection tools | 0.001106 |
 
 ## Deterministic identity shortcuts
 
