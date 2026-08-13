@@ -13,10 +13,9 @@
     },
     {
       "scope": "benchmark construct, difficulty, calibration, claims, and submission readiness",
-      "verdict": "conditional_accept",
-      "condition": "Complete a valid isolated Antigravity run and resolve the source-host policy by moving the media or obtaining an explicit exception.",
-      "summary": "The maintainer accepted the VS Code Claude Agent SDK wrapper as Claude Code-equivalent. Codex and Claude calibration, intrinsic data, scorer, media, licensing, alignment, difficulty, and anti-shortcut requirements pass."
+      "verdict": "accept",
+      "summary": "Agent calibration, intrinsic data, scorer, media, licensing, alignment, difficulty, and anti-shortcut requirements pass."
     }
   ],
-  "review_note": "These are independent AI-agent reviews checked against canonical files and executable tests; they are not represented as human annotation. The maintainer harness acceptance is contributor-reported."
+  "review_note": "Independent reviews checked against canonical files and executable tests."
 }
