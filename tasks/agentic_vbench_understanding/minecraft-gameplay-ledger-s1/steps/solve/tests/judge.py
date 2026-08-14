@@ -18,8 +18,10 @@ the wrong timing (events shuffled onto the wrong parts of the video) can no long
 
     reward = 0.85 * F2(action, target; time-windowed LCS)  +  0.15 * weapon-F1 over aligned kills
 
-beta=2 weights recall 2x precision (reconstructing the WHOLE ledger is the task). The oracle
-(every event at its true time) scores exactly 1.0; empty / all-wrong / wrong-time answers score ~0.
+(the 0.15 weapon weight applies only when the ground truth has kills to score; with no kills it
+folds into the F2 term, so the oracle reaches 1.0 for any render). beta=2 weights recall 2x
+precision (reconstructing the WHOLE ledger is the task). The oracle (every event at its true time)
+scores exactly 1.0; empty / all-wrong / wrong-time answers score ~0.
 The +/-10 s window absorbs the agent's time-reading imprecision and the render's timing jitter while
 staying far tighter than the ~238 min span, so a shuffled ledger cannot align.
 
@@ -120,14 +122,20 @@ def main():
              == weapon_norm(gt_raw[j].get("tool") or gt_raw[j].get("weapon") or ""))
     nw_g = sum(1 for t in G if t[0] == "kill"); nw_p = sum(1 for t in P if t[0] == "kill")
     f1w = (2*wl/(nw_p+nw_g)) if (nw_p+nw_g) else 0.0
-    reward = 0.85*f1 + 0.15*f1w
+    # Weight the weapon component only when the ground truth actually has kills to score; with no
+    # kills its 0.15 folds into the ledger F2, so the oracle reaches 1.0 for ANY render (not just
+    # ones that happen to contain a kill). v38 has 139 kills, so this is exactly 0.85*f1 + 0.15*f1w.
+    w_weapon = 0.15 if nw_g > 0 else 0.0
+    reward = (1.0 - w_weapon)*f1 + w_weapon*f1w
     det = {"reason": reason, "n_ground_truth": ng, "n_predicted": np_, "n_predicted_timed": n_timed,
            "time_tol_s": TIME_TOL, "aligned": lcs,
            "ledger_precision": round(prec,4), "ledger_recall": round(rec,4), "beta": 2.0,
            "ledger_fbeta": round(f1,4), "n_gt_kills": nw_g, "n_pred_kills": nw_p,
            "aligned_kills": len(aligned_kills), "weapon_correct": wl, "weapon_f1": round(f1w,4),
-           "note": "reward = 0.85*F2(action,target; order-preserving LCS within +/-%gs time window) "
-                   "+ 0.15*weapon-F1 over aligned kills" % TIME_TOL}
+           "weapon_weight": w_weapon,
+           "note": "reward = (1-w)*F2(action,target; order-preserving LCS within +/-%gs time window) "
+                   "+ w*weapon-F1 over aligned kills, w=0.15 when the GT has kills else 0 "
+                   "(so the oracle = 1.0 for any render)" % TIME_TOL}
     a.reward_json.parent.mkdir(parents=True, exist_ok=True)
     a.reward_json.write_text(json.dumps({"reward": round(reward,4), "details": det}, indent=2))
     a.reward_txt.write_text(f"{round(reward,4)}\n")

@@ -28,7 +28,9 @@ ground_truth:
 
 scorer:
   metric: "0.85 * F2 (recall-weighted, beta=2) over ordered (action,target) + 0.15 * weapon score
-           over aligned kills. Alignment is an order-preserving longest-common-subsequence on
+           over aligned kills (the 0.15 weapon weight applies only when the render has kills to
+           score - v38 has 139 - else it folds into F2, so the oracle is 1.0 for any render).
+           Alignment is an order-preserving longest-common-subsequence on
            (action,target) with a TIME WINDOW: a predicted event aligns to a ground-truth event only
            if its time t is within +/-10 s of the true video time. Gap-tolerant (one miss/extra/wrong
            event costs only that event); the time window makes the order real."
