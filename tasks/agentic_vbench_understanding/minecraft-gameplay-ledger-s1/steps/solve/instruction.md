@@ -58,27 +58,15 @@ Mobs (kill): `cow`, `pig`, `sheep`, `chicken`, `wolf`, `mooshroom`, `polar_bear`
 
 ## How it is scored
 
-Order-aware and recall-weighted: the reward is `0.85 *` an order-aware **F2** over the ordered
-`(action, target)` sequence (a longest-common-subsequence match, with recall weighted twice as
-heavily as precision) plus `0.15 *` a weapon score over the kills you place correctly. Missed
-actions, invented actions, wrong block/mob types, and wrong ordering all lower the score.
+Your events are matched to the ground truth by `(action, target)`, **in order**. A predicted event
+can match a true event only if its time `t` is within **±10 seconds** of the true time — you do not
+need exact times, but a ledger pinned to the wrong parts of the video will not match.
 
-**Recall matters more than a confident subset.** Because recall is weighted double, reporting a
-small number of events you are sure about scores poorly — the task is to reconstruct *most* of the
-ledger, in order, not to list a safe fraction of it. Watch the whole video.
-
-**The matching rule (order-preserving + time-windowed).** Your events are aligned to the ground
-truth by a **longest common subsequence** on the `(action, target)` tokens, with one added
-constraint: a predicted event can align to a ground-truth event only if its time `t` is within
-**±10 seconds** of the true time. LCS is order-preserving but gap-tolerant, so a missed, extra, or
-wrong event costs only *that* event — the events before and after it still match. The ±10 s window
-makes the ordering real: a ledger with the right blocks but the wrong timing (events pinned to the
-wrong parts of the video) cannot collect credit. You do **not** need exact times — within ~10 s of
-when each action happens in the video is enough. (Weapon credit is then given on the kills that land
-inside this alignment.)
+Reconstruct as much of the ledger as you can, in order: the task is to recover *most* of what
+happens across the whole video, not a safe fraction of it, so watch all of it.
 
 **Every target is nameable from the closed vocabulary.** The block and mob **textures are stock
-Minecraft** for exactly the named types in the vocabulary below — nothing is retextured or
+Minecraft** for exactly the named types in the vocabulary above — nothing is retextured or
 randomized. Different renders vary *which* named blocks appear (the palette), never how a block
 looks, so every on-screen block/mob maps to one vocabulary entry with no legend lookup required.
 

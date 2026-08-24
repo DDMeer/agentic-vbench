@@ -2,40 +2,53 @@
 
 ## Shipped: v38 (game_v38.mp4), timestamp-windowed metric
 
-`game_v38.mp4`, sha256 `110f1232…356d715d`, 238.5 min, **1995 events** (355 mine / 1501 place /
+`game_v38.mp4`, sha256 `110f1232…d1b0e60a`, 238.5 min, **1995 events** (355 mine / 1501 place /
 139 kill), 41 distinct block/mob types, 8 biomes ×9 laps, 27 structures (cabin with a full gable
 roof whose timber rotates per lap, well, watchtower) + a staircase mine, 1280×720 @ 25 fps, no audio.
 
-**Scorer:** `reward = 0.85 · F2(action,target) + 0.15 · weapon-F1 over aligned kills`. Alignment is
-an **order-preserving LCS on `(action,target)` within a ±10 s time window** — a predicted event
-aligns only if its `t` is within 10 s of the true video time. Recall-weighted (β=2). This is the
-maintainer-requested "order-preserving LCS **plus a time tolerance**": the window makes the order
-real, so a right-multiset / wrong-timing ledger cannot score.
+**Scorer:** `reward = 0.85 · F2(action,target) + 0.15 · weapon-F1 over aligned kills` (the weapon
+weight applies only when the render has kills; v38 has 139). Alignment is an **order-preserving LCS
+on `(action,target)` within a ±10 s time window** — a predicted event aligns only if its `t` is
+within 10 s of the true video time. Recall-weighted (β=2).
 
-| submission | reward | ledger F2 | notes |
-|---|---|---|---|
-| oracle | **1.0000** | 1.0000 | harness path (`solve.sh` → `judge.py`); verified |
-| correct multiset, order shuffled | 0.0431 | 0.0456 | LCS order + time window defeat it |
-| correct multiset, random times | 0.0079 | 0.0080 | time window defeats it |
-| most-common token ×N (times spread) | 0.0469 | 0.0551 | genuine shortcut, well under 0.15 |
-| actions+times right, targets "stone" | 0.0192 | 0.0226 | genuine shortcut, well under 0.15 |
-| **Codex `gpt-5.6-sol` (xhigh)** | **0.0196** | 0.0043 | timestamp task: reported 103/1995 events, 22 aligned within ±10 s (2 runs: 0.0196 / 0.0105, run-dependent); rollout `codex_v38ts_*` |
+## Strong-agent calibration lineup
+
+Each raw trajectory is committed here (secret-free audit record); the reward/solution **dumps live on
+HF** (pinned links below), not in git, since the numbers are tabulated here.
+
+| harness (version) | model | reasoning | reward | tool-call turns | trajectory |
+|---|---|---|---|---|---|
+| Codex CLI (0.145.0) | gpt-5.6-sol | xhigh | **0.0196** | 247 | `rollouts/codex_trajectory.md` |
+| Claude Code CLI (2.1.241) | claude-opus-4-8 | extended thinking | **0.0079** | 94 | `rollouts/claude_trajectory.md` |
+| Antigravity CLI | Gemini 3.x | — | _pending (added by maintainer/owner)_ | — | — |
+
+All measured on the shipped v38 video + shipped scorer; every agent is far under the family's
+<0.10 strong-agent bar. Codex was also run a second time (0.0105), so the Codex number is
+run-dependent in the 0.01–0.02 band. Rollout dumps (solution.json + reward.json) on HF, pinned to an
+immutable revision (not mutable `main`; trajectory SHA256s in `rollouts/README.md`):
+<https://huggingface.co/datasets/explcre/agenticvbench-understanding-materials/resolve/39f1b933102acb3e52348752eb736b31c4c9d50b/minecraft-gameplay-ledger-s1/calibration>
+
+## Anti-shortcut ablations (shipped scorer)
+
+| submission | reward | notes |
+|---|---|---|
+| oracle | **1.0000** | harness path (`solve.sh` → `judge.py`); verified |
+| correct multiset, order shuffled | 0.024–0.043 | LCS order + time window defeat it |
+| correct multiset, random times | 0.008–0.017 | time window defeats it |
+| most-common token ×N (times spread) | 0.0469 | genuine shortcut, well under 0.15 |
+| actions+times right, targets "stone" | 0.0192 | genuine shortcut, well under 0.15 |
+| single frame / no media | 0.0 | check_task ablations |
 
 **Why the timestamp window.** Under the earlier order-only LCS, a shuffled full multiset scored
 0.216 — an artifact of repeated-token leniency (41 distinct types over 1995 events; identical tokens
 match in any order). The ±10 s window pins each event to its place in the video, collapsing that to
-0.043 while the oracle stays 1.0. The map from event time to video time was spot-checked at both ends
-of the 238-min video (events appear within the window of their predicted times).
-
-**Generation fairness (v38 session):** 33 placements skipped as unframable (not placed, not recorded),
-86 kills rejected off-camera (139 recorded), all 27 structures verified visible (`ORBIT_SHOWN`),
-0 air-mines. Every recorded action is on-camera and framed dead-centre.
+~0.04 while the oracle stays 1.0. The map from event time to video time was spot-checked at both ends
+of the 238-min video.
 
 ## Difficulty is recall-limited (event count is the lever)
 
-The strong agent reconstructs a roughly fixed absolute number of events (~200) and covers a smaller
-fraction as the ledger grows, so reward falls with event count. Measured on renders of THIS generator
-under the shipped scorer family (order-only unless noted); the timestamp window is strictly no easier:
+The strong agent reconstructs a roughly fixed absolute number of events (~100–200) and covers a
+smaller fraction as the ledger grows, so reward falls with event count:
 
 | render | events | length | strong-agent reward | recall |
 |---|---|---|---|---|
@@ -45,4 +58,4 @@ under the shipped scorer family (order-only unless noted); the timestamp window 
 | v38 (order-only) | 1995 | 238 min | 0.070 | 0.05 |
 | **v38 (timestamp, shipped)** | 1995 | 238 min | **0.020** | 0.003 |
 
-n=1 per render; run-dependent. Rollouts in `calibration/rollouts/`.
+n=1 per render; run-dependent. Full trajectories in `rollouts/`.
