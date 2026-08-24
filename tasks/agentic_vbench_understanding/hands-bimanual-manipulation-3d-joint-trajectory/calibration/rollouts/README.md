@@ -3,6 +3,9 @@
 One raw agent transcript per agent, so a reviewer can confirm the score was earned
 honestly and count the tool-call turns:
 
+- `claude-code-fable.jsonl` — Claude Code CLI (Fable 5), fresh run on the shipped task,
+  executed inside the built task image (only the baked materials were reachable); ends
+  with the CLI's closing result record
 - `claude-code.jsonl` — Claude Code CLI (Opus 4.8), stream-json transcript
 - `codex.txt` — Codex CLI transcript (codex exec prints a plain-text log, not JSONL)
 - `antigravity.txt` — Antigravity CLI transcript (objects: run in a filesystem-isolated Docker container)

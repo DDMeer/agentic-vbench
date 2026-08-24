@@ -62,9 +62,12 @@ scorer:
 
 # 7. Difficulty: measured with real strong-agent runs.
 difficulty:
-  strong_agent_reward: 0.0    # Claude Opus 4.8, Codex GPT-5.5, Cursor Composer: all 0.0
-  tool_call_turns: 67         # Claude 67, Antigravity 45, Cursor 57; Codex self-stopped at 13
-  agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI (Gemini 3.5 Flash), Cursor CLI (Composer)
+  strong_agent_reward: 0.0    # every agent 0.0, including a fresh current-model run (Fable 5)
+  tool_call_turns: 67         # Claude Opus 67, Fable 5 64, Cursor 57; Antigravity 45, Codex self-stopped at 13
+  agent_model: Claude Code CLI (Fable 5), Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI (Gemini 3.5 Flash), Cursor CLI (Composer)
+  # The Fable 5 run executed inside the built task image; with network access it
+  # installed OpenCV + MediaPipe Hands, submitted a complete 36-frame solution, and
+  # still scored 0.0 (no unit within 3 cm). Transcript: rollouts/claude-code-fable.jsonl.
 
 # 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
 # calibration/ablations/.
