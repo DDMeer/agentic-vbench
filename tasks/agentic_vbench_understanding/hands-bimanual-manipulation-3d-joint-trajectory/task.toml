@@ -9,7 +9,9 @@ category = "video-understanding"
 tags = ["video-understanding", "egocentric", "hand-pose", "3d-reconstruction", "geometry", "agentic-vbench-hands"]
 # Three egocentric tabletop-manipulation clips. Ground truth: per-frame 3D hand-joint
 # positions from the capture rig's logged hand-tracking, expressed in each clip's RGB
-# camera frame. The clips and GT are baked at build time; nothing is online.
+# camera frame. Only the clips and agent-facing metadata are baked at build time; the
+# ground truth ships verifier side (steps/solve/tests/, with an oracle copy in
+# steps/solve/solution/) and is never in the agent's image.
 source = "egocentric tabletop manipulation clips (head-mounted RGB), logged hand-tracking ground truth"
 
 [environment]
