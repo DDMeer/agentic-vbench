@@ -11,7 +11,7 @@ the bar when every real agent scores below 0.10 and a real attempt takes more th
 | random guess | 0.0 | - |
 | Claude Code CLI (Opus 4.8) | 0.0 | 67 |
 | Codex CLI (GPT-5.5) | 0.0 | 13 |
-| Antigravity CLI | 0.0 | 45 |
+| Antigravity CLI (Gemini 3.5 Flash) | 0.0 | 45 |
 | Cursor CLI (Composer) | 0.0 | 57 |
 
 Every real agent scored 0.0: not a single one of the 720 (clip × frame × joint) units

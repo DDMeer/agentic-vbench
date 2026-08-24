@@ -64,7 +64,7 @@ scorer:
 difficulty:
   strong_agent_reward: 0.0    # Claude Opus 4.8, Codex GPT-5.5, Cursor Composer: all 0.0
   tool_call_turns: 67         # Claude 67, Antigravity 45, Cursor 57; Codex self-stopped at 13
-  agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI, Cursor CLI (Composer)
+  agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI (Gemini 3.5 Flash), Cursor CLI (Composer)
 
 # 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
 # calibration/ablations/.
