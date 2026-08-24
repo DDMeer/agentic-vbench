@@ -10,15 +10,21 @@ Oracle must be ~1.0 and an empty attempt near 0.
 | oracle (reference meshes) | 1.0 | - |
 | empty / null (no meshes) | 0.0 | - |
 | wrong object (keyboard mesh) | ≤ 0.002 | - |
+| Claude Code CLI (Fable 5) | 0.041 | 101 |
 | Claude Code CLI (Opus 4.8) | 0.018 | 52 |
 | Codex CLI (GPT-5.5) | 0.034 | 14 |
 | Antigravity CLI (Gemini 3.5 Flash) | 0.001 | 153 |
 | Cursor CLI (Composer) | 0.006 | 116 |
 
-Every real agent scored below 0.10. Claude (52 turns), Cursor (116), and Antigravity
-(153) all ran well past the 50-turn gate, reconstructing three full meshes each, yet none
-matched the true surface well enough: the low scores are the difficulty of the task, not
-agents giving up early. Antigravity built a full structure-from-motion pipeline (COLMAP
+The Fable 5 row is a fresh run on the shipped task, executed inside the built task image
+itself (the agent saw only the baked materials), with the full stream transcript in
+`rollouts/claude-code-fable.jsonl` ending in a result record (num_turns 102, of which
+101 are tool calls). It is the strongest attempt so far and still scores 0.041.
+
+Every real agent scored below 0.10. Fable 5 (101 tool calls), Claude Opus (52), Cursor
+(116), and Antigravity (153) all ran well past the 50-turn gate, reconstructing three
+full meshes each, yet none matched the true surface well enough: the low scores are the
+difficulty of the task, not agents giving up early. Antigravity built a full structure-from-motion pipeline (COLMAP
 SIFT features, exhaustive matching, incremental mapping, Poisson meshing) and still landed
 at 0.001, which shows that even a textbook multi-view reconstruction on these hand-held,
 self-occluding, texture-poor objects is far from the surface accuracy the scorer wants.
@@ -55,7 +61,7 @@ re-scored (same aligner, same grader):
 
 A coarse but correct surface still scores 1.0, and even a noticeably noisy surface (2% of
 the object diameter, well beyond a good reconstruction) scores 0.116 mean, above the
-strongest real agent (0.034). The gap is reconstruction accuracy, not an unreachable
+strongest real agent (0.041, Fable 5). The gap is reconstruction accuracy, not an unreachable
 threshold.
 
 Raw transcripts are in `rollouts/`, one file per agent.
