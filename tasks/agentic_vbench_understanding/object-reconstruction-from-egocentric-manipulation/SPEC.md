@@ -68,7 +68,7 @@ scorer:
 difficulty:
   strong_agent_reward: 0.034  # Codex 0.034, Claude 0.018, Cursor 0.006, Antigravity 0.001 (all < 0.10)
   tool_call_turns: 153         # Antigravity 153, Cursor 116, Claude 52 (all > 50); Codex 14
-  agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI, Cursor CLI (Composer)
+  agent_model: Claude Code CLI (Opus 4.8), Codex CLI (GPT-5.5), Antigravity CLI (Gemini 3.5 Flash), Cursor CLI (Composer)
   # Turn gate: three of the four runs (Antigravity 153, Cursor 116, Claude 52) cleared 50
   # turns and still scored under 0.10, so the low scores are the task being hard, not
   # agents quitting early. Codex (14) stopped on its own. Antigravity ran a full COLMAP

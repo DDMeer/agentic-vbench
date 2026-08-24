@@ -12,7 +12,7 @@ Oracle must be ~1.0 and an empty attempt near 0.
 | wrong object (keyboard mesh) | ≤ 0.002 | - |
 | Claude Code CLI (Opus 4.8) | 0.018 | 52 |
 | Codex CLI (GPT-5.5) | 0.034 | 14 |
-| Antigravity CLI | 0.001 | 153 |
+| Antigravity CLI (Gemini 3.5 Flash) | 0.001 | 153 |
 | Cursor CLI (Composer) | 0.006 | 116 |
 
 Every real agent scored below 0.10. Claude (52 turns), Cursor (116), and Antigravity
