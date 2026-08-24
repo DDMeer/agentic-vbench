@@ -33,7 +33,7 @@ immutable revision (not mutable `main`; trajectory SHA256s in `rollouts/README.m
 | submission | reward | notes |
 |---|---|---|
 | oracle | **1.0000** | harness path (`solve.sh` → `judge.py`); verified |
-| correct multiset, order shuffled | 0.024–0.043 | LCS order + time window defeat it |
+| correct multiset, order shuffled | 0.024–0.047 | LCS order + time window defeat it |
 | correct multiset, random times | 0.008–0.017 | time window defeats it |
 | most-common token ×N (times spread) | 0.0469 | genuine shortcut, well under 0.15 |
 | actions+times right, targets "stone" | 0.0192 | genuine shortcut, well under 0.15 |
