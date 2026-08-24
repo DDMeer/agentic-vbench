@@ -71,9 +71,13 @@ scorer:
 # shipped). Reachability of the ADD bar is shown by the partial-credit curve in
 # calibration/scores.md; a good model-based pose estimate scores well before it is exact.
 difficulty:
-  strong_agent_reward: 0.0    # Claude Code (Opus 4.8) on the current design, well below 0.10
-  tool_call_turns: 49         # long-horizon: agent samples and fits poses across the whole clip
-  agent_model: Claude Code CLI (Opus 4.8)
+  strong_agent_reward: 0.0    # Claude Code (Fable 5), fresh complete run on the shipped task
+  tool_call_turns: 226        # num_turns of the closing result record; 225 tool calls
+  agent_model: Claude Code CLI (Fable 5)
+  # The run executed inside the built task image. The agent used object_points.json to
+  # build metric landmark models, fit per-frame poses with PnP, and iterated for 98
+  # minutes; every frame's ADD still exceeded the 0.1-diameter tolerance. Transcript:
+  # calibration/rollouts/claude-code-fable.jsonl (ends with the CLI result record).
 
 # 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
 # calibration/ablations/.

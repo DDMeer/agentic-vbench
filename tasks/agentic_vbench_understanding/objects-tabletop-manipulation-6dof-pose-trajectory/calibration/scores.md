@@ -15,6 +15,43 @@ Face) and running setup, solve.sh, then judge.py in Docker: reward 1.0. The agen
 was checked to contain no ground truth anywhere on the image; the poses ship verifier
 side only (tests/ for the grader, a solution/ copy for the oracle).
 
+## Agent runs
+
+Fresh complete run with a current model on the fixed task (object_points shipped),
+executed inside the built task image itself, so the environment matches the shipped task
+exactly. The full stream transcript is `rollouts/claude-code-fable.jsonl` and ends with
+the CLI's closing result record.
+
+| run | score | turns |
+|---|---|---|
+| Claude Code CLI (Fable 5) | 0.0 | 226 |
+
+Turns are the `num_turns` field of the closing result record (225 of them are tool
+calls). The agent used object_points.json to build metric landmark models of all three
+objects, hand-annotated landmarks per query frame, fit poses with PnP, verified them by
+reprojecting the full point cloud onto crops, and iterated for 98 minutes. Its submitted
+poses cover all 36 queries with plausible tabletop depths, yet every frame's ADD exceeds
+the 0.1-diameter tolerance: metric depth and orientation from a single moving view stay
+out of reach even for a current model with a careful pipeline. The container had network
+access for the model API, so the agent could pip install OpenCV; that only makes the run
+stronger than the shipped no-network image, so the in-image score cannot be higher.
+
+Runs on the earlier revision (before object_points shipped, the revision diagnosed as
+unsolvable by design) are kept as evidence for that diagnosis:
+
+| run | score | turns |
+|---|---|---|
+| Codex CLI (GPT-5.5) | 0.0 | 12 |
+| Cursor CLI (Composer) | 0.0 | 62 |
+| Antigravity CLI (Gemini 3.5 Flash) | 0.0 | no solution produced |
+
+Their transcripts are `rollouts/codex.txt`, `rollouts/cursor.jsonl`, and
+`rollouts/antigravity.txt`. The Antigravity run executed in a filesystem-isolated Docker
+container that mounts only `materials/`; it spent its whole budget probing the clips and
+produced no solution.json. A Claude Code (Opus 4.8) run on that earlier revision also
+scored 0.0; its transcript was cut mid-run without a result record, so it is not listed
+as a row here and the Fable 5 run above replaces it.
+
 ## The task is solvable, and the ADD bar is reachable
 
 The earlier revision defined the pose in the object's canonical frame without giving the
