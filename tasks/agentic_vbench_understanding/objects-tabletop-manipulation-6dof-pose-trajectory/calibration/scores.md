@@ -41,12 +41,13 @@ are in `calibration/ablations/`.
 
 | ablation | score | turns |
 |---|---|---|
-| single_frame (one still frame per clip + intrinsics + object_points) | 0.0 | 49 |
+| single_frame (one still frame per clip + intrinsics + object_points) | 0.0 | 50 |
 | no_media (only cameras.json, queries.json, object_points.json) | 0.0 | 4 |
 | video_only / audio_only | n/a (audio not used) | - |
 
+Turn counts are the `num_turns` field of the closing result record in each transcript.
 single_frame is the strongest test here: the agent had the object points and one frame
-per clip, spent 49 turns trying to fit a pose, and still scored 0.0, because a single
+per clip, spent 50 turns trying to fit a pose, and still scored 0.0, because a single
 view does not fix metric depth. These runs are on the host where general CV libraries are
 available; the shipped image has only numpy and ffmpeg, so in-image scores can only be
 lower.

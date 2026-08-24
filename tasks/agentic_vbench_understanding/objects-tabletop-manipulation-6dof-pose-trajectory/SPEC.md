@@ -78,7 +78,7 @@ difficulty:
 # 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
 # calibration/ablations/.
 anti_shortcut:
-  single_frame: 0.0        # one frame per clip + intrinsics + object_points; 49 turns, no depth
+  single_frame: 0.0        # one frame per clip + intrinsics + object_points; 50 turns, no depth
   video_only: n/a          # audio not used
   audio_only: n/a
   no_media: 0.0            # only cameras.json + queries.json + object_points.json

@@ -1,1 +1,1 @@
-{"mode": "single_frame", "agent": "claude", "reward": 0.0, "turns": 49, "note": "agent produced a full solution from one frame per clip + object_points; graded 0.0"}
+{"mode": "single_frame", "agent": "claude", "reward": 0.0, "turns": 50, "note": "agent produced a full solution from one frame per clip + object_points; graded 0.0; turns = num_turns of the closing result record"}
