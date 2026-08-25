@@ -54,13 +54,14 @@ ground_truth:
 scorer:
   metric: >
     Per clip, after a best-fit similarity alignment (PCA-frame + 24 octahedral rotations
-    + similarity-ICP, symmetric trimmed-chamfer ranking): score = surface-F^2 *
-    (voxel-IoU / oracle_iou), clipped to [0,1]. The surface F-score (self-calibrating
-    tolerance = 4 median NN spacings) catches wrong/partial surfaces; the flood-filled
-    volumetric IoU collapses concavity-filling convex hulls and silhouette slabs. The IoU
-    is normalised by the per-object oracle_iou ceiling (the IoU the true mesh reaches
-    under independent resampling+voxelisation, baked at authoring) so the true shape
-    scores 1.0. reward = mean over the three clips.
+    + similarity-ICP, symmetric trimmed-chamfer ranking): score = (surface-F /
+    oracle_f)^2 * (voxel-IoU / oracle_iou), each ratio clipped to 1. The surface F-score
+    (self-calibrating tolerance = 2.5 median NN spacings of the reference samples,
+    TAU_SPACING_MULT in judge.py) catches wrong/partial surfaces; the flood-filled
+    volumetric IoU collapses concavity-filling convex hulls and silhouette slabs. Both
+    terms are normalised by their per-object oracle ceilings (the F and IoU the true
+    mesh itself reaches under independent resampling+voxelisation, baked at authoring)
+    so the true shape scores 1.0. reward = mean over the three clips.
   oracle_reward: 1.0   # measured: 1.0 end-to-end in Docker (per-clip 1.0/1.0/1.0)
   null_reward: 0.0     # measured: empty output dir
 

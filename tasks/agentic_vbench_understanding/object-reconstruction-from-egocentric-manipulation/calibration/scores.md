@@ -64,7 +64,30 @@ the object diameter, well beyond a good reconstruction) scores 0.116 mean, above
 strongest real agent (0.041, Fable 5). The gap is reconstruction accuracy, not an unreachable
 threshold.
 
-Raw transcripts are in `rollouts/`, one file per agent.
+Raw transcripts are in `rollouts/`, one file per agent. The in-repo copies elide base64
+frame payloads to keep the repo small; complete versions of every retained trajectory,
+frames included, are archived immutably (revision-pinned Hugging Face dataset, so the
+URLs below can never serve different bytes).
+
+## Full rollout archive
+
+Base URL:
+`https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_rollouts/resolve/08f1723fd59249c3cb54e75d46c2229ddf0ae552/recon/`
+
+| file | sha256 |
+|---|---|
+| claude-code-fable.full.jsonl | 47c49df867302cdfe18a3ce4d31cd5e968a3d6fd0b6f81feac3c2105879a28b2 |
+| claude-code.full.jsonl | a47ab890e71e1fafd2cb9a0d4de017ad57dd4cf200e73fb52c086c68f3540bef |
+| codex.full.txt | 9d3d168775ccff3f9f26dd3abf18d90617fda49cbc2939a5c56442bf0cb5b4c8 |
+| cursor.full.jsonl | 9094520184d8984567ba1e0a493d0e9c7950b90ce8fd76d88f4a843296093cc1 |
+| antigravity.full.txt | a03ab756bf44e65c6a3bd0d882aae712239b9985313805b5b3804cb5218c9949 |
+
+Redaction is mechanical and content-preserving: absolute host paths from the runner
+machine are replaced with `/workspace`, and capture-hardware / source-collection
+identifiers are replaced with neutral phrases so the tasks cannot be reverse-searched
+from the transcripts. No lines are removed and no payloads are elided in the archive;
+the in-repo copies are the same files after base64 frame elision. The substitution list
+is documented in the archive repo's README.
 
 Oracle end-to-end verified by building the task image (agent materials pulled from
 Hugging Face, reference meshes copied verifier-side) and running setup, solve.sh, and
