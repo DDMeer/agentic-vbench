@@ -7,6 +7,9 @@ environment/credential context were dropped at extraction and re-scanned for key
 - `codex_trajectory.md` — Codex CLI `gpt-5.6-sol` (xhigh), 247 tool calls.
 - `claude_trajectory.md` — Claude Code CLI `claude-opus-4-8`, 94 tool calls.
 
+(Turn counts here and in `scores.md` are the raw session tool-call totals; the committed trajectory
+collapses consecutive identical calls, so its visible `→ run` count is a few lower.)
+
 **Rollout dumps (solution.json + reward.json) are on HF**, pinned to an immutable revision (not a
 mutable `main` link), whole-file SHA256 recorded:
 
