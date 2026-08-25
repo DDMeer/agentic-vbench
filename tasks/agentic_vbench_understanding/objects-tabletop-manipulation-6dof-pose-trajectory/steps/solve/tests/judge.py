@@ -64,7 +64,12 @@ def _index_pred(pred):
         if isinstance(entries, list):
             for e in entries:
                 if isinstance(e, dict) and "frame" in e:
-                    fr[int(e["frame"])] = e
+                    # malformed frame ids (null, strings, floats with remainder) get no
+                    # credit for that entry instead of aborting the whole grading run
+                    try:
+                        fr[int(e["frame"])] = e
+                    except (TypeError, ValueError):
+                        continue
         out[cid] = fr
     return out
 
