@@ -9,6 +9,7 @@ cp /baked/clip_02.mp4 /workspace/materials/clip_02.mp4
 cp /baked/clip_03.mp4 /workspace/materials/clip_03.mp4
 cp /baked/cameras.json /workspace/materials/cameras.json
 cp /baked/queries.json /workspace/materials/queries.json
+cp /baked/hand_model.json /workspace/materials/hand_model.json
 
 mkdir -p /logs/artifacts
 ls -la /workspace/materials/ > /logs/artifacts/materials-listing.txt

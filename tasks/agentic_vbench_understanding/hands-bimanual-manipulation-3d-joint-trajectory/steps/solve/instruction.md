@@ -20,6 +20,10 @@ You are also given, in `/workspace/materials/`:
   `u = fx*X/Z + cx`, `v = fy*Y/Z + cy`).
 - `queries.json`: for each clip id, the list of integer frame indices you must answer
   for. Frame indices are 0-based into the corresponding mp4.
+- `hand_model.json`: the bone lengths of the wearer's right hand in metres, constant
+  across the clips (same person throughout). This is your metric reference: with the
+  pinhole intrinsics, a bone of length L at depth Z spans about `fx * L / Z` pixels, so
+  the observed pixel length of identified bones fixes the metric depth of the hand.
 
 ## Coordinate frame and joints
 
