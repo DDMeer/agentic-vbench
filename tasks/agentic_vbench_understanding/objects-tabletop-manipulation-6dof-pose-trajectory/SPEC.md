@@ -53,9 +53,12 @@ ground_truth:
     transformed into each clip's RGB camera frame using the logged device trajectory
     and factory camera extrinsics.
   tier: logged
-  verification: "Object mesh reprojected with the logged pose overlays the visible
-    object in sampled frames; camera-frame depth stays in the plausible arm's-reach
-    range (0.1-1.5 m) at every query; poses are temporally continuous."
+  verification: "Object points reprojected with the baked pose overlay the visible
+    object in the rectified pinned frames (checked per query after expressing the pose
+    in the rectified camera frame, which the earlier revision got wrong by the upright
+    rotation); at least 98 percent of the projected points fall inside the image at
+    every query; camera-frame depth stays in the plausible arm's-reach range
+    (0.1-1.5 m); poses are temporally continuous."
 
 # 6. Scorer: deterministic code only.
 scorer:
@@ -71,21 +74,24 @@ scorer:
 # shipped). Reachability of the ADD bar is shown by the partial-credit curve in
 # calibration/scores.md; a good model-based pose estimate scores well before it is exact.
 difficulty:
-  strong_agent_reward: 0.0    # Claude Code (Fable 5), fresh complete run on the shipped task
-  tool_call_turns: 226        # num_turns of the closing result record; 225 tool calls
+  strong_agent_reward: 0.002  # Fable 5 fresh run on the fixed task, shipped configuration
+  tool_call_turns: 122       # num_turns of the closing result record
   agent_model: Claude Code CLI (Fable 5)
-  # The run executed inside the built task image. The agent used object_points.json to
-  # build metric landmark models, fit per-frame poses with PnP, and iterated for 98
-  # minutes; every frame's ADD still exceeded the 0.1-diameter tolerance. Transcript:
-  # calibration/rollouts/claude-code-fable.jsonl (ends with the CLI result record).
+  # Shipped configuration: run inside the built task image, network restricted to the
+  # model endpoint by a DNS allowlist gate (allow_internet=false semantics; the model
+  # channel is harness-side in Harbor), 60 minute budget, shipped tools only.
+  # History: the earlier revision expressed GT poses in the native camera frame while
+  # the clips are rectified upright, so correct pose work read as 0.0 by construction
+  # (see calibration/scores.md). Re-scoring the strongest earlier run under the fixed
+  # frame gives 0.045, still well under the bar.
 
 # 8. Anti-shortcut ablations (each must be <= 0.15). Real Claude Code run per row; see
 # calibration/ablations/.
 anti_shortcut:
-  single_frame: 0.0        # one frame per clip + intrinsics + object_points; 50 turns, no depth
+  single_frame: 0.0     # one frame per clip + intrinsics + object_points; real run on the fixed task
   video_only: n/a          # audio not used
   audio_only: n/a
-  no_media: 0.0            # only cameras.json + queries.json + object_points.json
+  no_media: 0.0         # only cameras.json + queries.json + object_points.json
 
 # 9. Input media. Three ~2-minute clips are used as a multi-clip set rather than one
 # long video: the three clips are compared against three separate objects, which the
@@ -100,7 +106,7 @@ input:
     clip_02.mp4: b187d5cbaba972ca715f0ffd670b99b1c77ee9ad579d40b3acdff1b564c114ae
     clip_03.mp4: 56c42f94baecf5a78e2b6e32ed5af59719b51badfc6405d3f67d9b26bbc77520
     cameras.json: 753c37861a52a82d0689a571afed6ce5f90dcc358367a54c8a637919fb565d1c
-    queries.json: f55bc339b06544d2720e61910c05eccb2b3d9393c56516e86bddfa377963e2d6
+    queries.json: f9f4f7ec0f65d0bbec38a700e2c3492579f2dc9d44c569643f94cb8c23b150ae
     objects.json: cc9906530da3bfd8b6a97a7586cfc541b23a3e8e2cbe4b9f77e2362562c82f19
     object_points.json: da0889b30ec5dee3723533ab85fa819ec2e49988ee99b76c69669b64ccea22eb
   length_min: ~2 min each (short-clip set; exempt from the 10-min single-video floor)
