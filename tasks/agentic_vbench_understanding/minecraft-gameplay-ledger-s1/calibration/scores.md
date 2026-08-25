@@ -13,13 +13,14 @@ within 10 s of the true video time. Recall-weighted (β=2).
 
 ## Strong-agent calibration lineup
 
-Each raw trajectory is committed here (secret-free audit record); the reward/solution **dumps live on
-HF** (pinned links below), not in git, since the numbers are tabulated here.
+The audit record for each row is the agent's **full raw session transcript** (every tool call, output,
+turn, and frame; only secrets + home paths redacted), hosted immutably on HF and pinned by revision
+with whole-file SHA256 in `rollouts/README.md`. Reward/solution dumps are alongside on HF (not in git).
 
 | harness (version) | model | reasoning | reward | tool-call turns | trajectory |
 |---|---|---|---|---|---|
-| Codex CLI (0.145.0) | gpt-5.6-sol | xhigh | **0.0196** | 247 | `rollouts/codex_trajectory.md` |
-| Claude Code CLI (2.1.241) | claude-opus-4-8 | extended thinking | **0.0079** | 94 | `rollouts/claude_trajectory.md` |
+| Codex CLI (0.145.0) | gpt-5.6-sol | xhigh | **0.0196** | 247 | raw archive (see `rollouts/README.md`) |
+| Claude Code CLI (2.1.241) | claude-opus-4-8 | extended thinking | **0.0079** | 94 | raw archive (see `rollouts/README.md`) |
 | Antigravity CLI | Gemini 3.x | — | _pending (added by maintainer/owner)_ | — | — |
 
 All measured on the shipped v38 video + shipped scorer; every agent is far under the family's
