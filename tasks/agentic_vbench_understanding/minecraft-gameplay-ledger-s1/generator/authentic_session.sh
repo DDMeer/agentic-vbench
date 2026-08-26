@@ -30,7 +30,7 @@ OUT=${1:?outdir}
 PHASES=${2:-start,forest,build_village}
 MC=/tmp/galaxy_srv_disk00/pengchx3/agenticvbench/mc-client-1204
 SRV=/tmp/galaxy_srv_disk00/pengchx3/agenticvbench/p1-mc-server-1204
-TOOLS=/home/pengchx3/text-dna/agenticvbench-claude/generator
+TOOLS="${TOOLS:-$HOME/text-dna/agenticvbench-claude/generator}"
 J=$HOME/jdk-21.0.11+10/bin/java
 PORT=25590
 mkdir -p "$OUT"

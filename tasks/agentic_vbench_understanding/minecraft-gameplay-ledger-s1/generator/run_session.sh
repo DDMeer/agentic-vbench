@@ -7,7 +7,7 @@ V=${1:?version tag}
 MAXS=${2:-1800}          # capture ceiling; a multi-lap session needs more than the 30 min default
 LAPS=${3:-1}
 D=/tmp/galaxy_srv_disk00/pengchx3/agenticvbench/p1-mc
-cd /home/pengchx3/text-dna/agenticvbench-claude/generator
+cd "${TOOLS:-$HOME/text-dna/agenticvbench-claude/generator}"
 
 if ! (exec 3<>/dev/tcp/127.0.0.1/25577) 2>/dev/null; then
   echo "SERVER_DOWN: nothing listening on 25577 — start paper.jar first"; exit 3

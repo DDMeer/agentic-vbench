@@ -25,7 +25,9 @@ with whole-file SHA256 in `rollouts/README.md`. Reward/solution dumps are alongs
 
 All measured on the shipped v38 video + shipped scorer; every agent is far under the family's
 <0.10 strong-agent bar. Codex was also run a second time (0.0105), so the Codex number is
-run-dependent in the 0.01–0.02 band. Rollout dumps (solution.json + reward.json) on HF, pinned to an
+run-dependent in the 0.01–0.02 band. The Gemini row uses **Gemini CLI** with the reviewer's named
+`gemini-3.5-flash` model — the Antigravity IDE cannot run headless on our compute node, so the CLI is
+the reproducible path to that model. Rollout dumps (solution.json + reward.json) on HF, pinned to an
 immutable revision (not mutable `main`; trajectory SHA256s in `rollouts/README.md`):
 <https://huggingface.co/datasets/explcre/agenticvbench-understanding-materials/resolve/39f1b933102acb3e52348752eb736b31c4c9d50b/minecraft-gameplay-ledger-s1/calibration>
 

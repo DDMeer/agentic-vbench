@@ -23,7 +23,7 @@ SSD=/srv/disk00/sshfs/pengchx3/agenticvbench
 MC=$SSD/mc-client
 SRV=$SSD/p1-mc-server
 OUT=$SSD/mc-authentic
-TOOLS=/home/pengchx3/text-dna/agenticvbench-claude/generator
+TOOLS="${TOOLS:-$HOME/text-dna/agenticvbench-claude/generator}"
 mkdir -p "$OUT"
 
 echo "HOST=$(hostname) CPUS=${SLURM_CPUS_PER_TASK:-?} LOAD=$(cut -d' ' -f1-3 /proc/loadavg)"

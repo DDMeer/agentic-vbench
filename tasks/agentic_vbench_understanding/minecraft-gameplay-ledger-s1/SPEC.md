@@ -63,7 +63,7 @@ anti_shortcut:
   frame_dump_no_tools: 0.0      # a 238-min video at 1 fps is >14000 frames, far past any context window
 
 input:
-  url: https://huggingface.co/datasets/explcre/agenticvbench-understanding-materials/resolve/main/minecraft-gameplay-ledger-s1/game_v38.mp4
+  url: https://huggingface.co/datasets/explcre/agenticvbench-understanding-materials/resolve/39f1b933102acb3e52348752eb736b31c4c9d50b/minecraft-gameplay-ledger-s1/game_v38.mp4
   sha256: 110f1232d516f0649b3181858d845afba643a07948b4c84c346f8a82d1b0e60a
   length_min: 238.5
   resolution: 720
