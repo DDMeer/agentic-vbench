@@ -16,4 +16,12 @@ base=https://huggingface.co/datasets/explcre/agenticvbench-understanding-materia
 | Codex CLI · gpt-5.6-sol (xhigh) | `mc_codex_gpt-5.6-sol_raw.jsonl` | `6b06c5b04a44ac61565a3631fa3ff767896ca3dc0b191cebbf375c61aedf7140` |
 | Claude Code CLI · claude-opus-4-8 | `mc_claude_opus-4.8_raw.jsonl` | `12b7f002cca798f34a41ff41a1ceaaf6cccd4358cda75224101febbb06c682c7` |
 
+The Gemini row's raw archive is on a later revision:
+```
+REV=ea7b9d908d6c4d834276ed85656fc00d63f65fb1
+```
+| row | raw archive (`.../resolve/$REV/minecraft-gameplay-ledger-s1/calibration/raw/…`) | sha256 |
+|---|---|---|
+| Gemini CLI · gemini-3.5-flash | `mc_gemini_3.5-flash_raw.jsonl` | `8543567791b77d7a7ad88b6cae6230381760ceee078f9cba405c023c6efd0d79` |
+
 The reward/solution JSON dumps for each run are alongside at `.../calibration/` (same pinned revision).

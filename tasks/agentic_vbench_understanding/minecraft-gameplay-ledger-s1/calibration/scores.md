@@ -21,7 +21,7 @@ with whole-file SHA256 in `rollouts/README.md`. Reward/solution dumps are alongs
 |---|---|---|---|---|---|
 | Codex CLI (0.145.0) | gpt-5.6-sol | xhigh | **0.0196** | 247 | raw archive (see `rollouts/README.md`) |
 | Claude Code CLI (2.1.241) | claude-opus-4-8 | extended thinking | **0.0079** | 94 | raw archive (see `rollouts/README.md`) |
-| Antigravity CLI | Gemini 3.x | — | _pending (added by maintainer/owner)_ | — | — |
+| Gemini CLI (0.57.0) | gemini-3.5-flash | default | **0.0031** | 408 | raw archive (see `rollouts/README.md`) |
 
 All measured on the shipped v38 video + shipped scorer; every agent is far under the family's
 <0.10 strong-agent bar. Codex was also run a second time (0.0105), so the Codex number is
