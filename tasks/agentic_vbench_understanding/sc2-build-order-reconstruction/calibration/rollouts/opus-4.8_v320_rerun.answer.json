@@ -1,0 +1,15 @@
+{"players":[
+  {"race":"terran","buildings":[
+    {"t_seconds":0,"name":"CommandCenter"},
+    {"t_seconds":18,"name":"Barracks"},
+    {"t_seconds":73,"name":"OrbitalCommand"},
+    {"t_seconds":79,"name":"CommandCenter"},
+    {"t_seconds":106,"name":"Factory"},
+    {"t_seconds":128,"name":"Starport"}
+  ]},
+  {"race":"zerg","buildings":[
+    {"t_seconds":0,"name":"Hatchery"},
+    {"t_seconds":43,"name":"SpawningPool"},
+    {"t_seconds":348,"name":"Hatchery"}
+  ]}
+]}

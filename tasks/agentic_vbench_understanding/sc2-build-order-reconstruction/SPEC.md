@@ -1,78 +1,111 @@
----
-title: Task Spec Card
-summary: The structured header every video-understanding task must fill in and prove.
-read_when: Reviewing this task. Every field is a verifiable claim.
----
+# SPEC — sc2-build-order-reconstruction
 
-# Task Spec Card
+## Input
+Nine videos (`tiles/tile_r{0..2}c{0..2}.mp4`) = a 3×3 tiling of ONE full-map bird's-eye god-view
+of a 1v1 StarCraft II match (Terran vs Zerg, ~15 min), plus `tiles/frames_time.json` (frame index
+→ game-seconds). Full observer vision (no fog); RAW frames (no image processing); whole battlefield
+in frame (no clipping); ~5 fps game-time sampling (~0.18 s, 5000 frames/tile). No HUD, panels,
+counters, minimap, or names — only the rendered world.
 
-```yaml
-task: agentic_vbench_understanding/sc2-build-order-reconstruction
-
-# 1. What kind of thinking does this task need?
-#    understanding = compare/order/relate; reasoning = cause/cross-event inference.
-#    Build-order reconstruction is perception + ordering/timing of ~100 structures,
-#    not causal inference; the load-bearing step is fine-grained sprite reading.
-cognitive_level: understanding
-
-# 2. Which modalities are REQUIRED (not just present)?
-modalities_required:
-  video: "Every structure is observable only in the 3×3 bird's-eye tiles; identity comes from building sprites and add-on shapes (Reactor vs Tech Lab), race from tile location/creep. No HUD/panels/counters/minimap/names are shown."
-  audio: "not used — the raw render has no audio (stripped by construction)"
-
-# 3. The exact question and output schema.
-question: "From a 3×3 bird's-eye tiling of one full ~15-min StarCraft II match (Terran vs Zerg), reconstruct both players' build orders — every structure with its construction-start game-time."
-output_schema: "JSON {\"players\":[{race:terran|zerg, buildings:[{t_seconds:int, name:str}]}]}; name from a fixed vocabulary per race; full (race, name) match within 3 s, scored by F1. Rebuilds and tech morphs are separate events; cancelled buildings / creep tumors / minerals / geysers / rocks excluded."
-
-# 4. Evidence chain: the specific moments the answer depends on (>=2 far-apart).
-evidence:
-  - "t=29s, video (tile r0c2, Terran main), first SupplyDepot — earliest Terran production, sets the opening"
-  - "t=38s, video (tile r2c0, Zerg main), SpawningPool — earliest Zerg tech; read off purple-creep sprites"
-  - "t=~110s, video, OrbitalCommand morph + Lair morph — tech morphs are separate timed events, not new buildings"
-  - "t=~443s (07:23), video, Zerg Spire — late-game tech switch; only reachable by working the whole 15-min game across tiles"
-
-# 5. Ground truth: value, source, tier, verification.
-ground_truth:
-  source: "SC2 engine tracker events (UnitInitEvent = construction start) machine-parsed from the SAME match.SC2Replay the video was rendered from; no manual annotation"
-  tier: "machine-truth (engine-internal structured tracker records)"
-  verification: "100 events (Terran 67, Zerg 33) pooled into steps/solve/tests/gt.json; event time = construction-start game-loop in game-seconds (not completion); replay base build 75689"
-
-# 6. Scorer: deterministic code only.
-scorer:
-  metric: "F1 over events; a TP requires (race, structure_name) equal AND |Dt| <= 3 s; greedy 1:1 closest-time match. A wrong name, wrong race, or mis-timed event does not match."
-  oracle_reward: 1.0
-  null_reward: 0.0  # measured: empty submission -> 0.0
-
-# 7. Difficulty: measured with a real strong-agent run.
-difficulty:
-  strong_agent_reward: 0.080  # opus-4.8 @ Claude Code, best of three
-  tool_call_turns: 112  # opus-4.8 (102 frame reads + 10 scripts); codex ran 297 atomic ffmpeg/ffprobe calls (see scores.md)
-  agent_model: "opus-4.8 (Claude Code 2.1.215) = 0.080 / 112 calls; gpt-5.6-sol (Codex CLI 0.130.0) = 0.064 / 297 atomic calls; Gemini 3.1 Pro (Antigravity CLI 1.1.5) = 0.031 / 71 turns"
-
-# 8. Anti-shortcut ablations: run a strong model under each degraded input.
-#    Every one must score <= 0.15. TODO: run these measured ablations before the PR.
-anti_shortcut:
-  single_frame: "not on any frame — construction-start timing needs the frame a structure FIRST appears across the 15-min sequence, not a snapshot"
-  video_only: "n/a — the raw render has no audio by construction; the full task is video-only"
-  audio_only: "0.0 — no audio exists (stripped by construction)"
-  no_media: "not recallable — ordinary ladder game with no public build-order record; ~100 specific instances with ±3 s timing are not guessable from the prompt alone"
-  frame_dump_no_tools: "agency required — locating first-appearances needs seeking across 15 min × 9 tiles and brightening RAW frames, not pasted frames"
-  on_screen_text: "~0 — no HUD, panels, counters, minimap, or names are rendered; only the game world"
-  recall: "~0 — ordinary ladder game, not a broadcast/famous match"
-
-# 9. Input media.
-input:
-  url: "https://huggingface.co/datasets/iTheresaApocalypse/agentvbench/resolve/main/sc2/tiles/ (9 files tile_r{0..2}c{0..2}.mp4)"
-  sha256: "see tiles/SHA256SUMS.txt (9 per-file digests, verified at Docker build)"
-  length_min: 15
-  resolution: "3×3 tiling of one 3072² full-map god-view at camera distance 320 (whole battlefield, no clipping); RAW (no image processing); ~5 fps game-time (~0.18 s spacing, 5000 frames/tile)"
+## Output (`answer.json`)
+Per player, a chronological list of production events `(game_time_s, structure)`:
+```json
+{"players":[
+  {"race":"terran","buildings":[{"t_seconds":137,"name":"Factory"}]},
+  {"race":"zerg","buildings":[{"t_seconds":262,"name":"RoachWarren"}]}
+]}
 ```
 
-## Prompt-writing rules (the agent-facing instruction)
+## Event definition (what counts, precisely)
+These are exactly the rules `calibration/gen_sc2_gt.py` implements, and exactly what
+`steps/solve/instruction.md` tells the agent.
+- **Time = construction START** — the game-loop the structure is first placed (`UnitInitEvent`),
+  converted with `t = round(game_loop / 22.4)` (SC2 "Faster" speed), not completion time.
+- **Structures only**, from a per-race whitelist. Units, larvae/eggs/cocoons, creep tumors,
+  mineral fields, vespene geysers and destructible rocks are excluded, and so are the two
+  summonables the engine reports as structures but a build order does not contain
+  (Raven **AutoTurret**, Reaper **KD8Charge**).
+- **Structure tech morphs are separate events**, timed at the morph (`UnitTypeChangeEvent`):
+  CommandCenter→OrbitalCommand/PlanetaryFortress, Hatchery→Lair→Hive, Spire→GreaterSpire.
+  Non-structure type changes are excluded (SupplyDepot lower/raise, siege mode, burrow,
+  cocoons, Overseer/Queen morphs, …) — in this replay that removes 17 SupplyDepotLowered and
+  92 siege-mode changes that a naive parser would emit as build events.
+- **Add-ons** (Barracks/Factory/Starport TechLab and Reactor) are separate events.
+- **Rebuilds after destruction count as separate events** — full instance count required, no
+  de-duplication to a type set.
+- **Cancelled buildings** are NOT counted: a placement counts only if it also has a
+  `UnitDoneEvent`. In this replay that excludes 1 Extractor and 2 SpineCrawlers.
+- The two starting structures (Terran CommandCenter, Zerg Hatchery) are events at t=0.
 
-- One task per task: reconstruct both players' build orders (structure + game-time). No compound asks.
-- Every scored term is defined: event time = construction start; tech morphs and rebuilds are separate events; cancelled buildings / creep tumors / minerals / geysers / rocks excluded.
-- Closed vocabularies given in full per race (Terran 18 names, Zerg 12 names).
-- Exact output schema and deliverable path (`/workspace/output/solution.json`) stated.
-- The scoring method, tolerance, and ground-truth source are NOT described to the agent.
-- No trick wording: everything scored is stated in `instruction.md`.
+## Scoring (deterministic, pure code — `steps/solve/tests/judge.py`)
+Both players' events are pooled into ONE chronological timeline. A predicted event matches a GT
+event iff it agrees on **(race, structure_name)** (case/space-insensitive) AND game-time within
+**±3 s**; greedy 1:1 (closest time). **reward = F1** over matched events. A wrong name, wrong race,
+or mis-timed event does not match → guessing scores ≈ 0.
+
+Tolerance is tight because build order is order/timing-sensitive; the ~5 fps sampling makes ±3 s
+physically achievable. Relaxation (±5/10/30 s, per-race, name-only) is for OFFLINE diagnosis only
+(`calibration/score_sc2_unified.py`), not the reward.
+
+## Ground truth
+Machine-parsed from the SAME `.SC2Replay` the video was rendered from (SC2 engine tracker events →
+construction-start times); no manual annotation. Regenerate with:
+
+```bash
+python calibration/gen_sc2_gt.py --replay gt/match.SC2Replay
+```
+
+`gt/gt_terran.json` (61) + `gt/gt_zerg.json` (33) = **94 events**, pooled into
+`steps/solve/tests/gt.json` for the verifier. GT names use the engine's unit-type names, and every
+name that occurs is listed in the agent's instruction, so recall is not capped by vocabulary.
+
+**Alignment with the video** is measured, not assumed: `calibration/verify_events.py` measures,
+for six landmark structures spread over the game and across both players, the second at which the
+structure appears in the render, and compares it with the GT second. The onset is measured from the
+pixels alone as a step in *normalised edge energy* (`mean(|dI/dx|+|dI/dy|)/(mean(I)+8)`) in a 60×60
+px box — shadow-invariant, because this map has large moving cloud shadows that a brightness test
+cannot tell apart from a new building. The onset is timed to the **formal construction start**
+(the replay's `UnitInitEvent`), not the placement animation: a building appears in two stages —
+a 1–2 s edge-energy spike when the foundation is placed (which leads the tracker event), then a
+dip, then a sustained ramp as it grows — so the detector skips the placement spike and fires at
+the dip just before the ramp (the Extractor, which covers a geyser and smooths the ground, is the
+two-sided case and fires at the first second the edge energy stays below the baseline). Result:
+**all six within ±1 s of the GT** (deltas −1 / 0 / 0 / −1 / 0 / +1 s; median 0 s), well inside the
+±3 s match window, with the same spread at t=20 s and at t=800 s, i.e. no clock drift. The
+report `calibration/proof/alignment.md` ships the before/at/after screenshot strips and the
+per-landmark series; it also records what does *not* work (whole-region shift scans are dominated
+by army movement and creep spread) and what is not claimed (only in-base landmarks; morphs
+excluded).
+
+## Validation
+- Oracle (`steps/solve/solution/solve.sh`, reproduces GT) → reward **1.0**.
+- Empty / absent answer → **0.0**.
+- Calibration (strong code agents, isolated, no GT/scorer in the workdir): all four runs are
+  **< 0.10** at ±3 s (opus-4.8 re-run 0.097, opus-4.8 0.083, codex gpt-5.6-sol 0.080,
+  gemini-3.1-pro 0.080). Recall is the wall: best 56/94 events. See `calibration/scores.md`.
+
+## Anti-shortcut — MEASURED
+`on_screen_text` is impossible by construction (no HUD, panel, counter, clock, minimap or name is
+rendered — verified by inspecting frames). The other three shortcuts were run as ablations against
+this GT and this verifier (codex `gpt-5.6-sol`, three isolated dirs, media only; `calibration/rollouts/abl2_*`):
+
+| run | footage | reward (±3 s F1) | `t>=300 s` only |
+|---|---|---|---|
+| best full-video agent (opus-4.8 re-run) | 9 tiles, 15 min | **0.097** | 0.031 |
+| opus-4.8 / codex / gemini (video) | 9 tiles, 15 min | 0.080–0.083 | 0.000–0.058 |
+| `single_frame` | ONE frame at t=450 s | 0.076 | 0.000 |
+| `no_media` | none | 0.047 | 0.000 |
+| `recall` | none, prior knowledge only | 0.022 | 0.017 |
+
+The uncontaminated floor is **0.022–0.076**. Every video run is above it, though three of the four
+clear it only narrowly — the opening of a TvZ game is stereotyped and the GT holds 17 Terran
+SupplyDepots, so a periodic depot guess scores a few by construction. The separation is decisive
+late, where priors cannot reach: restricted to GT events at `t>=300 s`, all three ablations collapse
+to ≤ 0.017 while the video runs land 1–2 late events — a prior can open a game; it cannot time an
+expansion Hatchery at 348 s.
+
+**State the claim honestly: it is not `≈ 0`, and it is model-dependent.** An agent that does not
+mine the footage is nearly indistinguishable from one guessing a standard TvZ opening. If a stronger
+prior-proofing is wanted, requiring each event's map coordinates (or scoring only rebuilds,
+destructions and expansion locations) would remove the guessable component entirely. Regenerate
+with `python calibration/ablation_table.py`.

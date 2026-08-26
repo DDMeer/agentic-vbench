@@ -1,43 +1,29 @@
-version = "1.0"
-
+# AgenticVBench task — reconstruct BOTH players' build orders from a tiled bird's-eye SC2 video.
 [task]
-name = "agentic-vbench/sc2-build-order-reconstruction"
+id = "sc2-build-order-reconstruction"
+domain = "agentic_vbench_games"
+title = "StarCraft II bird's-eye: reconstruct both players' build orders (structure + game-time)"
 
-[metadata]
-difficulty = "hard"
-category = "video-understanding"
-tags = ["video-understanding", "strategy-game", "starcraft-2", "build-order", "event-timeline", "agentic-vbench-games"]
-# One full 1v1 StarCraft II match (Terran vs Zerg, ~15 min) from an AutomatonLE
-# replay (base build 75689). Rendered as a single full-map bird's-eye god-view
-# (fog-of-war disabled, whole battlefield in frame, no clipping), RAW frames
-# (no color/brightness processing), split into a 3×3 tile grid. No HUD, panels,
-# counters, minimap, or player names — only the rendered world.
-# Ground truth: machine-parsed from the SAME .SC2Replay via the SC2 engine's
-# tracker events (construction-start times); no manual annotation.
-source = "AutomatonLE 1v1 TvZ replay match.SC2Replay (base build 75689; ordinary ladder game, no public record)"
+[source]
+replay = "gt/match.SC2Replay"          # AutomatonLE 1v1 TvZ, base build 75689, ~15 min
+gt = "gt/gt_terran.json + gt/gt_zerg.json"   # 94 events (Terran 61, Zerg 33), machine-parsed from the replay
+gt_generator = "calibration/gen_sc2_gt.py"   # regenerates the GT from the replay; rules documented in SPEC.md
+gt_pooled = "steps/solve/tests/gt.json"      # both players pooled into one timeline (verifier input)
 
-[environment]
-# 9 tiles (~140 MB) + frames_time.json baked at build time.
-build_timeout_sec = 600.0
-cpus = 2
-memory_mb = 4096
-storage_mb = 8192
-# The answer is not online (ordinary ladder game, no public build-order record): keep this false.
-allow_internet = false
+[media]
+tiles = "tiles/tile_r{0..2}c{0..2}.mp4"   # 9-tile 3×3 of one full-map god-view, ~135 MB total
+frames_time = "tiles/frames_time.json"    # frame index -> game-seconds
+checksums = "tiles/SHA256SUMS.txt"
+render = "full-map god-view @ camera distance 320 (whole battlefield, no clipping), RAW (no image processing), 3072²→3×3 tiles, ~5 fps game-time (~0.18 s, 5000 frames/tile)"
+time_alignment = "event time = construction START, t = round(game_loop/22.4) game-seconds; frames_time.json maps frame->game-seconds; measured GT<->video alignment in calibration/proof/alignment.md"
 
-[environment.env]
-HF_TOKEN = "${HF_TOKEN:-}"
+[scoring]
+metric = "unified_timeline_f1"
+key = "(race, structure_name)"
+tolerance_s = 3
+rule = "both players pooled into ONE chronological timeline; greedy 1:1 time-matched by (race, name) within +/-3s; reward = F1"
 
-[[steps]]
-name = "solve"
-
-[steps.agent]
-# A ~15-min game with ~100 build events to localize and type across 9 tiles:
-# give the agent real time to seek and inspect frames. Local calibration runs
-# took up to ~90 min (opus-4.8, 112 tool calls; codex 297 atomic ffmpeg calls).
-timeout_sec = 5400.0
-
-[steps.verifier]
-timeout_sec = 600.0
-
+[limits]
+max_turns = 200
+time_limit_min = 90
 # CANARY: agentic_vbench task — do not train on this file.

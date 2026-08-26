@@ -1,9 +1,9 @@
 {
  "pid": 1,
- "n_events": 67,
+ "n_events": 61,
  "events": [
   {
-   "t": 2,
+   "t": 0,
    "name": "CommandCenter"
   },
   {
@@ -15,7 +15,7 @@
    "name": "Barracks"
   },
   {
-   "t": 80,
+   "t": 79,
    "name": "CommandCenter"
   },
   {
@@ -27,7 +27,11 @@
    "name": "Refinery"
   },
   {
-   "t": 125,
+   "t": 119,
+   "name": "OrbitalCommand"
+  },
+  {
+   "t": 123,
    "name": "Barracks"
   },
   {
@@ -35,23 +39,23 @@
    "name": "Refinery"
   },
   {
-   "t": 151,
+   "t": 149,
    "name": "SupplyDepot"
   },
   {
-   "t": 151,
+   "t": 150,
    "name": "BarracksTechLab"
   },
   {
-   "t": 177,
+   "t": 176,
    "name": "BarracksTechLab"
   },
   {
-   "t": 200,
+   "t": 198,
    "name": "Factory"
   },
   {
-   "t": 214,
+   "t": 212,
    "name": "Factory"
   },
   {
@@ -59,31 +63,31 @@
    "name": "Refinery"
   },
   {
-   "t": 231,
+   "t": 229,
    "name": "Refinery"
   },
   {
-   "t": 242,
+   "t": 240,
    "name": "FactoryTechLab"
   },
   {
-   "t": 245,
+   "t": 244,
    "name": "Starport"
   },
   {
-   "t": 251,
+   "t": 249,
    "name": "Starport"
   },
   {
-   "t": 257,
+   "t": 255,
    "name": "FactoryTechLab"
   },
   {
-   "t": 280,
+   "t": 279,
    "name": "SupplyDepot"
   },
   {
-   "t": 282,
+   "t": 281,
    "name": "StarportTechLab"
   },
   {
@@ -91,35 +95,35 @@
    "name": "GhostAcademy"
   },
   {
-   "t": 317,
+   "t": 316,
    "name": "StarportTechLab"
   },
   {
-   "t": 325,
+   "t": 323,
    "name": "SupplyDepot"
   },
   {
-   "t": 334,
+   "t": 332,
    "name": "EngineeringBay"
   },
   {
-   "t": 357,
+   "t": 355,
    "name": "SupplyDepot"
   },
   {
-   "t": 380,
+   "t": 379,
    "name": "SupplyDepot"
   },
   {
-   "t": 420,
+   "t": 419,
    "name": "SupplyDepot"
   },
   {
-   "t": 448,
+   "t": 446,
    "name": "SupplyDepot"
   },
   {
-   "t": 454,
+   "t": 453,
    "name": "MissileTurret"
   },
   {
@@ -127,19 +131,19 @@
    "name": "MissileTurret"
   },
   {
-   "t": 460,
+   "t": 459,
    "name": "MissileTurret"
   },
   {
-   "t": 462,
+   "t": 461,
    "name": "MissileTurret"
   },
   {
-   "t": 468,
+   "t": 467,
    "name": "SensorTower"
   },
   {
-   "t": 471,
+   "t": 470,
    "name": "Armory"
   },
   {
@@ -147,11 +151,11 @@
    "name": "SupplyDepot"
   },
   {
-   "t": 480,
+   "t": 478,
    "name": "Bunker"
   },
   {
-   "t": 485,
+   "t": 483,
    "name": "Barracks"
   },
   {
@@ -159,11 +163,11 @@
    "name": "Bunker"
   },
   {
-   "t": 531,
+   "t": 530,
    "name": "BarracksReactor"
   },
   {
-   "t": 560,
+   "t": 558,
    "name": "Factory"
   },
   {
@@ -171,11 +175,11 @@
    "name": "Starport"
   },
   {
-   "t": 565,
+   "t": 563,
    "name": "SupplyDepot"
   },
   {
-   "t": 568,
+   "t": 567,
    "name": "CommandCenter"
   },
   {
@@ -183,35 +187,23 @@
    "name": "SupplyDepot"
   },
   {
-   "t": 600,
-   "name": "StarportReactor"
-  },
-  {
-   "t": 600,
+   "t": 598,
    "name": "EngineeringBay"
   },
   {
-   "t": 602,
-   "name": "KD8Charge"
+   "t": 598,
+   "name": "StarportReactor"
   },
   {
-   "t": 605,
-   "name": "AutoTurret"
-  },
-  {
-   "t": 608,
-   "name": "AutoTurret"
-  },
-  {
-   "t": 614,
+   "t": 612,
    "name": "SupplyDepot"
   },
   {
-   "t": 625,
+   "t": 623,
    "name": "FactoryTechLab"
   },
   {
-   "t": 640,
+   "t": 638,
    "name": "SupplyDepot"
   },
   {
@@ -219,35 +211,31 @@
    "name": "Refinery"
   },
   {
+   "t": 657,
+   "name": "MissileTurret"
+  },
+  {
    "t": 660,
    "name": "MissileTurret"
   },
   {
-   "t": 662,
+   "t": 661,
    "name": "Refinery"
-  },
-  {
-   "t": 662,
-   "name": "MissileTurret"
-  },
-  {
-   "t": 682,
-   "name": "AutoTurret"
   },
   {
    "t": 682,
    "name": "Bunker"
   },
   {
-   "t": 688,
+   "t": 686,
    "name": "FusionCore"
   },
   {
-   "t": 694,
+   "t": 692,
    "name": "Armory"
   },
   {
-   "t": 777,
+   "t": 775,
    "name": "SupplyDepot"
   },
   {
@@ -255,20 +243,8 @@
    "name": "SupplyDepot"
   },
   {
-   "t": 814,
-   "name": "AutoTurret"
-  },
-  {
-   "t": 817,
-   "name": "AutoTurret"
-  },
-  {
-   "t": 825,
+   "t": 823,
    "name": "SupplyDepot"
-  },
-  {
-   "t": 831,
-   "name": "AutoTurret"
   }
  ]
 }

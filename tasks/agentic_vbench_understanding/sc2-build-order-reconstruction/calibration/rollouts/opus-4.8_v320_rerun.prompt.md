@@ -1,7 +1,7 @@
 # Reconstruct BOTH players' build orders from a tiled bird's-eye StarCraft II video
 
 You are given NINE videos: a 3×3 tiling of ONE bird's-eye view of the WHOLE map of a 1v1
-StarCraft II match (Terran vs Zerg), the full ~15-minute game. The tiles are at `/data/tile_r{row}c{col}.mp4`
+StarCraft II match (Terran vs Zerg), the full ~15-minute game. Tiles `tile_r{row}c{col}.mp4`
 (row 0=top..2=bottom, col 0=left..2=right) together cover the entire battlefield with no gaps
 and no clipping. BOTH bases are in the grid: the Terran main (grey/red metal) sits in the
 right-hand column and the Zerg main (buildings on purple creep) in the left-hand column;
@@ -10,7 +10,7 @@ locate the bases yourself instead of assuming one tile per player.
 
 - The frames are the **RAW render — no brightness/contrast processing** (so they are dim; you
   may brighten/adjust them yourself with ffmpeg if it helps you read structures).
-- Each video is 5000 frames sampled ~every 0.18 game-seconds. `/data/frames_time.json` maps frame
+- Each video is 5000 frames sampled ~every 0.18 game-seconds. `frames_time.json` maps frame
   index → game-seconds, so you can time each event precisely (to ~1 s).
 - The tiles are encoded at 15 fps, so frame `i` is at `i/15` seconds of *video* time; convert
   to game-seconds through `frames_time.json`, never by reading the video clock directly.
@@ -50,7 +50,7 @@ Zerg: Hatchery, Lair, Hive, SpawningPool, Extractor, RoachWarren, BanelingNest,
 EvolutionChamber, HydraliskDen, InfestationPit, Spire, GreaterSpire, NydusNetwork,
 UltraliskCavern, SpineCrawler, SporeCrawler. (Name matching is case/space-insensitive.)
 
-## Output → write `/output/answer.json`
+## Output → write `./answer.json`
 
 The JSON below shows the required **format only** — its names and times are invented
 placeholders, not events from this match.
@@ -64,5 +64,5 @@ placeholders, not events from this match.
 
 Watch the entire game across all 9 tiles, using every tool available to you over many rounds of
 tool calls (50+ preferred). Find each base among the tiles, track construction starts, and time
-each via `/data/frames_time.json`. Write `/output/answer.json` early and refine it; do not
-fabricate. The nine tiles + `frames_time.json` are the only inputs provided.
+each via `frames_time.json`. Write `answer.json` early and refine it; do not fabricate. The nine
+tiles + `frames_time.json` are the only inputs provided.
