@@ -66,6 +66,5 @@ are made-up, not from this game):
 - Do not look anything up online, and do not rely on memory of any game; find every
   event in the video. This is a private game with no public timeline.
 - Watch the entire video carefully, using every tool available to you (`ffmpeg`,
-  `ffprobe`, frame extraction, etc.), over many rounds of tool calls (50+
-  preferred). Do not stop early — confirm you have covered the whole game before
-  you answer.
+  `ffprobe`, frame extraction, etc.). Do not stop early — confirm you have covered
+  the whole game before you answer.
