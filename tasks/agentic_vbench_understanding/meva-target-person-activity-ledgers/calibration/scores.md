@@ -24,11 +24,32 @@ All three required rows clear the measured difficulty gate.
 
 ## Required degraded-input runs
 
-| ablation | score |
-|---|---:|
-| no media | 0.000000 |
-| single frame | 0.000000 |
-| one-frame-per-second dump, no inspection tools | 0.001106 |
+| ablation | harness | harness version | model | score | tool-call turns | trajectory |
+|---|---|---|---|---:|---:|---|
+| no media | GitHub Copilot CLI | 1.0.79-9 | GPT-5.6 Sol | 0.000000 | 11 | `rollouts/ablation-no-media.jsonl` |
+| single frame | GitHub Copilot CLI | 1.0.79-9 | GPT-5.6 Sol | 0.000000 | 24 | `rollouts/ablation-single-frame.jsonl` |
+| one-frame-per-second dump, no inspection tools | GitHub Copilot CLI | 1.0.79-9 | GPT-5.6 Sol | 0.001106 | 4 | `rollouts/ablation-frame-dump-no-tools.jsonl` |
+
+Tool-call turns are counted from each harness's own tool-invocation record, so
+the rule differs by harness: Copilot CLI `tool.execution_start`; Codex CLI
+distinct `item.started`; Claude Agent SDK `chat/toolCallStart`; Antigravity CLI
+distinct `step_update.step_index` where `step_type` is `tool`. Applying the
+matching rule to the file each row links to reproduces the number in that row.
+For the Claude row the split is by `channel`: the `ahp-chat://default/…` channel
+gives the 115 parent turns, and all channels together give 554.
+
+Each of the three ablation files above is a complete raw stream that ends in a
+`result` event with `exitCode` 0.
+
+Harness-level withholding for the frame-dump row is checkable in that stream's
+`session.info` line: it disables `bash`, `glob`, `rg`, and `view` on top of the
+set disabled in the other two runs. The inspection tools were removed by harness
+configuration, not merely discouraged by the prompt.
+
+The no-media run ended without writing a submission at all — its own summary
+records `Blocked: /workspace/materials is empty`. Its 0.000000 therefore comes
+from the missing-submission path and is equivalent to the empty-submission
+anchor above, rather than being an independent probe of schema guessability.
 
 ## Deterministic identity shortcuts
 

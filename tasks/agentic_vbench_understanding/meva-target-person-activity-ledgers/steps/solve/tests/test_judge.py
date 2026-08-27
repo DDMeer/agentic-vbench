@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 HERE = Path(__file__).parent
-GROUND_TRUTH = HERE.parents[2] / "environment" / "ground_truth.json"
+GROUND_TRUTH = HERE / "ground_truth.json"
 SPEC = importlib.util.spec_from_file_location("meva_judge", HERE / "judge.py")
 assert SPEC and SPEC.loader
 JUDGE = importlib.util.module_from_spec(SPEC)

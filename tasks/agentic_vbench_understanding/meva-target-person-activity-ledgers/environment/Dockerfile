@@ -4,14 +4,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ffmpeg curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --uid 1000 --shell /bin/bash agent \
- && mkdir -p /opt/verifier \
- && chown root:root /opt/verifier \
- && chmod 0700 /opt/verifier
+RUN useradd --create-home --uid 1000 --shell /bin/bash agent
 
-COPY ground_truth.json /opt/verifier/ground_truth.json
-RUN chown root:root /opt/verifier/ground_truth.json \
- && chmod 0600 /opt/verifier/ground_truth.json
+# The answer key is NOT baked into this image. It ships only in the task's
+# steps/solve/tests/ directory, which Harbor uploads to /tests inside the
+# verifier phase (user = root). This task has a single step, so /tests never
+# exists while the agent phase is running.
 
 ARG MEDIA_URL=https://huggingface.co/datasets/Jordan8717/agentic-vbench-meva-activity-ledgers/resolve/c3c7b0dc1d8cba7834564350b90d0c96b4178d46/meva_activity_montage.mp4
 ARG MEDIA_SHA256=2d51338a954cb726037116b9b9715ef8dccb7c242753a0e709a03c266fbce344
