@@ -8,7 +8,7 @@ const mineflayer = require('mineflayer');
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer');
 
 const GO = process.argv[2], DONE = process.argv[3];
-const LOG = '/tmp/galaxy_srv_disk00/pengchx3/agenticvbench/p1-mc/audit_mobs.log';
+const LOG = process.env.LOG || 'audit_mobs.log';
 const log = m => { try { fs.appendFileSync(LOG, m + '\n'); } catch (_) {} };
 process.on('uncaughtException', e => log('UNCAUGHT ' + (e && e.stack || e)));
 

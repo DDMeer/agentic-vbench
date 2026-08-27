@@ -14,7 +14,7 @@
 set -euo pipefail
 V=${1:?version tag}
 TASK_DIR=${2:-}
-D=/tmp/galaxy_srv_disk00/pengchx3/agenticvbench/p1-mc
+D="${WORK:-/tmp/agenticvbench-mc}/p1-mc"
 TOOLS=$(cd "$(dirname "$0")" && pwd)
 PLAY=$D/play_$V.json
 RAW=$(ls "$D/${V}_capture"/*.webm 2>/dev/null | head -1)

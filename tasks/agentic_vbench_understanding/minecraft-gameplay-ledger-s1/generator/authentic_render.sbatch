@@ -6,7 +6,7 @@
 #SBATCH --mem=16000M
 #SBATCH --partition=zhanglab.p
 #SBATCH --time=2:00:00
-#SBATCH --output=/srv/disk00/sshfs/pengchx3/agenticvbench/mc-authentic/slurm-%j.out
+#SBATCH --output=slurm-%j.out   # written to the submit directory
 #
 # Authentic Minecraft render: a REAL Minecraft 1.16.5 client joins the Paper server as a
 # spectator locked to the mineflayer bot, so the video gets the effects the headless JS
@@ -16,10 +16,10 @@
 # CPU, not GPU, on purpose: LWJGL/GLFW makes its GL context through GLX on X11, and Xvfb only
 # offers SOFTWARE GLX, so an allocated GPU would sit idle. llvmpipe is multithreaded, so what
 # actually decides the frame rate is dedicated cores — hence 32 CPUs and no --gres.
-# galaxy is required (not just preferred): the SSD is node-local here (/srv/disk00) and the
+# galaxy is required (not just preferred): the SSD is node-local there and the
 # Paper server the client must reach runs on this host.
 set -x
-SSD=/srv/disk00/sshfs/pengchx3/agenticvbench
+SSD="${WORK:-/tmp/agenticvbench-mc}"   # set WORK to a fast node-local SSD dir
 MC=$SSD/mc-client
 SRV=$SSD/p1-mc-server
 OUT=$SSD/mc-authentic

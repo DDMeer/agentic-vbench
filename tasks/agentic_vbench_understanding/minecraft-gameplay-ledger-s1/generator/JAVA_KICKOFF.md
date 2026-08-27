@@ -14,7 +14,7 @@ bash authentic_session.sh <OUTDIR> start,forest,build_village,combat_showcase,be
 ```
 Output: `<OUTDIR>/authentic.mp4` + `<OUTDIR>/play.json` (the machine-exact ledger) + `play.json.crash.log`
 (verbose decision log). Runs on the SSD only; needs Java 21 (`$HOME/jdk-21.0.11+10`), the 1.20.4 client
-(`/tmp/galaxy_srv_disk00/pengchx3/agenticvbench/mc-client-1204`), Paper server (`…/p1-mc-server-1204`).
+(`$WORK/mc-client-1204`), Paper server (`$WORK/p1-mc-server-1204`).
 
 ## Current state (2026-07-24)
 Works end to end above ground; verified **by viewing frames** (do this — logs and colour metrics
