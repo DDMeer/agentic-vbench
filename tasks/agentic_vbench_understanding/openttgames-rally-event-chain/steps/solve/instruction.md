@@ -20,10 +20,22 @@ or files outside `/workspace`.
   ball.
 - Do not count warm-ups, dead-ball swings, ball handling between points, or
   other non-live-play actions.
+- Report only racket-ball contacts you can actually observe in the video. The
+  camera framing is narrower than the playing area, and a player who moves back
+  to return a ball may leave the frame entirely. Do not infer or report a contact
+  that occurs outside the camera frame, even when the ball's later path implies
+  one must have happened. The same applies to a contact whose moment is not
+  visible in the footage.
+- Where a contact is observable but one of its categorical fields is not, do not
+  guess: omit the whole stroke rather than report it with an inferred `player`,
+  `hand`, or `stroke` value.
 - Player identity is determined by fixed image position:
   - `left`: the player positioned on the left side of the table in the video.
   - `right`: the player positioned on the right side of the table in the video.
-- Reconstruct every live-play rally in the match.
+- Reconstruct every live-play rally in the match whose serve contact you can
+  observe. A rally is anchored on its serve, so if a point is played but its
+  serve's racket-ball contact is not visible in the footage, omit that rally
+  entirely rather than reporting it with an estimated serve time.
 - Report rallies in chronological order by serve time.
 - Report strokes within each rally in chronological order.
 

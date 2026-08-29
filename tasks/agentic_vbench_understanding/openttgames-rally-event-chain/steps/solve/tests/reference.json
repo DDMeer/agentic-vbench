@@ -9,7 +9,7 @@
     "frame_count": 172200
   },
   "valid_rallies": 92,
-  "excluded_rallies": 0,
+  "excluded_rallies": 1,
   "rallies": [
     {
       "rally_id": 1,
@@ -373,94 +373,10 @@
           "player": "left",
           "hand": "backhand",
           "stroke": "loop"
-        },
-        {
-          "frame": 13429,
-          "time_sec": 111.908,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "push"
-        },
-        {
-          "frame": 13507,
-          "time_sec": 112.558,
-          "player": "right",
-          "hand": "backhand",
-          "stroke": "push"
-        },
-        {
-          "frame": 13608,
-          "time_sec": 113.4,
-          "player": "left",
-          "hand": "backhand",
-          "stroke": "loop"
-        },
-        {
-          "frame": 13661,
-          "time_sec": 113.842,
-          "player": "right",
-          "hand": "forehand",
-          "stroke": "block"
-        },
-        {
-          "frame": 13751,
-          "time_sec": 114.592,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "loop"
-        },
-        {
-          "frame": 13900,
-          "time_sec": 115.833,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "block"
-        },
-        {
-          "frame": 14010,
-          "time_sec": 116.75,
-          "player": "right",
-          "hand": "forehand",
-          "stroke": "loop"
-        },
-        {
-          "frame": 14105,
-          "time_sec": 117.542,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "loop"
-        },
-        {
-          "frame": 14246,
-          "time_sec": 118.717,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "block"
-        },
-        {
-          "frame": 14393,
-          "time_sec": 119.942,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "loop"
-        },
-        {
-          "frame": 14539,
-          "time_sec": 121.158,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "block"
-        },
-        {
-          "frame": 14690,
-          "time_sec": 122.417,
-          "player": "left",
-          "hand": "forehand",
-          "stroke": "loop"
         }
       ],
-      "ending_frame": 14715,
-      "ending_time_sec": 122.625,
+      "ending_frame": 12325,
+      "ending_time_sec": 102.708,
       "ending": "left_net"
     },
     {
@@ -3817,5 +3733,16 @@
       "ending": "left_winner"
     }
   ],
-  "excluded": []
+  "excluded": [
+    {
+      "rally_id": 8,
+      "kind": "video-gap",
+      "kept_through_frame": 12325,
+      "kept_through_time_sec": 102.708,
+      "excluded_strokes": 12,
+      "excluded_from_frame": 13429,
+      "excluded_to_frame": 14690,
+      "reason": "second point in the same serve-defined window; its serve is visible but the racket-ball contact frame is not resolvable in the source video"
+    }
+  ]
 }

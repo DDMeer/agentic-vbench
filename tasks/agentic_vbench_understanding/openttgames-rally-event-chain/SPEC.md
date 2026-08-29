@@ -16,11 +16,14 @@ modalities_required:
     Rally discovery, racket-contact timing, player identity,
     forehand/backhand classification, stroke-technique recognition,
     and terminal-outcome classification require temporal visual evidence.
+    Only contacts visible in frame are scored; the camera framing is narrower
+    than the playing area, so observability is itself part of the task.
   audio: not used
 
 question: >
   Reconstruct the ordered stroke chain and terminal outcome for every
-  live-play rally in a full 23-minute-55-second table-tennis match.
+  live-play rally whose serve contact is visible in a full
+  23-minute-55-second table-tennis match.
 
 output_schema: >
   Rally-grouped JSON containing serve timestamp in seconds, an ordered
@@ -32,6 +35,8 @@ output_schema: >
 evidence:
   - t=7.28s, video, early-match rally requiring serve and ordered stroke-chain reconstruction
   - t=1346.79s, video, late-match rally requiring the same reconstruction near the end of the full video
+  - t=102.71s, video, rally 8 terminates on a net-stop that must be distinguished
+    from the separate point played later in the same annotation window
 
 ground_truth:
   source: >
@@ -41,21 +46,27 @@ ground_truth:
     data/raw/game_data/train/game_2.json,
     annotation SHA256
     7466f1f8c46316406ae224a17491354eac89f9cc2de858633b6f893573db4fe7.
-    Six source-terminal gaps are handled as explicitly documented bounded
-    video-audit exceptions.
+    Six source-terminal gaps and one two-point serve window are handled as
+    explicitly documented bounded video-audit exceptions.
   tier: machine-truth
   verification: >
-    Serve events define 92 rally windows. All 399 published stroke
-    annotations are retained. Ordinary exact "net" events are treated as
-    non-terminal net crossings, while supported player-prefixed ending
-    labels define terminal outcomes. Adjacent identical terminal labels
+    Serve events define 92 rally windows. Ordinary exact "net" events are
+    treated as non-terminal net crossings, while supported player-prefixed
+    ending labels define terminal outcomes. Adjacent identical terminal labels
     within 2 frames are deduplicated. Six live-play windows
     (rally IDs 13, 16, 18, 24, 55, and 73) contain no source terminal
     annotation; only their missing terminal outcomes were completed by
-    bounded frame-level inspection of the official video and are recorded
-    in calibration/source-exception-audit.md. No serve window is silently
-    excluded. Deterministic regeneration produces 92 benchmark rallies
-    containing all 399 source-derived stroke annotations, and the generated
+    bounded frame-level inspection of the official video. Serve window 8 spans
+    two points - the scoreboard moves 4:3 to 4:4 inside the gap - so it is
+    truncated at frame 12325 (102.708 s, the frame at which the net arrests the
+    ball's forward motion) with terminal left_net, and the second point is
+    excluded in full (12 strokes) because its serve contact frame is not
+    resolvable in the source video. Cross-referencing strokes against the
+    source's own net/bounce events surfaced 26 unannotated opponent contacts;
+    23 were confirmed off-frame and 3 were examined at 1/120 s and found to
+    show no labellable contact, so no stroke was added to the benchmark. No
+    serve window is silently excluded. Deterministic regeneration produces 92
+    benchmark rallies containing 387 source-derived strokes, and the generated
     solution and verifier references are byte-for-byte identical.
 
 scorer:
@@ -99,15 +110,33 @@ input:
 - Serve-defined rally windows: 92
 - Published stroke annotations: 399
 - Benchmark rallies: 92
-- Benchmark strokes: 399
+- Benchmark strokes: 387
 - Silently excluded serve windows: 0
 - Bounded source-terminal exceptions: 6
 - Exception rally IDs: 13, 16, 18, 24, 55, 73
+- Video-gap truncations: 1 (rally 8)
+- Strokes excluded by that truncation: 12
+- Strokes added by manual audit: 0
 
-The six exceptions change only otherwise-missing terminal outcomes; the
-benchmark stroke sequence remains source-derived. See
-`calibration/source-exception-audit.md` for the scoped video audit and
-`calibration/generation_audit.json` for deterministic generation metadata.
+The six terminal exceptions change only otherwise-missing terminal outcomes.
+The rally 8 truncation removes a second point whose serve contact frame is not
+resolvable in the source video. No stroke was added by hand; every benchmark
+stroke remains source-derived. See `calibration/source-exception-audit.md` for
+the scoped video audit and `calibration/generation_audit.json` for
+deterministic generation metadata.
+
+## Observability boundary
+
+The fixed camera framing is narrower than the playing area, so a player who
+retreats to return a ball can leave the frame. Cross-referencing the source's
+own `net` and `bounce` events against its stroke labels surfaces 26 opponent
+contacts that physically occurred but carry no annotation; 23 are confirmed
+off-frame and 3 were examined frame by frame without yielding a labellable
+contact. The benchmark therefore scores only contacts observable in the media,
+and `steps/solve/instruction.md` states that rule to the agent: report only
+visible contacts, never infer one from the ball's later path, and omit a rally
+whose serve contact is not visible. This keeps the reachable ceiling at 1.0 for
+an agent that perceives the video correctly.
 
 ## Difficulty
 

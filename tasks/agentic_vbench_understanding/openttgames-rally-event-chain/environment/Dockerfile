@@ -17,24 +17,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 FROM ${PYTHON_IMAGE}
 
-ARG CODEX_VERSION=0.147.0
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ffmpeg \
         ca-certificates \
         curl \
         bash \
-        nodejs \
-        npm \
         ripgrep \
-    && npm install -g "@openai/codex@${CODEX_VERSION}" \
-    && codex --version \
-    && command -v codex \
-    && command -v node \
-    && command -v npm \
+    && command -v ffmpeg \
+    && command -v bash \
     && command -v rg \
-    && rm -rf /var/lib/apt/lists/* \
-    && npm cache clean --force
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=media-build /baked/game.mp4 /baked/game.mp4
 

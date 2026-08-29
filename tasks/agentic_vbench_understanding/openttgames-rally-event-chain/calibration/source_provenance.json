@@ -24,8 +24,8 @@
   "ground_truth_derivation": {
     "rally_window_rule": "Each serve defines the start of a candidate rally window extending until the next serve.",
     "ending_dedup_rule": "Adjacent identical ending labels within 2 frames are deduplicated.",
-    "valid_rally_rule": "Keep rally windows with exactly one explicit ending after deduplication.",
-    "excluded_rally_ids": [
+    "valid_rally_rule": "Keep rally windows with exactly one explicit ending after deduplication; six windows with no source terminal use a bounded video-audit terminal, and one window is truncated at an audited cut frame because it spans two points.",
+    "source_terminal_exception_ids": [
       13,
       16,
       18,
@@ -33,7 +33,12 @@
       55,
       73
     ],
-    "final_valid_rallies": 86,
-    "final_benchmark_strokes": 384
+    "video_gap_truncation_ids": [
+      8
+    ],
+    "silently_excluded_serve_windows": 0,
+    "final_valid_rallies": 92,
+    "final_benchmark_strokes": 387,
+    "final_excluded_strokes": 12
   }
 }

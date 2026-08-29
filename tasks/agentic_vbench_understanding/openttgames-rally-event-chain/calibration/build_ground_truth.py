@@ -18,6 +18,21 @@ ENDING_SUFFIXES = (
     "_miss_on_own_side",
 )
 
+SOURCE_VIDEO_GAP_TRUNCATIONS = {
+    # One serve-defined window spans two distinct points: the scoreboard moves
+    # from 4:3 to 4:4 inside the gap that follows the first point. The second
+    # point's serve is visible in the video but its racket-ball contact frame is
+    # not resolvable, so that point is excluded rather than given an inferred
+    # serve. Only the fully annotated first point is kept, terminated at the
+    # frame where the net arrests the ball's forward motion, per the net anchor
+    # rule in steps/solve/instruction.md. See calibration/source-exception-audit.md.
+    8: {
+        "keep_through_frame": 12325,
+        "ending_frame": 12325,
+        "ending": "left_net",
+    },
+}
+
 SOURCE_TERMINAL_EXCEPTIONS = {
     # These six serve-defined windows contain live play in the video but
     # have no terminal label in the pinned source annotation. The terminal
@@ -151,6 +166,21 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
             if serve_frame <= f < next_serve
         ]
 
+        rally_id = i + 1
+        truncation = SOURCE_VIDEO_GAP_TRUNCATIONS.get(rally_id)
+        dropped = []
+
+        if truncation:
+            cut = truncation["keep_through_frame"]
+
+            dropped = [
+                parse_stroke(f, l)
+                for f, l in window
+                if f > cut and is_stroke(l)
+            ]
+
+            window = [(f, l) for f, l in window if f <= cut]
+
         strokes = [
             parse_stroke(f, l)
             for f, l in window
@@ -165,8 +195,44 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
 
         endings = dedup_endings(endings_raw)
 
-        rally_id = i + 1
-        if len(endings) == 1:
+        if truncation:
+            ending_frame = truncation["ending_frame"]
+            ending_label = truncation["ending"]
+
+            if not (serve_frame <= ending_frame < next_serve):
+                raise ValueError(
+                    f"Truncated ending for rally {rally_id} "
+                    "falls outside its serve window"
+                )
+
+            if not is_ending(ending_label):
+                raise ValueError(
+                    f"Unsupported truncated ending for rally {rally_id}: "
+                    f"{ending_label}"
+                )
+
+            excluded.append({
+                "rally_id": rally_id,
+                "kind": "video-gap",
+                "kept_through_frame": truncation["keep_through_frame"],
+                "kept_through_time_sec": frame_to_time(
+                    truncation["keep_through_frame"]
+                ),
+                "excluded_strokes": len(dropped),
+                "excluded_from_frame": (
+                    dropped[0]["frame"] if dropped else None
+                ),
+                "excluded_to_frame": (
+                    dropped[-1]["frame"] if dropped else None
+                ),
+                "reason": (
+                    "second point in the same serve-defined window; its serve "
+                    "is visible but the racket-ball contact frame is not "
+                    "resolvable in the source video"
+                ),
+            })
+
+        elif len(endings) == 1:
             ending_frame, ending_label = endings[0]
 
         elif (
@@ -234,6 +300,25 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
         "excluded_rally_ids": [
             item["rally_id"] for item in excluded
         ],
+        "video_gap_truncation_ids": sorted(
+            SOURCE_VIDEO_GAP_TRUNCATIONS
+        ),
+        "video_gap_truncations": {
+            str(rally_id): {
+                **value,
+                "keep_through_time_sec": frame_to_time(
+                    value["keep_through_frame"]
+                ),
+                "ending_time_sec": frame_to_time(value["ending_frame"]),
+            }
+            for rally_id, value
+            in SOURCE_VIDEO_GAP_TRUNCATIONS.items()
+        },
+        "video_gap_excluded_strokes": sum(
+            item.get("excluded_strokes", 0)
+            for item in excluded
+            if item.get("kind") == "video-gap"
+        ),
         "source_terminal_exception_ids": sorted(
             SOURCE_TERMINAL_EXCEPTIONS
         ),
@@ -255,7 +340,9 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
         "ground_truth_construction_rule": (
             "Use the single deduplicated source ending within each "
             "serve-defined rally window; for the six explicitly listed "
-            "source-terminal gaps, use the bounded video-audit terminal."
+            "source-terminal gaps, use the bounded video-audit terminal; for "
+            "the listed video-gap truncation, keep only the events up to the "
+            "audited cut frame and record the remainder as excluded."
         ),
     }
 

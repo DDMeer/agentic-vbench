@@ -3,8 +3,23 @@
   "total_annotation_events": 1575,
   "total_serves": 92,
   "valid_rallies": 92,
-  "excluded_rallies": 0,
-  "excluded_rally_ids": [],
+  "excluded_rallies": 1,
+  "excluded_rally_ids": [
+    8
+  ],
+  "video_gap_truncation_ids": [
+    8
+  ],
+  "video_gap_truncations": {
+    "8": {
+      "keep_through_frame": 12325,
+      "ending_frame": 12325,
+      "ending": "left_net",
+      "keep_through_time_sec": 102.708,
+      "ending_time_sec": 102.708
+    }
+  },
+  "video_gap_excluded_strokes": 12,
   "source_terminal_exception_ids": [
     13,
     16,
@@ -45,10 +60,10 @@
       "ending_time_sec": 1059.367
     }
   },
-  "benchmark_strokes": 399,
+  "benchmark_strokes": 387,
   "dedup_rule": {
     "type": "adjacent identical ending labels",
     "max_gap_frames": 2
   },
-  "ground_truth_construction_rule": "Use the single deduplicated source ending within each serve-defined rally window; for the six explicitly listed source-terminal gaps, use the bounded video-audit terminal."
+  "ground_truth_construction_rule": "Use the single deduplicated source ending within each serve-defined rally window; for the six explicitly listed source-terminal gaps, use the bounded video-audit terminal; for the listed video-gap truncation, keep only the events up to the audited cut frame and record the remainder as excluded."
 }
