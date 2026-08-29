@@ -10,14 +10,16 @@ Tolerance is tight (build order is order/timing-sensitive); the ~5 fps game-time
 sampling (~0.18s) makes +/-3s physically achievable. Diagnose difficulty by relaxing
 TOL OFFLINE (see calibration/score_sc2_unified.py), not in this scorer.
 
-GT (gt.json): {"events":[{"race","name","t"}...]} pooled terran+zerg.
-Answer (/output/answer.json): accepted in either of two shapes (name/time reformatted
-only; content unchanged):
+GT (gt.json, sibling of this script): {"events":[{"race","name","t"}...]} pooled terran+zerg.
+Answer (--solution): accepted in either of two shapes (name/time reformatted only;
+content unchanged):
   A) {"players":[{"race":"terran","buildings":[{"t_seconds":20,"name":"SupplyDepot"}]}, ...]}
   B) {"player_1":[{"name":"Supply Depot","time":"00:40"}], "player_2":[...]}  (P1=terran, P2=zerg)
 Name matching is case/space-insensitive; times may be seconds or "MM:SS".
 """
-import json, os
+import argparse
+import json
+from pathlib import Path
 
 TOL = 3.0
 
@@ -98,13 +100,21 @@ def score(gt, ans):
 
 
 def main():
-    here = os.path.dirname(os.path.abspath(__file__))
-    gt = load(os.environ.get("GT_PATH", os.path.join(here, "gt.json")))
-    ans = load(os.environ.get("ANSWER_PATH", "/output/answer.json"), {})
-    reward, detail = score(gt, ans)
-    out = {"reward": round(reward, 4), "detail": detail}
-    with open(os.environ.get("REWARD_PATH", os.path.join(here, "reward.json")), "w") as f:
-        json.dump(out, f, indent=2)
+    here = Path(__file__).resolve().parent
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--solution", required=True, type=Path)
+    ap.add_argument("--reward-json", required=True, type=Path)
+    ap.add_argument("--reward-txt", required=True, type=Path)
+    ap.add_argument("--gt", type=Path, default=here / "gt.json")
+    args = ap.parse_args()
+
+    gt = load(args.gt)
+    ans = load(args.solution, {})
+    reward, details = score(gt, ans)
+    out = {"reward": round(reward, 4), "details": details}
+    args.reward_json.parent.mkdir(parents=True, exist_ok=True)
+    args.reward_json.write_text(json.dumps(out, indent=2))
+    args.reward_txt.write_text(f"{round(reward, 4)}\n")
     print(json.dumps(out))
 
 

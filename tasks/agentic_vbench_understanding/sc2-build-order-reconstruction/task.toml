@@ -1,29 +1,34 @@
-# AgenticVBench task — reconstruct BOTH players' build orders from a tiled bird's-eye SC2 video.
+version = "1.0"
+
 [task]
-id = "sc2-build-order-reconstruction"
-domain = "agentic_vbench_games"
-title = "StarCraft II bird's-eye: reconstruct both players' build orders (structure + game-time)"
+name = "agentic-vbench/sc2-build-order-reconstruction"
 
-[source]
-replay = "gt/match.SC2Replay"          # AutomatonLE 1v1 TvZ, base build 75689, ~15 min
-gt = "gt/gt_terran.json + gt/gt_zerg.json"   # 94 events (Terran 61, Zerg 33), machine-parsed from the replay
-gt_generator = "calibration/gen_sc2_gt.py"   # regenerates the GT from the replay; rules documented in SPEC.md
-gt_pooled = "steps/solve/tests/gt.json"      # both players pooled into one timeline (verifier input)
+[metadata]
+difficulty = "hard"
+category = "video-understanding"
+tags = ["video-understanding", "rts", "starcraft-2", "build-order", "event-timeline", "agentic-vbench-understanding"]
+# Ordinary ladder 1v1 TvZ (AutomatonLE, base build 75689, ~15 min), no HUD/panels/counters.
+# GT machine-parsed from the same .SC2Replay the video was rendered from (UnitInitEvent = construction start).
+source = "AutomatonLE 1v1 TvZ ladder replay (gt/match.SC2Replay), base build 75689"
 
-[media]
-tiles = "tiles/tile_r{0..2}c{0..2}.mp4"   # 9-tile 3×3 of one full-map god-view, ~135 MB total
-frames_time = "tiles/frames_time.json"    # frame index -> game-seconds
-checksums = "tiles/SHA256SUMS.txt"
-render = "full-map god-view @ camera distance 320 (whole battlefield, no clipping), RAW (no image processing), 3072²→3×3 tiles, ~5 fps game-time (~0.18 s, 5000 frames/tile)"
-time_alignment = "event time = construction START, t = round(game_loop/22.4) game-seconds; frames_time.json maps frame->game-seconds; measured GT<->video alignment in calibration/proof/alignment.md"
+[environment]
+build_timeout_sec = 2400.0
+cpus = 4
+memory_mb = 8192
+# 9 tiles ~135 MB total; give the build and trial room.
+storage_mb = 16384
+# The tiles are baked at build time and the GT is not online: keep this false.
+allow_internet = false
 
-[scoring]
-metric = "unified_timeline_f1"
-key = "(race, structure_name)"
-tolerance_s = 3
-rule = "both players pooled into ONE chronological timeline; greedy 1:1 time-matched by (race, name) within +/-3s; reward = F1"
+[environment.env]
+HF_TOKEN = "${HF_TOKEN:-}"
 
-[limits]
-max_turns = 200
-time_limit_min = 90
-# CANARY: agentic_vbench task — do not train on this file.
+[[steps]]
+name = "solve"
+
+[steps.agent]
+# A 15-min tiled bird's-eye with ~94 structures needs real time to seek and tally.
+timeout_sec = 3600.0
+
+[steps.verifier]
+timeout_sec = 600.0

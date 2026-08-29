@@ -1,10 +1,14 @@
-#!/usr/bin/env bash
-# Verifier entrypoint: score the agent's /output/answer.json against the pinned GT with the
-# deterministic unified-timeline F1 scorer, writing reward.json. Pure code, no VLM/LLM.
+#!/bin/bash
+# Verifier entry point. Preserve the agent's output for the audit trail, then grade.
 set -euo pipefail
-cd "$(dirname "$0")"
-export GT_PATH="${GT_PATH:-$(pwd)/gt.json}"
-export ANSWER_PATH="${ANSWER_PATH:-/output/answer.json}"
-export REWARD_PATH="${REWARD_PATH:-/output/reward.json}"
-python judge.py
-cat "$REWARD_PATH"
+
+mkdir -p /logs/verifier /logs/artifacts
+
+if [ -d /workspace/output ]; then
+    cp -a /workspace/output/. /logs/artifacts/ 2>/dev/null || true
+fi
+
+python3 /tests/judge.py \
+        --solution /workspace/output/solution.json \
+        --reward-json /logs/verifier/reward.json \
+        --reward-txt /logs/verifier/reward.txt
