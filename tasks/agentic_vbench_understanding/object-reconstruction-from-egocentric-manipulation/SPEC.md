@@ -95,7 +95,7 @@ anti_shortcut:
 input:
   clips: 3
   objects: [coffee_pot, potato_masher, spatula_red]   # three distinct non-convex shapes that need many views (survive the hull test)
-  url: https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_recon/resolve/main
+  url: https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_recon/resolve/ab18893ae61a4050aa80c383bf18ee6e9be326da
     # baked at build; every file SHA256-checked (see Dockerfile ARGs). Only the agent-facing
     # materials are hosted here; the reference meshes (answer key) are not, they ship
     # verifier-side under steps/solve/tests/ (grader) and steps/solve/solution/ (oracle).

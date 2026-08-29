@@ -1,4 +1,5 @@
-FROM python:3.12-slim
+# python:3.12-slim, digest-pinned so the base cannot drift after merge
+FROM python@sha256:423ed6ab25b1921a477529254bfeeabf5855151dc2c3141699a1bfc852199fbf
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ffmpeg curl ca-certificates \
@@ -14,7 +15,7 @@ RUN pip install --no-cache-dir numpy==2.1.3 scipy==1.14.1 trimesh==4.5.3
 # the answer key and are NOT in the image: they ship verifier-side (a copy in
 # steps/solve/solution/ for the oracle), and the grader scores against the point set
 # baked into steps/solve/tests/ground_truth.json. So the agent never sees a reference mesh.
-ARG MATERIALS_BASE=https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_recon/resolve/main
+ARG MATERIALS_BASE=https://huggingface.co/datasets/yalesunxiatao/agentic_vbench_understanding_recon/resolve/ab18893ae61a4050aa80c383bf18ee6e9be326da
 ARG CLIP01_SHA256=2f153d49b5c6b61e58d6b648af1002718dddd2fe2b32c6ba28d4e9d80d388a1c
 ARG CLIP02_SHA256=56c42f94baecf5a78e2b6e32ed5af59719b51badfc6405d3f67d9b26bbc77520
 ARG CLIP03_SHA256=9d2cd0f8127622bc5805f4cbaf83efcbf17a9ad8d1f46748a26a9ccb7c5ab546

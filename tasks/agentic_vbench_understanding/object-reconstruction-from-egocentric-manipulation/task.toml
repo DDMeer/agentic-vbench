@@ -18,9 +18,6 @@ memory_mb = 8192
 storage_mb = 8192
 allow_internet = false
 
-[environment.env]
-HF_TOKEN = "${HF_TOKEN:-}"
-
 [[steps]]
 name = "solve"
 
