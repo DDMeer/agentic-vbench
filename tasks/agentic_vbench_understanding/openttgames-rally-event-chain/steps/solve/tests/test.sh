@@ -152,6 +152,7 @@ python "$JUDGE" \
     --reference "$REFERENCE" \
     --reward-json /logs/verifier/reward.json \
     --reward-txt /logs/verifier/reward.txt \
+    --details-json /logs/verifier/reward-details.json \
     > /dev/null
 
 rm -rf "$TMP"

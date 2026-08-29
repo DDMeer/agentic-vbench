@@ -424,6 +424,12 @@ def main() -> None:
         required=False,
     )
 
+    parser.add_argument(
+        "--details-json",
+        type=Path,
+        required=False,
+    )
+
     args = parser.parse_args()
 
     try:
@@ -466,7 +472,7 @@ def main() -> None:
             text + "\n"
         )
 
-    # Used by Harbor.
+    # Used by Harbor. Reward values must be numeric.
     if args.reward_json:
         args.reward_json.parent.mkdir(
             parents=True,
@@ -474,6 +480,20 @@ def main() -> None:
         )
 
         args.reward_json.write_text(
+            json.dumps(
+                {"reward": result["reward"]},
+                indent=2,
+            ) + "\n"
+        )
+
+    # Keep full diagnostics separately.
+    if args.details_json:
+        args.details_json.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        args.details_json.write_text(
             text + "\n"
         )
 
