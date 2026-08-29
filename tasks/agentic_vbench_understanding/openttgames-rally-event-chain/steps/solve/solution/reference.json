@@ -8,8 +8,8 @@
     "duration_sec": 1435.0,
     "frame_count": 172200
   },
-  "valid_rallies": 86,
-  "excluded_rallies": 6,
+  "valid_rallies": 92,
+  "excluded_rallies": 0,
   "rallies": [
     {
       "rally_id": 1,
@@ -627,6 +627,31 @@
       "ending": "left_winner"
     },
     {
+      "rally_id": 13,
+      "serve_frame": 23419,
+      "serve_time_sec": 195.158,
+      "server": "right",
+      "strokes": [
+        {
+          "frame": 23419,
+          "time_sec": 195.158,
+          "player": "right",
+          "hand": "forehand",
+          "stroke": "serve"
+        },
+        {
+          "frame": 23520,
+          "time_sec": 196.0,
+          "player": "left",
+          "hand": "forehand",
+          "stroke": "lob"
+        }
+      ],
+      "ending_frame": 23710,
+      "ending_time_sec": 197.583,
+      "ending": "left_winner"
+    },
+    {
       "rally_id": 14,
       "serve_frame": 24267,
       "serve_time_sec": 202.225,
@@ -684,6 +709,31 @@
       "ending": "left_out"
     },
     {
+      "rally_id": 16,
+      "serve_frame": 26255,
+      "serve_time_sec": 218.792,
+      "server": "left",
+      "strokes": [
+        {
+          "frame": 26255,
+          "time_sec": 218.792,
+          "player": "left",
+          "hand": "forehand",
+          "stroke": "serve"
+        },
+        {
+          "frame": 26358,
+          "time_sec": 219.65,
+          "player": "right",
+          "hand": "forehand",
+          "stroke": "loop"
+        }
+      ],
+      "ending_frame": 26492,
+      "ending_time_sec": 220.767,
+      "ending": "right_winner"
+    },
+    {
       "rally_id": 17,
       "serve_frame": 26899,
       "serve_time_sec": 224.158,
@@ -707,6 +757,59 @@
       "ending_frame": 27000,
       "ending_time_sec": 225.0,
       "ending": "right_out"
+    },
+    {
+      "rally_id": 18,
+      "serve_frame": 28333,
+      "serve_time_sec": 236.108,
+      "server": "right",
+      "strokes": [
+        {
+          "frame": 28333,
+          "time_sec": 236.108,
+          "player": "right",
+          "hand": "backhand",
+          "stroke": "serve"
+        },
+        {
+          "frame": 28429,
+          "time_sec": 236.908,
+          "player": "left",
+          "hand": "forehand",
+          "stroke": "push"
+        },
+        {
+          "frame": 28530,
+          "time_sec": 237.75,
+          "player": "right",
+          "hand": "forehand",
+          "stroke": "loop"
+        },
+        {
+          "frame": 28607,
+          "time_sec": 238.392,
+          "player": "left",
+          "hand": "forehand",
+          "stroke": "loop"
+        },
+        {
+          "frame": 28685,
+          "time_sec": 239.042,
+          "player": "right",
+          "hand": "backhand",
+          "stroke": "loop"
+        },
+        {
+          "frame": 28748,
+          "time_sec": 239.567,
+          "player": "left",
+          "hand": "backhand",
+          "stroke": "loop"
+        }
+      ],
+      "ending_frame": 28780,
+      "ending_time_sec": 239.833,
+      "ending": "left_net"
     },
     {
       "rally_id": 19,
@@ -902,6 +1005,24 @@
       "ending_frame": 38894,
       "ending_time_sec": 324.117,
       "ending": "left_net"
+    },
+    {
+      "rally_id": 24,
+      "serve_frame": 39836,
+      "serve_time_sec": 331.967,
+      "server": "right",
+      "strokes": [
+        {
+          "frame": 39836,
+          "time_sec": 331.967,
+          "player": "right",
+          "hand": "forehand",
+          "stroke": "serve"
+        }
+      ],
+      "ending_frame": 39864,
+      "ending_time_sec": 332.2,
+      "ending": "right_net"
     },
     {
       "rally_id": 25,
@@ -2123,6 +2244,31 @@
       "ending": "right_net"
     },
     {
+      "rally_id": 55,
+      "serve_frame": 92546,
+      "serve_time_sec": 771.217,
+      "server": "right",
+      "strokes": [
+        {
+          "frame": 92546,
+          "time_sec": 771.217,
+          "player": "right",
+          "hand": "backhand",
+          "stroke": "serve"
+        },
+        {
+          "frame": 92652,
+          "time_sec": 772.1,
+          "player": "left",
+          "hand": "forehand",
+          "stroke": "loop"
+        }
+      ],
+      "ending_frame": 92752,
+      "ending_time_sec": 772.933,
+      "ending": "right_net"
+    },
+    {
       "rally_id": 56,
       "serve_frame": 97727,
       "serve_time_sec": 814.392,
@@ -2905,6 +3051,31 @@
       "ending": "left_out"
     },
     {
+      "rally_id": 73,
+      "serve_frame": 126958,
+      "serve_time_sec": 1057.983,
+      "server": "right",
+      "strokes": [
+        {
+          "frame": 126958,
+          "time_sec": 1057.983,
+          "player": "right",
+          "hand": "forehand",
+          "stroke": "serve"
+        },
+        {
+          "frame": 127070,
+          "time_sec": 1058.917,
+          "player": "left",
+          "hand": "backhand",
+          "stroke": "flick"
+        }
+      ],
+      "ending_frame": 127124,
+      "ending_time_sec": 1059.367,
+      "ending": "left_winner"
+    },
+    {
       "rally_id": 74,
       "serve_frame": 128028,
       "serve_time_sec": 1066.9,
@@ -3646,48 +3817,5 @@
       "ending": "left_winner"
     }
   ],
-  "excluded": [
-    {
-      "rally_id": 13,
-      "serve_frame": 23419,
-      "serve_time_sec": 195.158,
-      "reason": "0 endings after dedup",
-      "raw_endings": []
-    },
-    {
-      "rally_id": 16,
-      "serve_frame": 26255,
-      "serve_time_sec": 218.792,
-      "reason": "0 endings after dedup",
-      "raw_endings": []
-    },
-    {
-      "rally_id": 18,
-      "serve_frame": 28333,
-      "serve_time_sec": 236.108,
-      "reason": "0 endings after dedup",
-      "raw_endings": []
-    },
-    {
-      "rally_id": 24,
-      "serve_frame": 39836,
-      "serve_time_sec": 331.967,
-      "reason": "0 endings after dedup",
-      "raw_endings": []
-    },
-    {
-      "rally_id": 55,
-      "serve_frame": 92546,
-      "serve_time_sec": 771.217,
-      "reason": "0 endings after dedup",
-      "raw_endings": []
-    },
-    {
-      "rally_id": 73,
-      "serve_frame": 126958,
-      "serve_time_sec": 1057.983,
-      "reason": "0 endings after dedup",
-      "raw_endings": []
-    }
-  ]
+  "excluded": []
 }

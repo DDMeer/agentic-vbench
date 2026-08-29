@@ -6,6 +6,10 @@ from __future__ import annotations
 
 import argparse
 import json
+
+import os
+
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +23,42 @@ STROKE_FIELDS = (
     "hand",
     "stroke",
 )
+
+
+MAX_SOLUTION_BYTES = 8 * 1024 * 1024
+
+
+def load_solution_safely(path: Path) -> Any:
+    """Load an agent submission without following special filesystem objects."""
+    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+    fd = os.open(path, flags)
+
+    try:
+        info = os.fstat(fd)
+
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("solution.json is not a regular file")
+
+        if info.st_size > MAX_SOLUTION_BYTES:
+            raise ValueError(
+                f"solution.json exceeds {MAX_SOLUTION_BYTES} bytes"
+            )
+
+        # Read only from the descriptor validated by fstat().
+        with os.fdopen(fd, "rb") as f:
+            fd = -1
+            payload = f.read(MAX_SOLUTION_BYTES + 1)
+
+        if len(payload) > MAX_SOLUTION_BYTES:
+            raise ValueError(
+                f"solution.json exceeds {MAX_SOLUTION_BYTES} bytes"
+            )
+
+        return json.loads(payload)
+
+    finally:
+        if fd >= 0:
+            os.close(fd)
 
 
 def numeric(value: Any) -> float | None:
@@ -201,8 +241,10 @@ def score(
         for field in STROKE_FIELDS
     }
 
+    semantic_joint_hits = 0
     ending_label_hits = 0
     ending_time_hits = 0
+    ending_joint_hits = 0
 
     matched_details = []
 
@@ -242,6 +284,12 @@ def score(
                 if pred_stroke.get(field) == ref_stroke.get(field):
                     semantic_hits[field] += 1
 
+            semantic_joint_ok = all(
+                pred_stroke.get(field) == ref_stroke.get(field)
+                for field in STROKE_FIELDS
+            )
+            semantic_joint_hits += int(semantic_joint_ok)
+
         ending_label_ok = (
             prediction.get("ending") == reference.get("ending")
         )
@@ -261,8 +309,11 @@ def score(
             <= ENDING_TOLERANCE_S
         )
 
+        ending_joint_ok = ending_label_ok and ending_time_ok
+
         ending_label_hits += int(ending_label_ok)
         ending_time_hits += int(ending_time_ok)
+        ending_joint_hits += int(ending_joint_ok)
 
         matched_details.append(
             {
@@ -275,6 +326,7 @@ def score(
                 "matched_strokes": len(stroke_matches),
                 "ending_label_ok": ending_label_ok,
                 "ending_time_ok": ending_time_ok,
+                "ending_joint_ok": ending_joint_ok,
             }
         )
 
@@ -311,10 +363,10 @@ def score(
             total_reference_strokes,
         )
 
-    stroke_semantic_score = (
-        sum(semantic_scores.values()) / len(STROKE_FIELDS)
-        if STROKE_FIELDS
-        else 0.0
+    stroke_semantic_score = f1_from_hits(
+        semantic_joint_hits,
+        total_predicted_strokes,
+        total_reference_strokes,
     )
 
     matched_rally_count = len(rally_matches)
@@ -332,8 +384,10 @@ def score(
     )
 
     ending_score = (
-        ending_label_accuracy + ending_time_accuracy
-    ) / 2.0
+        ending_joint_hits / matched_rally_count
+        if matched_rally_count
+        else 0.0
+    )
 
     reward = (
         rally_f1
@@ -365,7 +419,7 @@ def score(
             for field, score_value in semantic_scores.items()
         },
 
-        "stroke_semantic_mean": round(
+        "stroke_semantic_joint": round(
             stroke_semantic_score,
             6,
         ),
@@ -379,7 +433,7 @@ def score(
                 ending_time_accuracy,
                 6,
             ),
-            "mean_score": round(
+            "joint_accuracy": round(
                 ending_score,
                 6,
             ),
@@ -433,14 +487,15 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        with args.solution.open() as f:
-            solution = json.load(f)
+        solution = load_solution_safely(args.solution)
 
         reason = "ok"
 
     except (
         FileNotFoundError,
         json.JSONDecodeError,
+        UnicodeDecodeError,
+        ValueError,
         OSError,
     ) as exc:
         solution = {}

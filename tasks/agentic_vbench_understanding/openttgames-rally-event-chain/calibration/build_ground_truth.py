@@ -18,6 +18,38 @@ ENDING_SUFFIXES = (
     "_miss_on_own_side",
 )
 
+SOURCE_TERMINAL_EXCEPTIONS = {
+    # These six serve-defined windows contain live play in the video but
+    # have no terminal label in the pinned source annotation. The terminal
+    # events below were filled by a bounded video audit requested during
+    # benchmark review. All other event-chain labels remain source-derived.
+    13: {
+        "frame": 23710,
+        "ending": "left_winner",
+    },
+    16: {
+        "frame": 26492,
+        "ending": "right_winner",
+    },
+    18: {
+        "frame": 28780,
+        "ending": "left_net",
+    },
+    24: {
+        "frame": 39864,
+        "ending": "right_net",
+    },
+    55: {
+        "frame": 92752,
+        "ending": "right_net",
+    },
+    73: {
+        "frame": 127124,
+        "ending": "left_winner",
+    },
+}
+
+
 STROKE_TYPES = (
     "_serve",
     "_loop",
@@ -133,9 +165,32 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
 
         endings = dedup_endings(endings_raw)
 
-        if len(endings) != 1:
+        rally_id = i + 1
+        if len(endings) == 1:
+            ending_frame, ending_label = endings[0]
+
+        elif (
+            len(endings) == 0
+            and rally_id in SOURCE_TERMINAL_EXCEPTIONS
+        ):
+            override = SOURCE_TERMINAL_EXCEPTIONS[rally_id]
+            ending_frame = override["frame"]
+            ending_label = override["ending"]
+            if not (serve_frame <= ending_frame < next_serve):
+                raise ValueError(
+                    f"Audited ending for rally {rally_id} "
+                    "falls outside its serve window"
+                )
+
+            if not is_ending(ending_label):
+                raise ValueError(
+                    f"Unsupported audited ending for rally {rally_id}: "
+                    f"{ending_label}"
+                )
+
+        else:
             excluded.append({
-                "rally_id": i + 1,
+                "rally_id": rally_id,
                 "serve_frame": serve_frame,
                 "serve_time_sec": frame_to_time(serve_frame),
                 "reason": f"{len(endings)} endings after dedup",
@@ -143,10 +198,8 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
             })
             continue
 
-        ending_frame, ending_label = endings[0]
-
         valid.append({
-            "rally_id": i + 1,
+            "rally_id": rally_id,
             "serve_frame": serve_frame,
             "serve_time_sec": frame_to_time(serve_frame),
             "server": strokes[0]["player"],
@@ -181,6 +234,17 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
         "excluded_rally_ids": [
             item["rally_id"] for item in excluded
         ],
+        "source_terminal_exception_ids": sorted(
+            SOURCE_TERMINAL_EXCEPTIONS
+        ),
+        "source_terminal_exceptions": {
+            str(rally_id): {
+                **value,
+                "ending_time_sec": frame_to_time(value["frame"]),
+            }
+            for rally_id, value
+            in SOURCE_TERMINAL_EXCEPTIONS.items()
+        },
         "benchmark_strokes": sum(
             len(rally["strokes"]) for rally in valid
         ),
@@ -188,9 +252,10 @@ def build_reference(input_path: Path) -> tuple[dict, dict]:
             "type": "adjacent identical ending labels",
             "max_gap_frames": 2,
         },
-        "valid_rally_rule": (
-            "exactly one ending after dedup within each "
-            "serve-defined rally window"
+        "ground_truth_construction_rule": (
+            "Use the single deduplicated source ending within each "
+            "serve-defined rally window; for the six explicitly listed "
+            "source-terminal gaps, use the bounded video-audit terminal."
         ),
     }
 
