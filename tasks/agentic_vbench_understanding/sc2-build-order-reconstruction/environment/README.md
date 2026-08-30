@@ -28,17 +28,21 @@ docker build -f environment/Dockerfile \
 ## Run the agent inside, then score outside
 ```bash
 # 1) agent works inside the container; it writes /workspace/output/solution.json
-docker run --rm -it -v "$PWD/out:/out" sc2-buildorder-task \
+mkdir -p out
+docker run --rm -it \
+  -v "$(pwd)/out:/workspace/output" \
+  -v "$(pwd)/steps/solve/instruction.md:/workspace/instruction.md:ro" \
+  sc2-buildorder-task \
   bash -lc 'cat /workspace/instruction.md; ls /workspace/materials; \
             <your agent runs here, writing /workspace/output/solution.json>'
 
-# 2) score OUTSIDE the container (GT + judge stay on the host)
+# 2) score OUTSIDE the container (GT + judge stay on the host; read host-side output)
 python steps/solve/tests/judge.py \
-  --solution /workspace/output/solution.json \
+  --solution "$(pwd)/out/solution.json" \
   --gt steps/solve/tests/gt.json \
-  --reward-json /logs/verifier/reward.json \
-  --reward-txt /logs/verifier/reward.txt
-# -> reward.json: {"reward": ..., "details": {...}}
+  --reward-json "$(pwd)/out/reward.json" \
+  --reward-txt "$(pwd)/out/reward.txt"
+# -> out/reward.json: {"reward": ..., "details": {...}}
 ```
 
 ## Hosting
