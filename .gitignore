@@ -86,3 +86,9 @@ release-assets/**/*.mp4
 tasks/agentic_vbench_understanding/*/environment/*.mp4
 # Understanding family: local calibration materials (not committed; media lives on HF).
 tasks/agentic_vbench_understanding/*/environment/local_materials/
+
+# Calibration working artifacts: failed-attempt archives and periodic workspace
+# snapshots. Kept locally as evidence but far too large for the repo (1.3 GB and
+# 267 MB respectively); the accepted runs' trajectories are committed instead.
+tasks/agentic_vbench_understanding/*/calibration/rollouts/aborted/
+tasks/agentic_vbench_understanding/*/calibration/rollouts/snapshots/

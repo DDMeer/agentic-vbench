@@ -83,6 +83,11 @@ scorer:
   null_reward: 0.0
 
 difficulty:
+  # Filled once all three harnesses are calibrated, per family precedent: every
+  # merged task in this family ships this card complete. Two of three are done
+  # (Codex 0.001858 / 53 turns, Antigravity 0.000000 / 164 turns, both clearing
+  # the gates); the measured values live in calibration/scores.md until Claude
+  # Code and the ablations land.
   strong_agent_reward: pending final calibration
   tool_call_turns: pending final calibration
   agent_model: pending final calibration
