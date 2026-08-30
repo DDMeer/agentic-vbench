@@ -7,7 +7,7 @@ of a 1v1 StarCraft II match (Terran vs Zerg, ~15 min), plus `tiles/frames_time.j
 in frame (no clipping); ~5 fps game-time sampling (~0.18 s, 5000 frames/tile). No HUD, panels,
 counters, minimap, or names — only the rendered world.
 
-## Output (`answer.json`)
+## Output (`solution.json`)
 Per player, a chronological list of production events `(game_time_s, structure)`:
 ```json
 {"players":[

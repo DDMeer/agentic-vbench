@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # (iTheresaApocalypse/agentvbench). The tiles are the only input the agent gets;
 # ground truth and scorer are verifier-side, never in this image (mounted for
 # the verify step only).
-ARG MATERIALS_URL=https://huggingface.co/datasets/iTheresaApocalypse/agentvbench/resolve/main/sc2/tiles
+ARG MATERIALS_URL=https://huggingface.co/datasets/iTheresaApocalypse/agentvbench/resolve/b74a6092c12bcd99a394fcec66cfc01253da13af/sc2/tiles
 COPY tiles/SHA256SUMS.txt /tmp/SHA256SUMS.txt
 RUN mkdir -p /workspace/materials /workspace/output /workspace/work \
  && cd /workspace/materials \
