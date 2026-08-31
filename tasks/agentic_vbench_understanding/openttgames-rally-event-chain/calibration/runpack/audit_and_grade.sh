@@ -58,6 +58,22 @@ echo "    (nothing listed above = clean)"
 echo "--- every URL the run touched (inspect: only the model endpoint is allowed):"
 grep -oiE "https?://[a-z0-9._/-]+" "$TRAJ" | sort | uniq -c | sort -rn | head -20 || true
 
+echo; echo "=== 2b. CREDENTIAL LEAK SCAN ==="
+echo "  Agents can print their own environment. A Gemini run executed \`env\` and"
+echo "  wrote GEMINI_API_KEY in clear text into its trajectory; injecting secrets as"
+echo "  files rather than command-line arguments does not prevent this. Any hit must"
+echo "  be redacted before the artifact is committed, and the key rotated."
+LEAK=0
+for pat in "AQ\\.[A-Za-z0-9_-]\\{20,\\}" "sk-ant-api[0-9]*-[A-Za-z0-9_-]\\{20,\\}" "sk-proj-[A-Za-z0-9_-]\\{20,\\}" "AIza[0-9A-Za-z_-]\\{30,\\}" "ghp_[A-Za-z0-9]\\{30,\\}"; do
+  n=$(grep -c -E "$pat" "$TRAJ" 2>/dev/null || true)
+  if [ "${n:-0}" != "0" ]; then echo "    $pat : $n  <<< SECRET IN TRAJECTORY"; LEAK=1; fi
+done
+for name in GEMINI_API_KEY ANTHROPIC_API_KEY OPENAI_API_KEY; do
+  n=$(grep -c -E "$name=[A-Za-z0-9]" "$TRAJ" 2>/dev/null || true)
+  if [ "${n:-0}" != "0" ]; then echo "    $name assigned a value : $n  <<< SECRET IN TRAJECTORY"; LEAK=1; fi
+done
+[ "$LEAK" = "0" ] && echo "    clean - no credential material in this trajectory"
+
 echo; echo "=== 3. EFFORT (natural > 50 tool-call turns required) ==="
 echo "  trajectory lines: $(wc -l < "$TRAJ")"
 python3 - "$TRAJ" <<'PYCOUNT'
@@ -68,7 +84,9 @@ import json, sys, collections
 #   Claude Code          tool_use blocks in assistant messages
 #   Antigravity native   distinct step_index whose type is a tool action
 path = sys.argv[1]
-codex = set(); claude = 0; agy_tool = set(); agy_all = set()
+# Claude turns are de-duplicated by tool_use block id: stream-json can emit the same
+# assistant message more than once, and counting raw blocks inflates the number.
+codex = set(); claude = set(); agy_tool = set(); agy_all = set()
 AGY_TOOLS = {"RUN_COMMAND","VIEW_FILE","EDIT_FILE","CODE_ACTION","LIST_DIRECTORY","GREP","READ_FILE","WRITE_FILE"}
 kinds = collections.Counter()
 for line in open(path, errors="replace"):
@@ -81,7 +99,7 @@ for line in open(path, errors="replace"):
         if it.get("type") == "command_execution": codex.add(it.get("id"))
     if d.get("type") == "assistant":
         for c in (d.get("message", {}) or {}).get("content", []) or []:
-            if c.get("type") == "tool_use": claude += 1
+            if c.get("type") == "tool_use": claude.add(c.get("id"))
     si = d.get("step_index")
     if si is None:
         su = d.get("step_update") or {}
@@ -92,7 +110,7 @@ for line in open(path, errors="replace"):
         agy_all.add(si); kinds[ty] += 1
         if ty in AGY_TOOLS or ty == "tool": agy_tool.add(si)
 if codex:    print("  Codex rule (distinct command_execution item.started): %d" % len(codex))
-if claude:   print("  Claude rule (tool_use blocks): %d" % claude)
+if claude:   print("  Claude rule (distinct tool_use block ids): %d" % len(claude))
 if agy_all:
     print("  Antigravity rule (distinct tool step_index): %d" % len(agy_tool))
     print("  all distinct step_index: %d   record types: %s" % (len(agy_all), dict(kinds.most_common(6))))

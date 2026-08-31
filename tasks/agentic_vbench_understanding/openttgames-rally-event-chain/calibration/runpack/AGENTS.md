@@ -20,4 +20,4 @@ Hard rules — violating any of them voids the run:
    see. Identify players only as `left` and `right` by their position in frame,
    per `instruction.md`.
 5. Write your final answer to `output/solution.json` exactly per the schema in
-   `instruction.md`. A complete best-effort answer beats an empty one.
+   `instruction.md`.

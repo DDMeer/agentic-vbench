@@ -83,21 +83,44 @@ scorer:
   null_reward: 0.0
 
 difficulty:
-  # Filled once all three harnesses are calibrated, per family precedent: every
-  # merged task in this family ships this card complete. Two of three are done
-  # (Codex 0.001858 / 53 turns, Antigravity 0.000000 / 164 turns, both clearing
-  # the gates); the measured values live in calibration/scores.md until Claude
-  # Code and the ablations land.
-  strong_agent_reward: pending final calibration
-  tool_call_turns: pending final calibration
-  agent_model: pending final calibration
+  # Measured on the reported Claude Code row; the other two harnesses are in
+  # calibration/scores.md with the same fields. All three clear both gates.
+  strong_agent_reward: 0.041168
+  tool_call_turns: 123
+  agent_model: Claude Code CLI 2.1.251 / claude-opus-4-8
+  # The turn count is the sum of two execution segments of one Claude Code session
+  # (86 + 37), separated by a subscription-window interruption and resumed with
+  # `claude --continue`. Both segments carry session_id 40ddfba8 and both transcripts
+  # are committed. Segment 2 alone would not clear >50. See calibration/scores.md.
 
 anti_shortcut:
-  single_frame: pending final calibration
+  # Complete. Every value is a real Codex CLI 0.147.0 / gpt-5.6-sol high run on the
+  # degraded input, graded by the frozen judge.py; family gate is <= 0.15. What each
+  # run demonstrates differs -- read the ablations section of calibration/scores.md
+  # before treating these four zeros as equivalent evidence.
+  single_frame: 0.000000
+  # agent declined to write output/solution.json rather than guess
   video_only: not applicable; audio is not a required modality
   audio_only: not applicable; audio is not a required modality
-  no_media: pending forced-answer no-media calibration
-  frame_dump_no_tools: pending final calibration
+  no_media: 0.000000
+  # agent declined to write output/solution.json rather than guess
+  no_media_forced: 0.000000
+  # extra variant, not in the family list: the prompt required a best-effort file
+  # even with no media. The agent complied but submitted an empty rally list, so
+  # this shows it will not fabricate -- not that guessing cannot score.
+  frame_dump_no_tools: 0.000000
+  # SUBSTITUTE CONDITION, not the literal family definition of "all frames pasted,
+  # no tool use". What ran: frames pre-extracted at 1 fps into materials/ (1435
+  # PNGs), ffmpeg/ffprobe/ffplay removed from the container, shell and Python
+  # retained. Codex CLI's only tool is the shell; under --sandbox read-only the
+  # agent cannot write output/solution.json at all, which would score 0 by
+  # construction and prove nothing. So this run gave the agent MORE capability
+  # than the spec allows: it worked 44 turns, built its own contact-sheet tooling,
+  # submitted a real answer recovering 89 of 92 rallies, and still scored 0 --
+  # it could not reconstruct the stroke chain (89 strokes against 387). The
+  # anti-shortcut conclusion is therefore conservative, but whether this
+  # substitutes acceptably for a literal frame_dump_no_tools run is a maintainer
+  # call.
 
 input:
   url: https://lab.osai.ai/datasets/openttgames/data/game_2.mp4
@@ -145,9 +168,12 @@ an agent that perceives the video correctly.
 
 ## Difficulty
 
-Final difficulty values are intentionally deferred until the agent-facing
-contract, ground truth, and verifier are frozen. Final calibration must use
-the current task image with Internet access disabled.
+Final calibration is complete and reported in `calibration/scores.md`, run on the
+current task image. Scored containers use a default-DROP egress allowlist rather
+than a blanket internet switch: task and data lookup endpoints -- the dataset host,
+GitHub, the raw-content CDN, and search engines -- are unreachable, while the model
+transport each harness needs stays open, since that is inference rather than lookup.
+`net_guard` re-proves both halves of that before and after every scored run.
 
 The final calibration record belongs in `calibration/scores.md` and must
 include one current-image run each for Codex, Claude Code, and Antigravity,
@@ -156,8 +182,11 @@ trajectory location.
 
 ## Anti-shortcut checks
 
-After the task contract is frozen, run exactly the required degraded-input
-checks:
+The required family conditions are listed below. Each has reported evidence in
+`calibration/scores.md`. The `frame_dump_no_tools` evidence uses the documented
+more-permissive substitute described above -- the agent kept a shell -- and whether
+that substitution is acceptable in place of a literal no-tools run is a maintainer
+call.
 
 - single representative frame only;
 - forced answer with no media;

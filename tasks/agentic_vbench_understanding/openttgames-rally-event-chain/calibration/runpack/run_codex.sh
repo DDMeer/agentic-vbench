@@ -23,11 +23,24 @@ docker inspect "$CNAME" >/dev/null 2>&1 || { echo "run ./stage_workspace.sh code
 "$(dirname "$0")/net_guard.sh" codex-pre "$R/codex.netguard.log"
 
 echo "installing codex@$VER into the run container (calibration-only, not in the shipped image)"
+# Re-pin the package hosts immediately before apt runs. They are CDN-backed and
+# rotate within minutes of `netgate.sh up`, so the address set fixed at gate-up
+# time can already be stale by here -- which surfaces as an unreachable mirror
+# and a silently un-installed CLI.
+"$(dirname "$0")/netgate.sh" install
 docker exec "$CNAME" sh -c "
   apt-get update -qq && apt-get install -y -qq --no-install-recommends nodejs npm >/dev/null
   npm install -g @openai/codex@$VER >/dev/null 2>&1
-  codex --version
-" | sed 's/^/  /'
+" | sed 's/^/  /' || true
+
+# A missing CLI must stop the run here. Continuing costs a scored phase that can
+# only produce nothing.
+if ! CODEX_V=$(docker exec "$CNAME" codex --version 2>/dev/null); then
+  echo "FATAL: codex did not install - not starting a scored phase" >&2
+  docker exec "$CNAME" sh -c 'apt-get update 2>&1 | tail -3' >&2 || true
+  exit 1
+fi
+echo "  $CODEX_V"
 
 # Tighten the gate before scoring: the package hosts needed for the install
 # above must not stay reachable during the run itself.
@@ -36,11 +49,12 @@ docker exec "$CNAME" sh -c "
 # Record exactly what is being run; scores.md cites this file.
 {
   echo "harness:        Codex CLI"
-  echo "harness version: $(docker exec "$CNAME" codex --version 2>/dev/null)"
+  echo "harness version: $CODEX_V"
   echo "model:          $MODEL"
   echo "reasoning:      high"
   echo "task commit:    $(git -C "$TASK" rev-parse HEAD)"
   echo "image:          ${TASK_IMAGE:-agentic-vbench-openttgames}"
+  echo "rules sha256:   $(shasum -a 256 "$(dirname "$0")/AGENTS.md" | awk '{print $1}')"
   echo "started:        $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 } | tee "$R/codex_run_metadata.txt"
 
@@ -59,7 +73,7 @@ docker exec -e CODEX_HOME=/opt/codex-home \
 
 "$(dirname "$0")/net_guard.sh" codex-post "$R/codex.netguard.log"
 docker cp "$CNAME:/workspace/output/solution.json" "$R/codex_solution.json" 2>/dev/null \
-  || echo "  no solution.json produced - record as an incomplete run scoring 0.0"
+  || echo "  no solution.json produced - incomplete run; do not report it as a scored calibration"
 
 echo "rollout: $R/codex_gpt-5.6-sol.jsonl"
 echo "next:    ./audit_and_grade.sh codex $R/codex_gpt-5.6-sol.jsonl"

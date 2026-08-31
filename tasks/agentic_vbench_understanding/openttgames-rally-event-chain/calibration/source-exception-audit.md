@@ -5,11 +5,14 @@ annotation for `game_2`.
 
 Six serve-defined windows contain real live-play exchanges in the official video
 but have no supported terminal annotation in the pinned source annotation.
-Per maintainer review, only these six source-terminal gaps were manually
-video-audited.
+In response to maintainer review these six source-terminal gaps -- and only these
+six -- were manually video-audited. Recording the audit is what the review asked
+for; whether the resulting endings are accepted is the maintainer's call.
 
-The source-provided stroke sequences were retained unchanged. Only the missing
-terminal event was completed.
+Within the rally segments that remain in the benchmark, the source-provided stroke
+sequences were retained unchanged and only the missing terminal event was completed.
+The one place where source strokes were dropped rather than kept is the rally 8
+video-gap truncation described below.
 
 | Rally ID | Serve time (s) | Source state | Video-audited terminal | Ending anchor (s) |
 |---:|---:|---|---|---:|

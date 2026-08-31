@@ -9,7 +9,7 @@ set -euo pipefail
 
 LABEL="${1:?usage: ./net_guard.sh <label> <logfile>}"
 LOG="${2:?logfile required}"
-GATE=avb-netgate
+GATE=${AVB_GATE:-avb-netgate}
 IMAGE=${TASK_IMAGE:-agentic-vbench-openttgames}
 
 MUST_BLOCK=(

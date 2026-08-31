@@ -4,7 +4,8 @@
 # Anti-cheat properties enforced here:
 #   - the container is built from the frozen task image, so the agent sees the
 #     shipped libraries and nothing else;
-#   - only the agent-visible materials exist in it: the video and instruction.md;
+#   - only the task-visible video and instruction.md plus the documented harness
+#     rules file (staged as AGENTS.md / GEMINI.md / CLAUDE.md) exist in it;
 #   - the baked media is re-verified against the pinned SHA-256;
 #   - a guard scan proves no reference, judge, or annotation file is reachable;
 #   - the repo is never mounted, so the answer key cannot be read even by accident.
@@ -15,7 +16,7 @@ set -euo pipefail
 H="${1:?usage: ./stage_workspace.sh <harness>}"
 TASK="$(cd "$(dirname "$0")/../.." && pwd)"
 IMAGE=${TASK_IMAGE:-agentic-vbench-openttgames}
-GATE=avb-netgate
+GATE=${AVB_GATE:-avb-netgate}
 CNAME="avb-run-$H"
 
 # Take the pinned media digest specifically; the first 64-hex string in the
@@ -81,26 +82,68 @@ echo "  staged harness rules file (AGENTS.md / GEMINI.md / CLAUDE.md)"
 # login in read-only avoids putting key material on a command line or in the
 # container's environment. The gate allows only the model endpoint, so this
 # credential cannot reach anything else.
-if [ -f "$HOME/.codex/auth.json" ]; then
+if [ "$H" = codex ] && [ -f "$HOME/.codex/auth.json" ]; then
   docker exec "$CNAME" mkdir -p /opt/codex-home
   docker cp "$HOME/.codex/auth.json" "$CNAME:/opt/codex-home/auth.json"
   docker exec "$CNAME" chmod 600 /opt/codex-home/auth.json
   echo "  staged CODEX_HOME credential (read-only login, not an API key)"
 fi
 
-if [ -f "$HOME/.avb_anthropic_key" ]; then
-  docker cp "$HOME/.avb_anthropic_key" "$CNAME:/opt/anthropic-key"
-  docker exec "$CNAME" chmod 600 /opt/anthropic-key
-  echo "  staged Anthropic credential file"
+if [ "$H" = claude ]; then
+  # Subscription OAuth is preferred over the metered API key. macOS keeps the
+  # login in the Keychain, so it is piped straight into the container and never
+  # touches the host filesystem or a command line. An ANTHROPIC_API_KEY present
+  # anywhere would silently override OAuth and restore per-token billing, so the
+  # key file is staged only when there is no subscription login to use.
+  if security find-generic-password -s "Claude Code-credentials" -w >/dev/null 2>&1; then
+    security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
+      | docker exec -i "$CNAME" sh -c '
+          mkdir -p /root/.claude && cat > /root/.claude/.credentials.json
+          chmod 600 /root/.claude/.credentials.json
+          printf "{\n  \"hasCompletedOnboarding\": true\n}\n" > /root/.claude.json'
+    sub=$(docker exec "$CNAME" python3 -c \
+      'import json;print(json.load(open("/root/.claude/.credentials.json"))["claudeAiOauth"]["subscriptionType"])' 2>/dev/null)
+    echo "  staged Claude subscription OAuth login (plan: ${sub:-unknown}); no API key staged"
+  elif [ -f "$HOME/.avb_anthropic_key" ]; then
+    docker cp "$HOME/.avb_anthropic_key" "$CNAME:/opt/anthropic-key"
+    docker exec "$CNAME" chmod 600 /opt/anthropic-key
+    echo "  staged Anthropic API key file (metered; no subscription login found)"
+  fi
 fi
 
-if [ -f "$HOME/.avb_gemini_key" ]; then
-  docker cp "$HOME/.avb_gemini_key" "$CNAME:/opt/gemini-key"
-  docker exec "$CNAME" sh -c '
-    chmod 600 /opt/gemini-key
-    mkdir -p /root/.gemini/antigravity-cli
-    printf "{\n  \"modelProvider\": \"gemini\"\n}\n" > /root/.gemini/antigravity-cli/settings.json'
-  echo "  staged Gemini credential + antigravity-cli settings.json"
+if [ "$H" = antigravity ]; then
+  # Account (subscription) auth is preferred. Note what is deliberately NOT done
+  # here: no `modelProvider: "gemini"` in settings.json. That key selects the CLI's
+  # API-key mode, which would make it look for GEMINI_API_KEY and ignore the
+  # account session entirely.
+  #
+  # The credential is the file the CLI itself writes after an in-container login.
+  # macOS keeps the host login in the Keychain, which is not portable -- copying
+  # the whole ~/.gemini into a container was tried and still reports "Please sign
+  # in". A Linux container has no keyring daemon, so the CLI falls back to
+  # antigravity-oauth-token, and that file does transfer.
+  # Account auth is opt-in (AVB_ACCOUNT_AUTH=1), not the default, because it is
+  # known-broken in a container: subsystems that need the desktop keyring log
+  # "You are not logged into Antigravity" and retry hard -- 42 times in 90 s --
+  # until the container hits its memory cap and is OOM-killed, while the main
+  # inference path keeps working. Evidence: rollouts/aborted/oom-accountauth.*.
+  # It also needs lh3.googleusercontent.com in the scored allowlist. API-key mode
+  # has neither problem and is what the reported run used.
+  if [ "${AVB_ACCOUNT_AUTH:-0}" = 1 ] && [ -f "$HOME/.avb_antigravity_oauth" ]; then
+    docker exec "$CNAME" mkdir -p /root/.gemini/antigravity-cli
+    docker cp "$HOME/.avb_antigravity_oauth" "$CNAME:/root/.gemini/antigravity-cli/antigravity-oauth-token"
+    docker exec "$CNAME" chmod 600 /root/.gemini/antigravity-cli/antigravity-oauth-token
+    am=$(docker exec "$CNAME" python3 -c \
+      'import json;print(json.load(open("/root/.gemini/antigravity-cli/antigravity-oauth-token"))["auth_method"])' 2>/dev/null)
+    echo "  staged Antigravity account session (auth_method: ${am:-unknown}); no API key staged"
+  elif [ -f "$HOME/.avb_gemini_key" ]; then
+    docker cp "$HOME/.avb_gemini_key" "$CNAME:/opt/gemini-key"
+    docker exec "$CNAME" sh -c '
+      chmod 600 /opt/gemini-key
+      mkdir -p /root/.gemini/antigravity-cli
+      printf "{\n  \"modelProvider\": \"gemini\"\n}\n" > /root/.gemini/antigravity-cli/settings.json'
+    echo "  staged Gemini API key (metered/API-key mode; no account session found)"
+  fi
 fi
 
 

@@ -12,7 +12,9 @@
 # not be modified for calibration and has no iptables, and agent CLIs differ in
 # whether they honour HTTP(S)_PROXY, so a proxy would silently degrade to no
 # isolation for some harnesses. The gate holds the network namespace; run
-# containers join it with `--network container:avb-netgate`.
+# containers join it with `--network container:$AVB_GATE` (default `avb-netgate`).
+# Bringing up more than one named gate keeps concurrent runs independent: `install`
+# on one gate cannot widen another gate's allowlist while that run is being scored.
 #
 # Two phases, because installing a CLI needs package hosts that a scored run
 # must not keep:
@@ -21,7 +23,7 @@
 #   ./netgate.sh show | down
 set -euo pipefail
 
-GATE=avb-netgate
+GATE=${AVB_GATE:-avb-netgate}
 ALPINE=${ALPINE_IMAGE:-alpine}
 
 MODEL_HOSTS=(
@@ -32,6 +34,24 @@ MODEL_HOSTS=(
   antigravity.google
   oauth2.googleapis.com
 )
+# Antigravity's account (non-API-key) auth runs an eligibility check on every
+# invocation that fetches the signed-in user's profile picture. There is no flag
+# or env var to skip it: with this host blocked the CLI exits before any work,
+# with "Eligibility check failed: failed to get profile picture". It is therefore
+# required for the whole scored phase, not just install -- removing it after
+# startup was tried and fails, because the check re-resolves and the CDN rotates
+# addresses. This widens the scored allowlist by one Google user-content CDN;
+# scores.md discloses it, and net_guard still proves the ground-truth hosts stay
+# blocked.
+# Opt-in only: set AVB_ACCOUNT_AUTH=1. Left off by default so that a harness
+# which does not need it -- Codex, Claude Code, or Antigravity in API-key mode --
+# keeps the narrower allowlist, and so that running one harness can never widen
+# another's gate.
+if [ "${AVB_ACCOUNT_AUTH:-0}" = 1 ]; then
+  ACCOUNT_AUTH_HOSTS=( lh3.googleusercontent.com )
+else
+  ACCOUNT_AUTH_HOSTS=()
+fi
 INSTALL_HOSTS=(
   deb.debian.org
   security.debian.org
@@ -69,7 +89,7 @@ up)
   docker rm -f "$GATE" >/dev/null 2>&1 || true
   docker run -d --name "$GATE" --cap-add=NET_ADMIN "$ALPINE" sh -c 'sleep infinity' >/dev/null
   docker exec "$GATE" apk add --no-cache iptables >/dev/null 2>&1
-  apply "${INSTALL_HOSTS[@]}" "${MODEL_HOSTS[@]}"
+  apply "${INSTALL_HOSTS[@]}" "${MODEL_HOSTS[@]}" ${ACCOUNT_AUTH_HOSTS[@]+"${ACCOUNT_AUTH_HOSTS[@]}"}
   echo "netgate up (install phase: package hosts + model endpoints allowed)"
   ;;
 install)
@@ -78,12 +98,12 @@ install)
   # this refreshes it in place rather than recreating the gate, which would tear
   # down the network namespace the run container is sharing.
   docker inspect "$GATE" >/dev/null 2>&1 || { echo "netgate not up"; exit 1; }
-  apply "${INSTALL_HOSTS[@]}" "${MODEL_HOSTS[@]}"
+  apply "${INSTALL_HOSTS[@]}" "${MODEL_HOSTS[@]}" ${ACCOUNT_AUTH_HOSTS[@]+"${ACCOUNT_AUTH_HOSTS[@]}"}
   echo "netgate refreshed (install phase)"
   ;;
 lock)
   docker inspect "$GATE" >/dev/null 2>&1 || { echo "netgate not up"; exit 1; }
-  apply "${MODEL_HOSTS[@]}"
+  apply "${MODEL_HOSTS[@]}" ${ACCOUNT_AUTH_HOSTS[@]+"${ACCOUNT_AUTH_HOSTS[@]}"}
   echo "netgate locked (scored phase: model endpoints only)"
   ;;
 show) docker exec "$GATE" iptables -L OUTPUT -n ;;

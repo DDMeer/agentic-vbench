@@ -42,12 +42,16 @@ done
   echo "model:           $MODEL"
   echo "task commit:     $(git -C "$TASK" rev-parse HEAD)"
   echo "image:           ${TASK_IMAGE:-agentic-vbench-openttgames}"
+  echo "rules sha256:   $(shasum -a 256 "$(dirname "$0")/AGENTS.md" | awk '{print $1}')"
   echo "started:         $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 } | tee "$R/claude_run_metadata.txt"
 
 
+# Only export a key when one was actually staged. Exporting an empty
+# ANTHROPIC_API_KEY, or any key at all, overrides the subscription OAuth login
+# and puts the run back on metered billing.
 docker exec "$CNAME" sh -c "
-    export ANTHROPIC_API_KEY=\$(cat /opt/anthropic-key 2>/dev/null || echo \"\$ANTHROPIC_API_KEY\")
+    if [ -f /opt/anthropic-key ]; then export ANTHROPIC_API_KEY=\$(cat /opt/anthropic-key); fi
     cd /workspace
     claude -p \"\$(cat instruction.md)\" \
       --model $MODEL \
@@ -58,7 +62,7 @@ docker exec "$CNAME" sh -c "
 
 "$(dirname "$0")/net_guard.sh" claude-post "$R/claude.netguard.log"
 docker cp "$CNAME:/workspace/output/solution.json" "$R/claude_solution.json" 2>/dev/null \
-  || echo "  no solution.json produced - record as an incomplete run scoring 0.0"
+  || echo "  no solution.json produced - incomplete run; do not report it as a scored calibration"
 
 echo "rollout: $R/claude_$MODEL.jsonl"
 echo "next:    ./audit_and_grade.sh claude $R/claude_$MODEL.jsonl"

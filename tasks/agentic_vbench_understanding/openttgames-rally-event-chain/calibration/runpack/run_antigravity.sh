@@ -18,7 +18,11 @@
 #    the CLI supports --continue, so the run now resumes the same conversation
 #    with backoff instead of restarting from zero.
 #
-# Lookup stays blocked at the harness level (web tools off) and at the container
+# Lookup is prohibited by the harness rules file and enforced after the fact by the
+# transcript watchdog and audit scan -- this CLI exposes no flag to remove its web
+# tools, and its server-side Search grounding executes provider-side, so the netgate
+# cannot block it. A detected search voids the run. Ordinary egress is blocked at the
+# container
 # level (shared netgate namespace). Gemini's Search grounding is server-side and
 # no network policy can see it, so audit_and_grade.sh scans the transcript.
 #
@@ -51,6 +55,7 @@ done
   echo "model:           $MODEL"
   echo "task commit:     $(git -C "$TASK" rev-parse HEAD)"
   echo "image:           ${TASK_IMAGE:-agentic-vbench-openttgames}"
+  echo "rules sha256:   $(shasum -a 256 "$(dirname "$0")/AGENTS.md" | awk '{print $1}')"
   echo "started:         $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 } | tee "$R/antigravity_run_metadata.txt"
 
@@ -79,7 +84,7 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
 
   if [ "$attempt" -eq 1 ]; then
     docker exec "$CNAME" sh -c "
-      export GEMINI_API_KEY=\$(cat /opt/gemini-key)
+      if [ -f /opt/gemini-key ]; then export GEMINI_API_KEY=\$(cat /opt/gemini-key); fi
       export PATH=\"\$HOME/.local/bin:\$PATH\"
       cd /workspace
       agy -p \"\$(cat instruction.md)\" --model $MODEL \
@@ -88,7 +93,7 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
     " >> "$R/antigravity_${MODEL}.jsonl" 2>> "$R/antigravity_${MODEL}.err"
   else
     docker exec "$CNAME" sh -c "
-      export GEMINI_API_KEY=\$(cat /opt/gemini-key)
+      if [ -f /opt/gemini-key ]; then export GEMINI_API_KEY=\$(cat /opt/gemini-key); fi
       export PATH=\"\$HOME/.local/bin:\$PATH\"
       cd /workspace
       agy --continue -p \"Continue the task from where you stopped. Write the final answer to /workspace/output/solution.json.\" \
@@ -161,7 +166,7 @@ done
 
 "$(dirname "$0")/net_guard.sh" antigravity-post "$R/antigravity.netguard.log"
 docker cp "$CNAME:/workspace/output/solution.json" "$R/antigravity_solution.json" 2>/dev/null \
-  || echo "  no solution.json produced - record as an incomplete run scoring 0.0"
+  || echo "  no solution.json produced - incomplete run; do not report it as a scored calibration"
 
 echo "native transcript: $R/antigravity_${MODEL}.native.jsonl"
 echo "next: ./audit_and_grade.sh antigravity $R/antigravity_${MODEL}.native.jsonl"
