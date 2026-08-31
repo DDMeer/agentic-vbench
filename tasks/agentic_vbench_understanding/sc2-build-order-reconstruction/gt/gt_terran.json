@@ -1,0 +1,250 @@
+{
+ "pid": 1,
+ "n_events": 61,
+ "events": [
+  {
+   "t": 0,
+   "name": "CommandCenter"
+  },
+  {
+   "t": 20,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 45,
+   "name": "Barracks"
+  },
+  {
+   "t": 79,
+   "name": "CommandCenter"
+  },
+  {
+   "t": 100,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 108,
+   "name": "Refinery"
+  },
+  {
+   "t": 119,
+   "name": "OrbitalCommand"
+  },
+  {
+   "t": 123,
+   "name": "Barracks"
+  },
+  {
+   "t": 131,
+   "name": "Refinery"
+  },
+  {
+   "t": 149,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 150,
+   "name": "BarracksTechLab"
+  },
+  {
+   "t": 176,
+   "name": "BarracksTechLab"
+  },
+  {
+   "t": 198,
+   "name": "Factory"
+  },
+  {
+   "t": 212,
+   "name": "Factory"
+  },
+  {
+   "t": 222,
+   "name": "Refinery"
+  },
+  {
+   "t": 229,
+   "name": "Refinery"
+  },
+  {
+   "t": 240,
+   "name": "FactoryTechLab"
+  },
+  {
+   "t": 244,
+   "name": "Starport"
+  },
+  {
+   "t": 249,
+   "name": "Starport"
+  },
+  {
+   "t": 255,
+   "name": "FactoryTechLab"
+  },
+  {
+   "t": 279,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 281,
+   "name": "StarportTechLab"
+  },
+  {
+   "t": 288,
+   "name": "GhostAcademy"
+  },
+  {
+   "t": 316,
+   "name": "StarportTechLab"
+  },
+  {
+   "t": 323,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 332,
+   "name": "EngineeringBay"
+  },
+  {
+   "t": 355,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 379,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 419,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 446,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 453,
+   "name": "MissileTurret"
+  },
+  {
+   "t": 457,
+   "name": "MissileTurret"
+  },
+  {
+   "t": 459,
+   "name": "MissileTurret"
+  },
+  {
+   "t": 461,
+   "name": "MissileTurret"
+  },
+  {
+   "t": 467,
+   "name": "SensorTower"
+  },
+  {
+   "t": 470,
+   "name": "Armory"
+  },
+  {
+   "t": 474,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 478,
+   "name": "Bunker"
+  },
+  {
+   "t": 483,
+   "name": "Barracks"
+  },
+  {
+   "t": 485,
+   "name": "Bunker"
+  },
+  {
+   "t": 530,
+   "name": "BarracksReactor"
+  },
+  {
+   "t": 558,
+   "name": "Factory"
+  },
+  {
+   "t": 562,
+   "name": "Starport"
+  },
+  {
+   "t": 563,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 567,
+   "name": "CommandCenter"
+  },
+  {
+   "t": 588,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 598,
+   "name": "EngineeringBay"
+  },
+  {
+   "t": 598,
+   "name": "StarportReactor"
+  },
+  {
+   "t": 612,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 623,
+   "name": "FactoryTechLab"
+  },
+  {
+   "t": 638,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 651,
+   "name": "Refinery"
+  },
+  {
+   "t": 657,
+   "name": "MissileTurret"
+  },
+  {
+   "t": 660,
+   "name": "MissileTurret"
+  },
+  {
+   "t": 661,
+   "name": "Refinery"
+  },
+  {
+   "t": 682,
+   "name": "Bunker"
+  },
+  {
+   "t": 686,
+   "name": "FusionCore"
+  },
+  {
+   "t": 692,
+   "name": "Armory"
+  },
+  {
+   "t": 775,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 800,
+   "name": "SupplyDepot"
+  },
+  {
+   "t": 823,
+   "name": "SupplyDepot"
+  }
+ ]
+}

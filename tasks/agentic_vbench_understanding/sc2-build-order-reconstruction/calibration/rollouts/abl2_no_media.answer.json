@@ -1,0 +1,47 @@
+{
+  "players": [
+    {
+      "race": "terran",
+      "buildings": [
+        {"t_seconds": 18, "name": "SupplyDepot"},
+        {"t_seconds": 41, "name": "Barracks"},
+        {"t_seconds": 43, "name": "Refinery"},
+        {"t_seconds": 86, "name": "CommandCenter"},
+        {"t_seconds": 100, "name": "OrbitalCommand"},
+        {"t_seconds": 103, "name": "SupplyDepot"},
+        {"t_seconds": 132, "name": "Factory"},
+        {"t_seconds": 137, "name": "BarracksReactor"},
+        {"t_seconds": 158, "name": "Refinery"},
+        {"t_seconds": 166, "name": "Starport"},
+        {"t_seconds": 170, "name": "OrbitalCommand"},
+        {"t_seconds": 235, "name": "CommandCenter"},
+        {"t_seconds": 297, "name": "OrbitalCommand"},
+        {"t_seconds": 322, "name": "EngineeringBay"},
+        {"t_seconds": 327, "name": "EngineeringBay"},
+        {"t_seconds": 348, "name": "Barracks"},
+        {"t_seconds": 354, "name": "Barracks"},
+        {"t_seconds": 420, "name": "Armory"},
+        {"t_seconds": 492, "name": "CommandCenter"}
+      ]
+    },
+    {
+      "race": "zerg",
+      "buildings": [
+        {"t_seconds": 50, "name": "Hatchery"},
+        {"t_seconds": 57, "name": "Extractor"},
+        {"t_seconds": 66, "name": "SpawningPool"},
+        {"t_seconds": 145, "name": "Hatchery"},
+        {"t_seconds": 220, "name": "Extractor"},
+        {"t_seconds": 244, "name": "BanelingNest"},
+        {"t_seconds": 258, "name": "Lair"},
+        {"t_seconds": 302, "name": "EvolutionChamber"},
+        {"t_seconds": 307, "name": "EvolutionChamber"},
+        {"t_seconds": 355, "name": "Hatchery"},
+        {"t_seconds": 440, "name": "HydraliskDen"},
+        {"t_seconds": 535, "name": "InfestationPit"},
+        {"t_seconds": 565, "name": "Hatchery"},
+        {"t_seconds": 590, "name": "Hive"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+ "pid": 2,
+ "n_events": 33,
+ "events": [
+  {
+   "t": 0,
+   "name": "Hatchery"
+  },
+  {
+   "t": 44,
+   "name": "SpawningPool"
+  },
+  {
+   "t": 55,
+   "name": "Extractor"
+  },
+  {
+   "t": 101,
+   "name": "RoachWarren"
+  },
+  {
+   "t": 103,
+   "name": "Extractor"
+  },
+  {
+   "t": 118,
+   "name": "BanelingNest"
+  },
+  {
+   "t": 284,
+   "name": "EvolutionChamber"
+  },
+  {
+   "t": 348,
+   "name": "Hatchery"
+  },
+  {
+   "t": 413,
+   "name": "Lair"
+  },
+  {
+   "t": 417,
+   "name": "HydraliskDen"
+  },
+  {
+   "t": 504,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 509,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 512,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 517,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 535,
+   "name": "SpineCrawler"
+  },
+  {
+   "t": 540,
+   "name": "SpineCrawler"
+  },
+  {
+   "t": 545,
+   "name": "SpineCrawler"
+  },
+  {
+   "t": 551,
+   "name": "SpineCrawler"
+  },
+  {
+   "t": 554,
+   "name": "InfestationPit"
+  },
+  {
+   "t": 562,
+   "name": "Spire"
+  },
+  {
+   "t": 566,
+   "name": "EvolutionChamber"
+  },
+  {
+   "t": 590,
+   "name": "Extractor"
+  },
+  {
+   "t": 593,
+   "name": "Extractor"
+  },
+  {
+   "t": 617,
+   "name": "Hatchery"
+  },
+  {
+   "t": 699,
+   "name": "Extractor"
+  },
+  {
+   "t": 701,
+   "name": "Extractor"
+  },
+  {
+   "t": 752,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 755,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 816,
+   "name": "SpineCrawler"
+  },
+  {
+   "t": 822,
+   "name": "SpineCrawler"
+  },
+  {
+   "t": 826,
+   "name": "SporeCrawler"
+  },
+  {
+   "t": 875,
+   "name": "Hive"
+  },
+  {
+   "t": 881,
+   "name": "UltraliskCavern"
+  }
+ ]
+}

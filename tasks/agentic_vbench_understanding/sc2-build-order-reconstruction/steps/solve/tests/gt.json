@@ -1,0 +1,475 @@
+{
+ "n_events": 94,
+ "events": [
+  {
+   "race": "terran",
+   "name": "CommandCenter",
+   "t": 0
+  },
+  {
+   "race": "zerg",
+   "name": "Hatchery",
+   "t": 0
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 20
+  },
+  {
+   "race": "zerg",
+   "name": "SpawningPool",
+   "t": 44
+  },
+  {
+   "race": "terran",
+   "name": "Barracks",
+   "t": 45
+  },
+  {
+   "race": "zerg",
+   "name": "Extractor",
+   "t": 55
+  },
+  {
+   "race": "terran",
+   "name": "CommandCenter",
+   "t": 79
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 100
+  },
+  {
+   "race": "zerg",
+   "name": "RoachWarren",
+   "t": 101
+  },
+  {
+   "race": "zerg",
+   "name": "Extractor",
+   "t": 103
+  },
+  {
+   "race": "terran",
+   "name": "Refinery",
+   "t": 108
+  },
+  {
+   "race": "zerg",
+   "name": "BanelingNest",
+   "t": 118
+  },
+  {
+   "race": "terran",
+   "name": "OrbitalCommand",
+   "t": 119
+  },
+  {
+   "race": "terran",
+   "name": "Barracks",
+   "t": 123
+  },
+  {
+   "race": "terran",
+   "name": "Refinery",
+   "t": 131
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 149
+  },
+  {
+   "race": "terran",
+   "name": "BarracksTechLab",
+   "t": 150
+  },
+  {
+   "race": "terran",
+   "name": "BarracksTechLab",
+   "t": 176
+  },
+  {
+   "race": "terran",
+   "name": "Factory",
+   "t": 198
+  },
+  {
+   "race": "terran",
+   "name": "Factory",
+   "t": 212
+  },
+  {
+   "race": "terran",
+   "name": "Refinery",
+   "t": 222
+  },
+  {
+   "race": "terran",
+   "name": "Refinery",
+   "t": 229
+  },
+  {
+   "race": "terran",
+   "name": "FactoryTechLab",
+   "t": 240
+  },
+  {
+   "race": "terran",
+   "name": "Starport",
+   "t": 244
+  },
+  {
+   "race": "terran",
+   "name": "Starport",
+   "t": 249
+  },
+  {
+   "race": "terran",
+   "name": "FactoryTechLab",
+   "t": 255
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 279
+  },
+  {
+   "race": "terran",
+   "name": "StarportTechLab",
+   "t": 281
+  },
+  {
+   "race": "zerg",
+   "name": "EvolutionChamber",
+   "t": 284
+  },
+  {
+   "race": "terran",
+   "name": "GhostAcademy",
+   "t": 288
+  },
+  {
+   "race": "terran",
+   "name": "StarportTechLab",
+   "t": 316
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 323
+  },
+  {
+   "race": "terran",
+   "name": "EngineeringBay",
+   "t": 332
+  },
+  {
+   "race": "zerg",
+   "name": "Hatchery",
+   "t": 348
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 355
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 379
+  },
+  {
+   "race": "zerg",
+   "name": "Lair",
+   "t": 413
+  },
+  {
+   "race": "zerg",
+   "name": "HydraliskDen",
+   "t": 417
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 419
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 446
+  },
+  {
+   "race": "terran",
+   "name": "MissileTurret",
+   "t": 453
+  },
+  {
+   "race": "terran",
+   "name": "MissileTurret",
+   "t": 457
+  },
+  {
+   "race": "terran",
+   "name": "MissileTurret",
+   "t": 459
+  },
+  {
+   "race": "terran",
+   "name": "MissileTurret",
+   "t": 461
+  },
+  {
+   "race": "terran",
+   "name": "SensorTower",
+   "t": 467
+  },
+  {
+   "race": "terran",
+   "name": "Armory",
+   "t": 470
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 474
+  },
+  {
+   "race": "terran",
+   "name": "Bunker",
+   "t": 478
+  },
+  {
+   "race": "terran",
+   "name": "Barracks",
+   "t": 483
+  },
+  {
+   "race": "terran",
+   "name": "Bunker",
+   "t": 485
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 504
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 509
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 512
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 517
+  },
+  {
+   "race": "terran",
+   "name": "BarracksReactor",
+   "t": 530
+  },
+  {
+   "race": "zerg",
+   "name": "SpineCrawler",
+   "t": 535
+  },
+  {
+   "race": "zerg",
+   "name": "SpineCrawler",
+   "t": 540
+  },
+  {
+   "race": "zerg",
+   "name": "SpineCrawler",
+   "t": 545
+  },
+  {
+   "race": "zerg",
+   "name": "SpineCrawler",
+   "t": 551
+  },
+  {
+   "race": "zerg",
+   "name": "InfestationPit",
+   "t": 554
+  },
+  {
+   "race": "terran",
+   "name": "Factory",
+   "t": 558
+  },
+  {
+   "race": "terran",
+   "name": "Starport",
+   "t": 562
+  },
+  {
+   "race": "zerg",
+   "name": "Spire",
+   "t": 562
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 563
+  },
+  {
+   "race": "zerg",
+   "name": "EvolutionChamber",
+   "t": 566
+  },
+  {
+   "race": "terran",
+   "name": "CommandCenter",
+   "t": 567
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 588
+  },
+  {
+   "race": "zerg",
+   "name": "Extractor",
+   "t": 590
+  },
+  {
+   "race": "zerg",
+   "name": "Extractor",
+   "t": 593
+  },
+  {
+   "race": "terran",
+   "name": "EngineeringBay",
+   "t": 598
+  },
+  {
+   "race": "terran",
+   "name": "StarportReactor",
+   "t": 598
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 612
+  },
+  {
+   "race": "zerg",
+   "name": "Hatchery",
+   "t": 617
+  },
+  {
+   "race": "terran",
+   "name": "FactoryTechLab",
+   "t": 623
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 638
+  },
+  {
+   "race": "terran",
+   "name": "Refinery",
+   "t": 651
+  },
+  {
+   "race": "terran",
+   "name": "MissileTurret",
+   "t": 657
+  },
+  {
+   "race": "terran",
+   "name": "MissileTurret",
+   "t": 660
+  },
+  {
+   "race": "terran",
+   "name": "Refinery",
+   "t": 661
+  },
+  {
+   "race": "terran",
+   "name": "Bunker",
+   "t": 682
+  },
+  {
+   "race": "terran",
+   "name": "FusionCore",
+   "t": 686
+  },
+  {
+   "race": "terran",
+   "name": "Armory",
+   "t": 692
+  },
+  {
+   "race": "zerg",
+   "name": "Extractor",
+   "t": 699
+  },
+  {
+   "race": "zerg",
+   "name": "Extractor",
+   "t": 701
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 752
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 755
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 775
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 800
+  },
+  {
+   "race": "zerg",
+   "name": "SpineCrawler",
+   "t": 816
+  },
+  {
+   "race": "zerg",
+   "name": "SpineCrawler",
+   "t": 822
+  },
+  {
+   "race": "terran",
+   "name": "SupplyDepot",
+   "t": 823
+  },
+  {
+   "race": "zerg",
+   "name": "SporeCrawler",
+   "t": 826
+  },
+  {
+   "race": "zerg",
+   "name": "Hive",
+   "t": 875
+  },
+  {
+   "race": "zerg",
+   "name": "UltraliskCavern",
+   "t": 881
+  }
+ ]
+}

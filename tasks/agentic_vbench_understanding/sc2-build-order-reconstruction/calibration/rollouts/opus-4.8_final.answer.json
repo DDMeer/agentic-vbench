@@ -1,0 +1,28 @@
+{
+  "players": [
+    {
+      "race": "terran",
+      "buildings": [
+        {"t_seconds": 5, "name": "CommandCenter"},
+        {"t_seconds": 80, "name": "SupplyDepot"},
+        {"t_seconds": 88, "name": "Barracks"},
+        {"t_seconds": 131, "name": "Factory"},
+        {"t_seconds": 200, "name": "Refinery"},
+        {"t_seconds": 256, "name": "Starport"},
+        {"t_seconds": 256, "name": "BarracksReactor"},
+        {"t_seconds": 290, "name": "FactoryTechLab"},
+        {"t_seconds": 312, "name": "EngineeringBay"},
+        {"t_seconds": 430, "name": "SupplyDepot"},
+        {"t_seconds": 500, "name": "Armory"}
+      ]
+    },
+    {
+      "race": "zerg",
+      "buildings": [
+        {"t_seconds": 622, "name": "Hatchery"},
+        {"t_seconds": 700, "name": "SpawningPool"},
+        {"t_seconds": 734, "name": "Lair"}
+      ]
+    }
+  ]
+}
