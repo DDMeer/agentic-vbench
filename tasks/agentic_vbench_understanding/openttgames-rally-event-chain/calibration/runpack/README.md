@@ -82,6 +82,15 @@ keyring log "You are not logged into Antigravity" and retry hard -- 42 times in 
 seconds -- until the container is OOM-killed, while the main inference path keeps
 working. The evidence is in `rollouts/aborted/oom-accountauth.*`.
 
+## Reproducing the frame-dump contact sheets
+
+`build_frame_dump_sheets.sh` rebuilds the 30 contact sheets the `frame_dump_no_tools`
+ablation was given, from the pinned source media, and verifies every regenerated sheet
+against `../ablations/ablation_frame-dump-notools_sheets.sha256`. It exists so the manifest
+is checkable: a list of digests identifies the intended bytes but proves nothing on its own
+without the bytes or a derivation. A clean run reproduces all 30 digests. No JPEG binaries
+are committed to the repository.
+
 ## Resuming an interrupted run
 
 `resume_claude.sh` continues a Claude Code run that a subscription rate-limit window cut

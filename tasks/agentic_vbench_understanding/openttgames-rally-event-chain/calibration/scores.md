@@ -112,8 +112,8 @@ Each harness records work differently, so each is counted with its own rule and 
 is stated rather than assumed:
 
 - **Codex CLI** — distinct `item.started` records of type `command_execution`: **150**.
-  A looser pattern that also counts `file_change` gives 63; the stricter shell-call count
-  is reported.
+  The trajectory also carries 5 `file_change` items and 1 `todo_list` item; counting shell
+  calls plus file changes would give 155. The stricter shell-call count is what is reported.
 - **Antigravity CLI** — distinct `step_index` whose record type is a tool action
   (`RUN_COMMAND`, `VIEW_FILE`, `CODE_ACTION`, `LIST_DIRECTORY`, …) in the CLI's **native
   transcript**: **164**.
@@ -168,7 +168,15 @@ than tile count, so 7x7 and 5x5 cost the same per sheet and 7x7 simply needs few
 sheets at ~4.7k tokens each leaves real output room inside the context window, where the
 1918x1078 variant at ~5.6k did not.
 `ablations/ablation_frame-dump-notools_sheets.sha256` pins exactly which 30 sheets the
-scored request saw.
+scored request saw, and `runpack/build_frame_dump_sheets.sh` regenerates them from the
+pinned source media so the manifest can actually be checked rather than taken on trust.
+
+The pipeline is deterministic inside the frozen task image: the script verifies the media
+digest first, extracts 1 fps frames, tiles them 7x7 at 224x126, encodes JPEG at `-q:v 5`
+through the image's own ffmpeg 7.1.5, and then runs `sha256sum -c` against the committed
+manifest. A clean run from scratch reproduces **all 30 committed digests**, which is what
+makes the 1435-frame coverage, the ordering and the presentation independently verifiable.
+No JPEG binaries are committed.
 
 On whether the presentation is legible enough for the zero to mean anything: at 224x126 per
 tile, players, stances, racket arms, the table and the net all read clearly, and the model's
