@@ -32,6 +32,12 @@ OUT="${1:-/workspace/sheets}"
 CNAME=avb-sheets-rebuild
 IMAGE=${TASK_IMAGE:-agentic-vbench-openttgames}
 MEDIA_SHA=330ac07730bae6d899dbbbd00ad43500c583e6af6ea6dd261565bc77811eba66
+# The encoder version is what fixes the output bytes, so it is asserted rather than
+# printed. The image ID is not: Docker image IDs are not reproducible across
+# independent builds of the same Dockerfile, so pinning one would reject a reviewer
+# who built the image themselves -- which is the normal way to check this task. The
+# ID is recorded for provenance and the ffmpeg version is enforced.
+EXPECT_FFMPEG="ffmpeg version 7.1.5-0+deb13u1"
 A="$(cd "$(dirname "$0")/.." && pwd)/ablations"
 MANIFEST="$A/ablation_frame-dump-notools_sheets.sha256"
 
@@ -41,8 +47,16 @@ docker rm -f "$CNAME" >/dev/null 2>&1 || true
 docker run -d --name "$CNAME" -w /workspace "$IMAGE" sh -c 'sleep infinity' >/dev/null
 trap 'docker rm -f "$CNAME" >/dev/null 2>&1 || true' EXIT
 
-echo "ffmpeg: $(docker exec "$CNAME" ffmpeg -version 2>/dev/null | head -1)"
-echo "image:  $(docker image inspect "$IMAGE" --format '{{.Id}}')"
+FFMPEG_V=$(docker exec "$CNAME" ffmpeg -version 2>/dev/null | head -1)
+echo "ffmpeg: $FFMPEG_V"
+echo "image:  $(docker image inspect "$IMAGE" --format '{{.Id}}')  (recorded, not pinned -- see above)"
+case "$FFMPEG_V" in
+  "$EXPECT_FFMPEG"*) echo "  encoder version matches the pinned build" ;;
+  *) echo "FATAL: this image ships $FFMPEG_V, but the sheets were built with" >&2
+     echo "       $EXPECT_FFMPEG. A different encoder can produce different bytes," >&2
+     echo "       so the digests below would not be comparable. Use the frozen image." >&2
+     exit 1 ;;
+esac
 
 docker exec "$CNAME" sh -c "
   echo '$MEDIA_SHA  /baked/game.mp4' | sha256sum -c - >/dev/null || {

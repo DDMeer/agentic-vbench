@@ -119,11 +119,10 @@ anti_shortcut:
   # submitted 43 rallies and matched 3; strokes 5 of 387. On legibility: players,
   # stances, table and net read clearly at 224x126 per tile, but the ball itself is a
   # few pixels and independent inspection could not reliably identify it, so the
-  # probe's self-report is not treated as settled. The zero does not rest on that
-  # question: at 1 fps only 278 of 387 reference strokes fall within the 0.35 s
-  # tolerance of a sampled instant, so the ceiling is structural before perception
-  # enters. Serve times (1.0 s tolerance) are all reachable at 1 fps and it matched
-  # 3 of 92. Sheet digests in
+  # probe's self-report is not treated as settled. What the run shows instead is that
+  # the presentation was usable enough to work from: 73% of its 158 submitted stroke
+  # times are non-integer, so it interpolated between sampled instants rather than
+  # echoing them, and still matched only 3 rallies and 5 strokes. Sheet digests in
   # calibration/ablations/ablation_frame-dump-notools_sheets.sha256.
   #
   # Disclosure: the two diagnostics that require predicting without observing need an

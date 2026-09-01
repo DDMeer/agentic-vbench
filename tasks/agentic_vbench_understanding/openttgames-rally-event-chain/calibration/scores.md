@@ -185,12 +185,11 @@ mid-rally tile is less certain than that -- the players and their posture are ea
 but the ball is a few pixels and could not be reliably identified by eye. Neither the probe
 nor that inspection settles the question on its own.
 
-The stronger point does not depend on it: the binding limit is the sampling rate the review
-accepted, not the tile size. Stroke contacts are scored to 0.35 s, and at 1 fps only 278 of
-387 reference strokes (71.8%) fall within 0.35 s of a sampled instant at all -- the rest are
-unreachable at any resolution. The run matched 5. Serve times, scored to 1.0 s, are all
-reachable at 1 fps, and it matched 3 of 92. The ceiling is structural before perception
-enters, and the result sits far below even that ceiling.
+What the run itself shows is that the presentation was usable enough to work from: the
+model produced 43 rallies with 158 stroke times, 73% of them non-integer, so it was
+interpolating between sampled instants rather than echoing the seconds it was shown. It
+attempted the task rather than bouncing off an unreadable input, and still matched only 3
+rallies and 5 strokes.
 
 ### The rules file was not identical across all four
 
