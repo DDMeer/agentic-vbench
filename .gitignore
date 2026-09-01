@@ -98,6 +98,7 @@ tasks/agentic_vbench_understanding/*/calibration/rollouts/claude_stopped_workdir
 tasks/agentic_vbench_understanding/*/calibration/rollouts/claude_stopped_tmp/
 tasks/agentic_vbench_understanding/*/calibration/rollouts/claude_stopped_output/
 tasks/agentic_vbench_understanding/*/calibration/rollouts/claude_oauth_workdir/
+tasks/agentic_vbench_understanding/*/calibration/ablations/superseded/
 
 # ...but the per-run egress-guard logs are evidence, not runtime noise: they are
 # the only artifact backing the "isolation verified before and after every scored

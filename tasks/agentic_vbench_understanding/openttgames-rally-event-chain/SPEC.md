@@ -48,7 +48,9 @@ ground_truth:
     7466f1f8c46316406ae224a17491354eac89f9cc2de858633b6f893573db4fe7.
     Six source-terminal gaps and one two-point serve window are handled as
     explicitly documented bounded video-audit exceptions.
-  tier: machine-truth
+  tier: >
+    machine truth from published structured annotations, with bounded
+    video-audited terminal exceptions
   verification: >
     Serve events define 92 rally windows. Ordinary exact "net" events are
     treated as non-terminal net crossings, while supported player-prefixed
@@ -94,33 +96,41 @@ difficulty:
   # are committed. Segment 2 alone would not clear >50. See calibration/scores.md.
 
 anti_shortcut:
-  # Complete. Every value is a real Codex CLI 0.147.0 / gpt-5.6-sol high run on the
-  # degraded input, graded by the frozen judge.py; family gate is <= 0.15. What each
-  # run demonstrates differs -- read the ablations section of calibration/scores.md
-  # before treating these four zeros as equivalent evidence.
+  # Complete. Family gate is <= 0.15 and all four clear it, but they are not
+  # interchangeable. single_frame and plain no_media are abstention controls; the
+  # forced no_media and literal frame_dump_no_tools runs are the non-abstaining
+  # evidence. Read the ablations section of calibration/scores.md before comparing.
   single_frame: 0.000000
-  # agent declined to write output/solution.json rather than guess
+  # Codex, 4 tool calls. The agent declined to write a solution rather than guess
+  # from one still, so this bounds completability, not guessability.
   video_only: not applicable; audio is not a required modality
   audio_only: not applicable; audio is not a required modality
   no_media: 0.000000
-  # agent declined to write output/solution.json rather than guess
-  no_media_forced: 0.000000
-  # extra variant, not in the family list: the prompt required a best-effort file
-  # even with no media. The agent complied but submitted an empty rally list, so
-  # this shows it will not fabricate -- not that guessing cannot score.
+  # Two runs are retained. Plain no_media (Codex, 3 calls) is a refusal. The
+  # forced-answer variant is the one that bounds recall: told to guess anyway, the
+  # agent submitted 96 rallies and 467 strokes spanning 63.4-1388.5 s and matched
+  # 19 of 92 rallies and 54 of 387 strokes. Guessing a match-shaped answer is easy;
+  # landing serve contacts within 1.0 s and strokes within 0.35 s is not.
   frame_dump_no_tools: 0.000000
-  # SUBSTITUTE CONDITION, not the literal family definition of "all frames pasted,
-  # no tool use". What ran: frames pre-extracted at 1 fps into materials/ (1435
-  # PNGs), ffmpeg/ffprobe/ffplay removed from the container, shell and Python
-  # retained. Codex CLI's only tool is the shell; under --sandbox read-only the
-  # agent cannot write output/solution.json at all, which would score 0 by
-  # construction and prove nothing. So this run gave the agent MORE capability
-  # than the spec allows: it worked 44 turns, built its own contact-sheet tooling,
-  # submitted a real answer recovering 89 of 92 rallies, and still scored 0 --
-  # it could not reconstruct the stroke chain (89 strokes against 387). The
-  # anti-shortcut conclusion is therefore conservative, but whether this
-  # substitutes acceptably for a literal frame_dump_no_tools run is a maintainer
-  # call.
+  # The literal condition, Claude Code 2.1.251, tool_use count 0. All 1435 frames of
+  # the 1 fps sample -- none omitted -- pre-arranged into 30 7x7 contact sheets at
+  # 1568x882 and given to the model as image inputs on a single request with every
+  # tool disallowed. No shell, no file access, no inspection of any kind. It
+  # submitted 43 rallies and matched 3; strokes 5 of 387. A probe confirmed the ball
+  # is still resolvable at this tile size, so the zero is a measurement rather than
+  # an unreadable presentation. Sheet digests in
+  # calibration/ablations/ablation_frame-dump-notools_sheets.sha256.
+  #
+  # Disclosure: the two diagnostics that require predicting without observing need an
+  # ablation-only override, because rule 4 ("work from the video") otherwise makes the
+  # agent abstain, which it did on the first attempts. The mechanism differs between
+  # them. Forced no_media appends the override to the CONTAINER copy of the rules and
+  # records both digests in its metadata (repository 779eec27..., container
+  # fe217b24...). frame_dump_no_tools edits no rules file: it is a single multimodal
+  # request issued from /tmp, which has no CLAUDE.md, so the shared rules file is
+  # never loaded, and the override exists only in the prompt text. The repository
+  # rules file is unmodified in both cases and the frozen task contract is untouched.
+
 
 input:
   url: https://lab.osai.ai/datasets/openttgames/data/game_2.mp4
@@ -183,14 +193,19 @@ trajectory location.
 ## Anti-shortcut checks
 
 The required family conditions are listed below. Each has reported evidence in
-`calibration/scores.md`. The `frame_dump_no_tools` evidence uses the documented
-more-permissive substitute described above -- the agent kept a shell -- and whether
-that substitution is acceptable in place of a literal no-tools run is a maintainer
-call.
+`calibration/scores.md`.
 
 - single representative frame only;
 - forced answer with no media;
-- all frames available but no agentic tools.
+- complete selected 1 fps frame set available directly to the model, with no
+  task-inspection tools.
+
+The third condition is met literally rather than by substitute. The complete
+selected sample -- all 1435 frames at 1 fps, none omitted -- is pre-arranged into 30
+contact sheets and presented to the model as multimodal image inputs on a single
+request with every tool disallowed. The agent keeps no shell and makes zero
+task-inspection tool calls; `tool_use` count in the retained trajectory is 0. This is
+the selected 1 fps set, not the 172,200 native frames.
 
 Each degraded-input run must score at or below 0.15. If one exceeds that
 threshold, fix the shortcut rather than changing the threshold.

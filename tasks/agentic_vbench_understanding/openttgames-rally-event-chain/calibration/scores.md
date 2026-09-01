@@ -39,17 +39,20 @@ on its own (`is_error=false`), writing a 66 KB `output/solution.json`. Segment 2
 turns alone would not clear the >50 gate; the reported 123 is the sum. Neither segment
 used subagents.
 
-[^parity]: Antigravity used the pre-finalization shared rules rather than the finalized
-minimal rules. The measured result is reported as-is; a strict-parity rerun can be
-provided if requested.
+[^parity]: Antigravity ran against the same six frozen task files as the other rows. The
+only rules difference is one sentence the pre-finalization file carried and the finalized
+file does not -- "A complete best-effort answer beats an empty one." The run produced a
+non-empty answer and still scored 0, so that sentence cannot account for the result. The
+maintainer reviewed this difference at head `afe9997` and accepted it without a
+strict-parity rerun.
 
-All three harnesses have completed measured runs, and the required ablation evidence is
-reported below -- with the documented frame-dump substitute caveat. Codex
+All three harnesses have completed measured runs and the required ablation evidence is
+reported below, including a literal zero-tool `frame_dump_no_tools` run. Codex
 and Claude Code ran under the finalized calibration setup; the Antigravity row keeps the
 documented pre-finalization-rules caveat below. Every row clears the family gates: reward < 0.10 and more than 50 tool-call turns. The project's own
 `scripts/understanding/check_task.py` passes all eight checks it can run here --
 structure, oracle 1.0, null baseline 0.0, strong agent 0.041168 < 0.1, 123 turns > 50,
-and all three required ablations at 0.0 <= 0.15.
+and every required ablation at 0.0 <= 0.15.
 
 The Codex row is the run of 2026-08-30 under the minimal shared rules
 (`runpack/AGENTS.md`, sha256 `779eec27…`). Two earlier Codex runs are kept in full as
@@ -119,84 +122,93 @@ is stated rather than assumed:
 
 ## Anti-shortcut ablations
 
-Every ablation is a real Codex CLI 0.147.0 / `gpt-5.6-sol` high run on the degraded
-input, in the shipped image, under the same shared rules file and the same egress policy
-as the calibration row -- on a dedicated ablation gate, separate from the scored
-calibration gate -- graded by the same frozen `judge.py`. Family gate: each must score
-at or below 0.15.
+Family gate: each must score at or below 0.15. All four clear it, but they are not
+interchangeable. `single_frame` and plain `no_media` are abstention controls: the agent
+declined to answer, which bounds completability without the media. The forced `no_media`
+and literal `frame_dump_no_tools` runs are the non-abstaining evidence: both submit
+substantial answers and still miss.
 
-| ablation | reward | turns | rallies submitted (ref 92) | strokes submitted (ref 387) | trajectory |
-|---|---:|---:|---:|---:|---|
-| `single_frame` | **0.000000** | 4 | — | — | `ablations/ablation_single-frame.jsonl` |
-| `no_media` | **0.000000** | 3 | — | — | `ablations/ablation_no-media.jsonl` |
-| `no_media` forced-answer | **0.000000** | 5 | 0 | 0 | `ablations/ablation_no-media-forced.jsonl` |
-| `frame_dump_no_tools` (substitute) | **0.000000** | 44 | 89 | 89 | `ablations/ablation_frame-dump.jsonl` |
+| ablation | harness | reward | tool calls | submitted (rallies / strokes) | matched (of 92 / 387) | trajectory |
+|---|---|---:|---:|---:|---:|---|
+| `single_frame` | Codex 0.147.0 | **0.000000** | 4 | — | — | `ablations/ablation_single-frame.jsonl` |
+| `no_media` | Codex 0.147.0 | **0.000000** | 3 | — | — | `ablations/ablation_no-media.jsonl` |
+| `no_media`, forced answer | Codex 0.147.0 | **0.000000** | 6 | 96 / 467 | 19 / 54 | `ablations/ablation_no-media-forced.jsonl` |
+| `frame_dump_no_tools` | Claude Code 2.1.251 | **0.000000** | **0** | 43 / 158 | 3 / 5 | `ablations/ablation_frame-dump-notools.jsonl` |
 
-The forced-answer variant is the one the review asked for; the plain `no_media` row is
-kept beside it because the two fail differently and the difference is the point.
-| `video-only` / `audio-only` | n/a | — | — | — | audio is not a required modality |
+**`single_frame` and `no_media` are refusals.** Neither agent wrote a solution rather than
+guess. They establish that the task cannot be completed without the media; on their own
+they say nothing about whether the schema is guessable.
 
-All four clear the gate. What each one actually shows differs, and the difference matters
-more than the shared 0.0:
+**The forced `no_media` variant is what bounds recall.** Told to guess anyway, the agent
+produced 96 rallies and 467 strokes spanning 63.4 s to 1388.5 s -- a full-match-shaped
+answer, not a token entry. It matched 19 of 92 rallies and 54 of 387 strokes, and the
+product across four terms is still 0. Guessing the shape of a match is easy; landing serve
+contacts inside 1.0 s and stroke contacts inside 0.35 s is not.
 
-**`single-frame` and `no-media` are refusals, not guesses.** Neither agent wrote
-`output/solution.json` at all. From the single-frame transcript: "I did not fabricate
-`output/solution.json` from the single frame." The `{"rallies": []}` recorded as those
-runs' submissions is the harness's substitution for a missing file, not an agent
-submission. These two therefore establish that the task cannot be completed without the
-media; on their own they say nothing about whether the schema is guessable.
+**`frame_dump_no_tools` is the literal condition, run with zero tool calls.** The complete
+1 fps sample -- all 1435 frames, none omitted -- was pre-arranged into 30 seven-by-seven
+contact sheets and handed to the model as image inputs on a single request with every tool
+disallowed. The model had no shell, no file access and no way to inspect anything; it
+answered from the pixels in one pass, and the harness wrote its reply. It submitted 43
+rallies and matched 3. `tool_use` count in the trajectory is 0, which is the condition
+being tested.
 
-**`no-media-forced` was added to probe exactly that** and only partly succeeds. Its prompt
-appends an ablation clause requiring a best-effort file regardless of missing media --
-which makes the anti-shortcut test stricter, not easier. The agent complied by writing the
-file, then chose to submit an empty rally list: "It contains an empty rally list because no
-media was provided and unobserved events cannot be inferred." So it answers "will it guess
-when forced to submit?" (no) rather than "would guessing score?".
+Sheet geometry was chosen by measurement, not taste. Image cost tracks pixel area rather
+than tile count, so 7x7 and 5x5 cost the same per sheet and 7x7 simply needs fewer: 30
+sheets at ~4.7k tokens each leaves real output room inside the context window, where the
+1918x1078 variant at ~5.6k did not. A probe confirmed the model still resolves the ball at
+this tile size, so the zero is a result rather than an artefact of an unreadable
+presentation. `ablations/ablation_frame-dump-notools_sheets.sha256` pins exactly which 30
+sheets the scored request saw.
 
-**`frame-dump` is the load-bearing one.** That agent did not refuse. It worked for 44
-turns, built its own contact-sheet tooling, submitted a real schema-valid answer, and
-recovered rally boundaries reasonably well -- 89 rallies against a reference of 92. It
-still scored 0.0, because it submitted 89 strokes against a reference of 387: it found
-where rallies were but could not reconstruct the stroke chain inside them, and `reward` is
-a product across four terms. This is stronger evidence than any forced-guess run: a
-capable agent, given every frame, answering in earnest, scores zero.
+### The rules file was not identical across all four
 
-The schema is not guessable in the abstract either: scoring requires matching 92 rallies
-and 387 strokes within timing tolerances across four multiplied terms.
+Two of these diagnostics only work if the agent is willing to predict without having
+observed. The shared rules file forbids exactly that -- rule 4 is "work from the video",
+and `instruction.md` says to omit rather than infer -- and the agents obeyed it. The first
+forced `no_media` attempt returned a single placeholder rally; the second returned an empty
+list, explaining that "binding workspace rules prohibit fabricating unobserved events". The
+first `frame_dump_no_tools` attempt did the same. They were right to.
 
-### `frame-dump`: what was actually run, and how it differs from the family definition
+The two runs solve this differently, and the difference matters for provenance:
 
-The family spec defines `frame_dump_no_tools` as "all frames pasted, no tool use". What
-ran here was:
+- **Forced `no_media`** appends an ablation-only override to the **container copy** of the
+  rules (`AGENTS.md` / `GEMINI.md` / `CLAUDE.md`) saying rule 4 does not apply on that run.
+  Its metadata records both digests, `rules sha256` for the repository copy and
+  `rules in container` (`fe217b24…`) for what the agent actually saw.
+- **`frame_dump_no_tools`** edits no rules file at all. It is a single multimodal request
+  issued from `/tmp`, which contains no `CLAUDE.md`, so the shared rules file is never
+  loaded into that run's context. The model sees the 30 sheets, `instruction.md` and the
+  ablation note, and nothing else; the override lives only in that prompt text. Its
+  metadata says so explicitly and records no container-rules digest, because there is no
+  modified rules file to record.
 
-> frames pre-extracted at 1 fps into `materials/` (1435 PNGs), `ffmpeg`/`ffprobe`/`ffplay`
-> removed from the container, shell and Python retained.
+The repository rules file is untouched at sha256 `779eec27…` in both cases, every scored
+calibration run used it unmodified, and the frozen task contract is unchanged.
+`single_frame` and plain `no_media` ran under the unmodified rules with no override at all,
+which is why they abstain.
 
-Two deviations, both deliberate and both stated rather than papered over:
+This is disclosed rather than smoothed over because the override is the reason these two
+runs measure anything at all. Without it the honest description of both would be "the agent
+declined", which is what the review already rejected as insufficient.
 
-1. **The agent kept a shell.** Codex CLI's only tool *is* the shell. Running it under
-   `--sandbox read-only` -- the obvious way to express "no tool use" -- makes `/workspace`
-   unwritable, so the agent cannot write `output/solution.json` at all. Verified directly:
-   `codex sandbox -c sandbox_mode="read-only"` fails a write to `/workspace/output` with
-   "Read-only file system". That would score 0.0 by construction and prove nothing. The
-   merged tasks that ran this ablation faithfully used Claude Code, whose file-write tool
-   is separate from Bash, so it can lose the shell and still submit.
-2. **Removing `ffmpeg` did not remove the agent's ability to inspect frames.** It wrote
-   `make_sheet.py` and assembled contact sheets with Python imaging instead.
+### Superseded ablation attempts
 
-So this run's restriction is *weaker* than the family definition, not stronger: the agent
-had more capability than the spec allows, and still scored 0.0. The anti-shortcut
-conclusion is therefore conservative. Whether this substitution is acceptable in place of
-a faithful `frame_dump_no_tools` run is a maintainer call.
+The earlier `frame_dump_no_tools` run is not reported above. It presented the same 1 fps
+frames as files on disk and the agent spent 44 shell and Python calls inspecting them,
+which is a frames-plus-tools condition rather than the requested one. It scored 0.000000
+with 89 rallies submitted and 10 matched. It and the abstaining first attempts are retained
+locally under `ablations/superseded/` and are excluded from the repository; they are
+debugging history, not evidence for any reported number.
 
 ### Ablation audit
 
-Every ablation was scanned with the same rules as the calibration runs: search/browse tool
-invocations across all three vendor spellings, dataset and annotation markers, and
-credential material. All four are clean on all three, with zero hits. `net_guard` passed
-both before and after each run (8 passes total), each on a dedicated egress gate
-(`avb-netgate-abl`) held separate from the calibration run's gate so that one run's
-install phase could never widen the other's allowlist during scoring.
+Every ablation was scanned with the same rules as the calibration runs: search and browse
+tool invocations across all vendor spellings, dataset and annotation markers, and
+credential material, with base64 image blocks stripped first. All four are clean on all
+three. `net_guard` passed both before and after each run, each on a dedicated ablation gate
+held separate from the scored calibration gate, so one run's install phase could never
+widen another's allowlist during scoring.
 
 ### Claude Code trajectories
 
@@ -244,6 +256,14 @@ paths blocked; model transport open.** Reaching the model endpoint is inference,
 lookup. `task.toml` still declares `allow_internet = false`, which Harbor 0.22.0 maps to
 `network_mode = "no-network"`; that field is deprecated in 0.22.0 and is left untouched so
 the frozen task contract is not modified for calibration convenience.
+
+Every reported run and ablation used the same locally built image, ID
+`sha256:db657366f70748b8a6d674a04982123e7a69ea85a130fe775b7465854dbabf92`, created
+2026-08-29T23:45:38Z. It has no registry digest because it is built locally from the
+frozen `environment/Dockerfile` rather than pulled. The identity is established by that
+image ID plus the fact that every run started after the image's creation timestamp and no
+rebuild happened in between; the per-run metadata files recorded the image *name* only,
+which is the gap this note closes.
 
 Resource budget is enforced from `task.toml` rather than left unlimited: the scored
 container runs with `--memory=8192m --memory-swap=8192m --cpus=4`, verified from inside
@@ -332,10 +352,12 @@ break the run container's borrowed network namespace) and never re-stages the wo
   every reported metric. They are retained locally under `rollouts/aborted/` as debugging
   evidence only. One of them writes a file with the same basename as the reported run's
   first segment, which is why segments here are matched by `session_id`.
-- **Antigravity rules parity** — Antigravity used the pre-finalization shared rules
-  rather than the finalized minimal rules (sha256 `779eec27…`) that the Codex and Claude
-  Code rows used. The measured result is reported as-is; a strict-parity rerun can be
-  provided if requested.
+- **Antigravity rules parity** — the Antigravity row used the pre-finalization shared
+  rules rather than the finalized minimal file (sha256 `779eec27…`) the other two rows
+  used. The six frozen task files were identical; the only difference is the sentence
+  "A complete best-effort answer beats an empty one", which the finalized file drops. The
+  run answered non-empty and still scored 0. Reviewed and accepted at head `afe9997`
+  without a strict-parity rerun.
 - **Peak memory** — the reported Codex run peaked at 8034 MiB against the task's 8192 MiB
   budget (98%), with `oom_kill = 0` and `OOMKilled=false`. Most of that is reclaimable page
   cache from decoding an 11 GB source, but the margin is thin enough to record.

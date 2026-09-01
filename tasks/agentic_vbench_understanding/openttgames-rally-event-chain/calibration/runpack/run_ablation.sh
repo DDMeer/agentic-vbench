@@ -3,19 +3,26 @@
 # proves the task has no shortcut, so every number must come from a real run --
 # never a constructed submission.
 #
-#   single-frame    one representative frame instead of the video
-#   no-media        prompt and schema only, no media at all
-#   frame-dump      frames pre-extracted at 1 fps (1435 PNGs), ffmpeg/ffprobe/ffplay
-#                   removed afterwards. This is a documented substitute for the
-#                   family's literal frame_dump_no_tools, not that condition: the
-#                   agent keeps a shell, because Codex's only tool is the shell and
-#                   `--sandbox read-only` would leave it unable to write
-#                   output/solution.json at all.
+#   single-frame      one representative frame instead of the video
+#   no-media          prompt and schema only, no media at all
+#   no-media-forced   same, but the run is required to answer instead of abstaining;
+#                     this is the variant that bounds recall, and it needs an
+#                     ablation-only override in the container copy of the rules
+#                     because rule 4 otherwise makes the agent decline
+#
+# A legacy `frame-dump` branch is still present, but only to reproduce the superseded
+# frames-plus-tools run. It is not retained evidence and is not part of the current
+# required ablation set. The literal frame_dump_no_tools condition lives in
+# run_ablation_frame_dump_notools.sh, because Codex cannot express it: the shell is
+# Codex's only tool, so leaving the frames on disk leaves the agent inspecting them,
+# and `--sandbox read-only` would leave it unable to write output/solution.json at
+# all. The superseded run's artifacts are under ablations/superseded/.
 #
 # video-only / audio-only are not run: this task declares audio as not required,
 # so that pair does not apply.
 #
-# Usage: ./run_ablation.sh single-frame|no-media|frame-dump [codex-version]
+# Usage (retained):            ./run_ablation.sh single-frame|no-media|no-media-forced [codex-version]
+# Legacy reproduction only:    ./run_ablation.sh frame-dump [codex-version]
 set -euo pipefail
 
 MODE="${1:?usage: ./run_ablation.sh single-frame|no-media|no-media-forced|frame-dump}"
@@ -83,13 +90,49 @@ case "$MODE" in
 esac
 
 if [ "$MODE" = no-media-forced ]; then
+  # The binding rules file outranks instruction.md, and rule 4 ("work from the
+  # video") is why earlier attempts at this diagnostic abstained even when the
+  # appended ablation section told them to guess: the agent was right to treat the
+  # hard rules as inviolable. For this diagnostic only, the container copy of the
+  # rules carries the same override. The repository copy is untouched and every
+  # scored run still uses it at sha256 779eec27...; the metadata below records the
+  # different digest the agent actually saw here.
+  for f in AGENTS.md GEMINI.md CLAUDE.md; do
+    docker exec "$CNAME" sh -c "cat >> /workspace/$f <<'"'"'RULEEOF'"'"'
+
+## Ablation override (this diagnostic run only)
+
+Rule 4 does not apply on this run: there is no video to work from. This is a
+deliberate no-media diagnostic that measures what guessing alone scores, so
+abstaining defeats it. Producing a best-effort invented reconstruction here does
+not void the run and is not a claim about the real match. See the ablation
+condition at the end of instruction.md.
+RULEEOF"
+  done
   docker exec "$CNAME" sh -c 'cat >> /workspace/instruction.md <<'"'"'EOF'"'"'
 
-## Ablation condition
+## Ablation condition (this run only)
 
-No media is provided for this run. Produce your best-effort `output/solution.json`
-in the required schema regardless. Do not stop to ask for the media and do not
-finish without writing the file.
+No media is provided. This is a deliberate diagnostic, not a mistake, and abstaining
+defeats its purpose: an empty rally list measures nothing.
+
+**This section supersedes the no-guessing rules above for this run only.** The
+"do not guess, omit rather than infer" rule stated above, and the workspace rules
+against reporting unobserved events do not apply here: this is a deliberate
+diagnostic whose entire purpose is to measure what pure guessing scores, so
+declining to guess makes it measure nothing. Nothing you write here is a claim
+about the real match, and nothing here changes how the normal task is run.
+
+You must still write `output/solution.json`, conforming to the schema above, and it
+must be a best-effort reconstruction of the **whole match**, not a token single entry.
+The video is 1435 seconds of a real table-tennis match; produce the full sequence of
+rallies you would expect across that duration, with plausible serve times, stroke
+chains, players, hands, stroke types and endings throughout.
+
+Guess. Infer whatever you can from how matches of this length are normally
+structured. Being wrong is the expected outcome and costs you nothing here; what
+defeats the purpose of this diagnostic is a single placeholder rally, an empty
+list, a refusal, or a request for the media.
 EOF'
 fi
 
@@ -116,7 +159,8 @@ docker exec "$CNAME" codex --version >/dev/null 2>&1 || {
   echo "web_search:      false"
   echo "gate:            $GATE"
   echo "task commit:     $(git -C "$TASK" rev-parse HEAD)"
-  echo "rules sha256:    $(shasum -a 256 "$(dirname "$0")/AGENTS.md" | awk '{print $1}')"
+  echo "rules sha256:    $(shasum -a 256 "$(dirname "$0")/AGENTS.md" | awk '{print $1}') (repository copy)"
+  echo "rules in container: $(docker exec "$CNAME" sha256sum /workspace/AGENTS.md 2>/dev/null | awk '{print $1}')"
   echo "started:         $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 } | tee "$A/ablation_${MODE}_metadata.txt"
 
