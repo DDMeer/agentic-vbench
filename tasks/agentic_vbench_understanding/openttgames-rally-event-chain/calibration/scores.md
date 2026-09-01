@@ -1,7 +1,8 @@
 # Calibration — openttgames-rally-event-chain
 
-Frozen at commit `1b7cbd5e1473a07405ad481c6179f98b2aca70f0`; every run below used that
-commit's task files and the image built from its `environment/Dockerfile`.
+Ground truth and the six-file task contract were frozen at commit
+`1b7cbd5e1473a07405ad481c6179f98b2aca70f0`. Those six files remain byte-identical to that
+base; calibration and ablation-specific execution details are documented below.
 
 Deterministic scorer `steps/solve/tests/judge.py`, no VLM or LLM judge.
 `reward = rally_discovery_F1 × ending_joint_accuracy × stroke_timing_F1 × stroke_semantic_joint_F1`.
