@@ -1,8 +1,17 @@
 # Calibration — openttgames-rally-event-chain
 
-Ground truth and the six-file task contract were frozen at commit
-`1b7cbd5e1473a07405ad481c6179f98b2aca70f0`. Those six files remain byte-identical to that
-base; calibration and ablation-specific execution details are documented below.
+Ground truth and the six-file task contract were frozen at
+`6aa6786` ("Freeze OpenTTGames GT and observability contract"). Those six files remain
+byte-identical to that base; calibration and ablation-specific execution details are
+documented below.
+
+That freeze commit was `1b7cbd5e1473a07405ad481c6179f98b2aca70f0` when the calibration
+runs were made, and every run-time artifact here records that SHA. Rebasing this branch
+onto `upstream/main` to clear a `.gitignore` conflict rewrote the commit objects, so the
+same content now lives at `6aa6786`, which is the SHA reachable from this branch. The two
+carry byte-identical copies of all six frozen files; the pre-rebase SHA is left untouched
+in the run metadata because editing a recorded artifact to match a later history rewrite
+would falsify it.
 
 Deterministic scorer `steps/solve/tests/judge.py`, no VLM or LLM judge.
 `reward = rally_discovery_F1 × ending_joint_accuracy × stroke_timing_F1 × stroke_semantic_joint_F1`.
