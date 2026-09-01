@@ -33,17 +33,18 @@ Thirteen regression assertions in `steps/solve/tests/test.sh`; all pass.
 
 | harness | harness version | model | reasoning | reward | tool-call turns | wall time | trajectory |
 |---|---|---|---|---:|---:|---:|---|
-| Codex CLI | 0.147.0 | `gpt-5.6-sol` | high | **0.000078** | **150** | 34.5 min | `rollouts/codex_gpt-5.6-sol.jsonl` |
+| Codex CLI | 0.147.0 | `gpt-5.6-sol` | high | **0.000078** | **150** | 35.5 min | `rollouts/codex_gpt-5.6-sol.jsonl` |
 | Antigravity CLI [^parity] | 1.1.22 | `gemini-3.1-pro-high` | high | **0.000000** | **164** | 40.6 min | `rollouts/antigravity_gemini-3.1-pro-high.native.jsonl` |
-| Claude Code CLI [^seg] | 2.1.251 | `claude-opus-4-8` | default | **0.041168** | **123** | 99.3 min | `rollouts/claude_claude-opus-4-8.jsonl` + `.seg2.jsonl` |
+| Claude Code CLI [^seg] | 2.1.251 | `claude-opus-4-8` | default | **0.041168** | **123** | 101.0 min | `rollouts/claude_claude-opus-4-8.jsonl` + `.seg2.jsonl` |
 
 [^seg]: One Claude Code session executed in two segments, separated by a
 subscription-window interruption, and reported as the sum. Both segments carry the
 same `session_id`
 `40ddfba8-6703-4fd8-bf91-6c39f778d500`, which is what ties them together.
-Segment 1 (2026-08-30 23:20Z, 86 tool-call turns, 68.3 min, `is_error=true`) stopped
+Segment 1 (guard span 2026-08-30 23:19:01Z to 00:28:18Z, 69.3 min, 86 tool-call turns,
+`is_error=true`) stopped
 when the five-hour window filled with `output/` still empty. Segment 2
-(2026-08-31 04:03Z, 37 turns, 31.1 min) resumed that same conversation with
+(guard span 04:02:22Z to 04:34:03Z, 31.7 min, 37 turns) resumed that same conversation with
 `claude --continue` -- not a fresh agent rediscovering leftover files -- and finished
 on its own (`is_error=false`), writing a 66 KB `output/solution.json`. Segment 2's 37
 turns alone would not clear the >50 gate; the reported 123 is the sum. Neither segment
@@ -56,9 +57,12 @@ non-empty answer and still scored 0, so that sentence cannot account for the res
 maintainer reviewed this difference at head `afe9997` and accepted it without a
 strict-parity rerun.
 
-Wall time is the span between each run's pre- and post-`net_guard` timestamps, so it
-includes the CLI install phase and is checkable from the committed logs; the Claude figure
-is the sum of its two segments.
+Wall time is the span from a run's pre-`net_guard` timestamp to its post-`net_guard`
+timestamp, so it includes the CLI install phase, and every value is computable from the
+committed `*.netguard.log` files alone. The Claude figure sums its two segments
+(69.3 + 31.7). An earlier edit of this row mixed three different definitions -- one value
+from metadata `started` to post-guard, one from pre- to post-guard, and one from the CLI's
+own reported durations -- so all three are now on the single definition stated here.
 
 All three harnesses have completed measured runs and the required ablation evidence is
 reported below, including a literal zero-tool `frame_dump_no_tools` run. Codex
