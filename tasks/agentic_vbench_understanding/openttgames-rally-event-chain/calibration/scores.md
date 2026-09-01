@@ -33,9 +33,9 @@ Thirteen regression assertions in `steps/solve/tests/test.sh`; all pass.
 
 | harness | harness version | model | reasoning | reward | tool-call turns | wall time | trajectory |
 |---|---|---|---|---:|---:|---:|---|
-| Codex CLI | 0.147.0 | `gpt-5.6-sol` | high | **0.000078** | **150** | 36 min | `rollouts/codex_gpt-5.6-sol.jsonl` |
-| Antigravity CLI [^parity] | 1.1.22 | `gemini-3.1-pro-high` | high | **0.000000** | **164** | 42 min | `rollouts/antigravity_gemini-3.1-pro-high.native.jsonl` |
-| Claude Code CLI [^seg] | 2.1.251 | `claude-opus-4-8` | default | **0.041168** | **123** | 99.4 min | `rollouts/claude_claude-opus-4-8.jsonl` + `.seg2.jsonl` |
+| Codex CLI | 0.147.0 | `gpt-5.6-sol` | high | **0.000078** | **150** | 34.5 min | `rollouts/codex_gpt-5.6-sol.jsonl` |
+| Antigravity CLI [^parity] | 1.1.22 | `gemini-3.1-pro-high` | high | **0.000000** | **164** | 40.6 min | `rollouts/antigravity_gemini-3.1-pro-high.native.jsonl` |
+| Claude Code CLI [^seg] | 2.1.251 | `claude-opus-4-8` | default | **0.041168** | **123** | 99.3 min | `rollouts/claude_claude-opus-4-8.jsonl` + `.seg2.jsonl` |
 
 [^seg]: One Claude Code session executed in two segments, separated by a
 subscription-window interruption, and reported as the sum. Both segments carry the
@@ -55,6 +55,10 @@ file does not -- "A complete best-effort answer beats an empty one." The run pro
 non-empty answer and still scored 0, so that sentence cannot account for the result. The
 maintainer reviewed this difference at head `afe9997` and accepted it without a
 strict-parity rerun.
+
+Wall time is the span between each run's pre- and post-`net_guard` timestamps, so it
+includes the CLI install phase and is checkable from the committed logs; the Claude figure
+is the sum of its two segments.
 
 All three harnesses have completed measured runs and the required ablation evidence is
 reported below, including a literal zero-tool `frame_dump_no_tools` run. Codex
