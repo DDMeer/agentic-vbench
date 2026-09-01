@@ -197,8 +197,15 @@ declined", which is what the review already rejected as insufficient.
 
 The earlier `frame_dump_no_tools` run is not reported above. It presented the same 1 fps
 frames as files on disk and the agent spent 44 shell and Python calls inspecting them,
-which is a frames-plus-tools condition rather than the requested one. It scored 0.000000
-with 89 rallies submitted and 10 matched. It and the abstaining first attempts are retained
+which is a frames-plus-tools condition rather than the requested one. It scored 0.000000.
+
+Its summary here was also wrong and is corrected: that run **submitted** 89 rallies, and
+an earlier version of this file described that as having "recovered 89 of 92 rallies". It
+did not. The scorer **matched 10 of 92 rallies and 7 of 387 strokes** (rally-discovery F1
+0.110). A submitted count is not recall, which is why the table above reports submitted and
+matched as separate columns.
+
+It and the abstaining first attempts are retained
 locally under `ablations/superseded/` and are excluded from the repository; they are
 debugging history, not evidence for any reported number.
 
