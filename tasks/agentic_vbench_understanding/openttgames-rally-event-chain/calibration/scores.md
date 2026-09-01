@@ -257,13 +257,20 @@ lookup. `task.toml` still declares `allow_internet = false`, which Harbor 0.22.0
 `network_mode = "no-network"`; that field is deprecated in 0.22.0 and is left untouched so
 the frozen task contract is not modified for calibration convenience.
 
-Every reported run and ablation used the same locally built image, ID
+Image identity, stated at the strength the evidence actually supports. The local image is
 `sha256:db657366f70748b8a6d674a04982123e7a69ea85a130fe775b7465854dbabf92`, created
-2026-08-29T23:45:38Z. It has no registry digest because it is built locally from the
-frozen `environment/Dockerfile` rather than pulled. The identity is established by that
-image ID plus the fact that every run started after the image's creation timestamp and no
-rebuild happened in between; the per-run metadata files recorded the image *name* only,
-which is the gap this note closes.
+2026-08-29T23:45:38Z; it has no registry digest because it is built locally from the frozen
+`environment/Dockerfile` rather than pulled.
+
+Only one retained run records that ID directly in its own metadata: the
+`frame_dump_no_tools` ablation, which was produced after the review asked for it. The four
+harness runs recorded the image *name* only, and the forced `no_media` ablation recorded no
+image line at all.
+
+So for those, the claim is an inference rather than a per-run cryptographic record: the
+image was built before every reported run and no rebuild happened in between, which is
+consistent with all of them having used it, but it was not captured at run time. Reruns
+from here record the ID directly.
 
 Resource budget is enforced from `task.toml` rather than left unlimited: the scored
 container runs with `--memory=8192m --memory-swap=8192m --cpus=4`, verified from inside
