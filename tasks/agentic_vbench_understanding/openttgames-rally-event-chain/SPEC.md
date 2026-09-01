@@ -116,9 +116,14 @@ anti_shortcut:
   # the 1 fps sample -- none omitted -- pre-arranged into 30 7x7 contact sheets at
   # 1568x882 and given to the model as image inputs on a single request with every
   # tool disallowed. No shell, no file access, no inspection of any kind. It
-  # submitted 43 rallies and matched 3; strokes 5 of 387. A probe confirmed the ball
-  # is still resolvable at this tile size, so the zero is a measurement rather than
-  # an unreadable presentation. Sheet digests in
+  # submitted 43 rallies and matched 3; strokes 5 of 387. On legibility: players,
+  # stances, table and net read clearly at 224x126 per tile, but the ball itself is a
+  # few pixels and independent inspection could not reliably identify it, so the
+  # probe's self-report is not treated as settled. The zero does not rest on that
+  # question: at 1 fps only 278 of 387 reference strokes fall within the 0.35 s
+  # tolerance of a sampled instant, so the ceiling is structural before perception
+  # enters. Serve times (1.0 s tolerance) are all reachable at 1 fps and it matched
+  # 3 of 92. Sheet digests in
   # calibration/ablations/ablation_frame-dump-notools_sheets.sha256.
   #
   # Disclosure: the two diagnostics that require predicting without observing need an

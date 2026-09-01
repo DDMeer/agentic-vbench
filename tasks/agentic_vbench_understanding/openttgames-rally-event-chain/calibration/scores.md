@@ -166,10 +166,23 @@ being tested.
 Sheet geometry was chosen by measurement, not taste. Image cost tracks pixel area rather
 than tile count, so 7x7 and 5x5 cost the same per sheet and 7x7 simply needs fewer: 30
 sheets at ~4.7k tokens each leaves real output room inside the context window, where the
-1918x1078 variant at ~5.6k did not. A probe confirmed the model still resolves the ball at
-this tile size, so the zero is a result rather than an artefact of an unreadable
-presentation. `ablations/ablation_frame-dump-notools_sheets.sha256` pins exactly which 30
-sheets the scored request saw.
+1918x1078 variant at ~5.6k did not.
+`ablations/ablation_frame-dump-notools_sheets.sha256` pins exactly which 30 sheets the
+scored request saw.
+
+On whether the presentation is legible enough for the zero to mean anything: at 224x126 per
+tile, players, stances, racket arms, the table and the net all read clearly, and the model's
+own probe response described the ball as a resolvable dot. Independent inspection of a
+mid-rally tile is less certain than that -- the players and their posture are easy to read,
+but the ball is a few pixels and could not be reliably identified by eye. Neither the probe
+nor that inspection settles the question on its own.
+
+The stronger point does not depend on it: the binding limit is the sampling rate the review
+accepted, not the tile size. Stroke contacts are scored to 0.35 s, and at 1 fps only 278 of
+387 reference strokes (71.8%) fall within 0.35 s of a sampled instant at all -- the rest are
+unreachable at any resolution. The run matched 5. Serve times, scored to 1.0 s, are all
+reachable at 1 fps, and it matched 3 of 92. The ceiling is structural before perception
+enters, and the result sits far below even that ceiling.
 
 ### The rules file was not identical across all four
 
